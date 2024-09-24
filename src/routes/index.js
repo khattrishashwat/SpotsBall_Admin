@@ -71,6 +71,7 @@ const UsersSubscription = lazy(() =>
 const ReportedUsers = lazy(() =>
   import("../pages/authenticated/reportedUsers/ReportedUsers")
 );
+const UserAccountDelete = lazy(() => import("../pages/authenticated/UserAccountDelete"));
 
 const routes = createBrowserRouter(
   [
@@ -102,6 +103,10 @@ const routes = createBrowserRouter(
           path: "reset",
           Component: Reset,
         },
+        {
+          path:"delete-user-account",
+          Component:UserAccountDelete,
+        }
       ],
     },
     {
@@ -216,6 +221,7 @@ const routes = createBrowserRouter(
           path: "reported-users",
           Component: ReportedUsers,
         },
+        
       ],
     },
     {
