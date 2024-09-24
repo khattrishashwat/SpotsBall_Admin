@@ -80,6 +80,10 @@ const routes = createBrowserRouter(
       element: <Navigate to={"/auth/login"} />,
     },
     {
+      path:"delete-user-account",
+      Component:UserAccountDelete,
+    },
+    {
       path: "/auth",
       Component: GuestRoutes,
       children: [
@@ -103,10 +107,7 @@ const routes = createBrowserRouter(
           path: "reset",
           Component: Reset,
         },
-        {
-          path:"delete-user-account",
-          Component:UserAccountDelete,
-        }
+        
       ],
     },
     {
