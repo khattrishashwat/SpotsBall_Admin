@@ -2,8 +2,8 @@ import axios from "axios";
 
 const httpClient = axios.create({
   // baseURL:'http://localhost:7200', // Replace this with your API base URL
-  baseURL: "http://172.16.100.241:7200", // Replace this with your API base URL
-  // baseURL: "http://3.130.22.169", // staging server
+  // baseURL: "http://172.16.100.241:7200", // Replace this with your API base URL
+  baseURL: "http://3.130.22.169", // staging server
  
 });
 
