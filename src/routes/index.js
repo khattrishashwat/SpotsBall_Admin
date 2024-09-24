@@ -230,7 +230,7 @@ const routes = createBrowserRouter(
     },
   ],
   {
-    // basename: "/admin-panel", // <-- Replace with your actual base path
+    basename: "/admin-panel", // <-- Replace with your actual base path
   }
 );
 
