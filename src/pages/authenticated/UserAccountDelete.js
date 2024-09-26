@@ -7,6 +7,11 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { IconButton, Snackbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { Placeholder } from 'rsuite';
+import backgrounImage from "./../../assets/images/backgroundImage.png";
+import Logo from "../../../src/components/logo.png";
+import Loader from "../../components/loader/Loader";
+import { Audio } from 'react-loader-spinner'
 
 const PhoneNumberForm = () => {
     const [CountyCode, setCountyCode] = useState();
@@ -14,6 +19,7 @@ const PhoneNumberForm = () => {
     const [alertMessage, setAlertMessage] = useState();
     const [apiSuccess, setApiSuccess] = useState("");
     const [apiError, setApiError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const phoneinputRef = useRef();
 
@@ -25,6 +31,7 @@ const PhoneNumberForm = () => {
     // Function to handle form submission
     const handleSubmit = (values, { resetForm }) => {
         console.log('Phone Number:', values.phone);
+        setLoading(true);
         httpClient
             .delete('/api/v1/user/delete-user', { phone: values.phone })
             .then((res) => {
@@ -42,6 +49,8 @@ const PhoneNumberForm = () => {
                 setApiSuccess(false)
                 console.log("eeeeeeeeeeeee", err)
                 console.error('Error deleting user:', err.response ? err.response.data : err.message);
+            }).finally(() => {
+                setLoading(false); // Reset loading state after request completion
             });
     };
 
@@ -58,96 +67,136 @@ const PhoneNumberForm = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 minHeight: '100vh', // Full height to allow vertical centering
-                backgroundColor: '#e0e0e0', // Background color for the entire screen
+                backgroundImage: `url(${backgrounImage})`, // Background image
+                backgroundSize: 'cover', // Cover the entire area
+                backgroundPosition: 'center', // Center the background image
+                backgroundRepeat: 'no-repeat', // Prevent repeating the image
+                backgroundColor: '#e0e0e0', // 
+
             }}
         >
-            <Container
-                maxWidth="xs" // Set the maxWidth to 'xs' to make the form smaller
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    minHeight: '50vh', // Ensure full height in case of smaller content
-                    backgroundColor: '#f4f4f4',
-                    padding: '20px',
-                    borderRadius: '8px',
-                    boxShadow: '0 0 15px rgba(0, 0, 0, 0.1)',
-                    textAlign: 'center', // Center the text content
-                }}
-            >
-                <Typography variant="h2" sx={{ marginBottom: '20px', fontWeight: "700", color: '#55679C' }}>
-                    Twilio
-                </Typography>
-                <Typography variant="h5" sx={{ marginBottom: '20px', fontWeight: "500", color: '#333' }}>
-                    Delete User Account
-                </Typography>
-                <Snackbar
-                    open={openSnakeBar}
-                    autoHideDuration={1000}
-                    message={alertMessage}
-                    color="red"
-                    ContentProps={{
-                        sx: apiSuccess
-                            ? { backgroundColor: "blue" }
-                            : { backgroundColor: "red" },
+            {loading ? (<Loader/>) : (
+                <Container
+                    maxWidth="xs" // Set the maxWidth to 'xs' to make the form smaller
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        minHeight: '35vh', // Ensure full height in case of smaller content
+                        backgroundColor: '#f4f4f4',
+                        padding: '20px 20px',
+                        borderRadius: '8px',
+                        boxShadow: '0 0 15px rgba(0, 0, 0, 0.1)',
+                        textAlign: 'center', // Center the text content
+                        width: "350px",
+
                     }}
-                    anchorOrigin={{
-                        horizontal: "right",
-                        vertical: "bottom",
-                    }}
-                    action={
-                        <React.Fragment>
-                            <IconButton
-                                aria-label="close"
-                                color="inherit"
-                                sx={{ p: 0.5 }}
-                                onClick={() => setOpenSnakeBar(false)}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </React.Fragment>
-                    }
-                />
-                <form onSubmit={formik.handleSubmit}>
-                    <PhoneInput
-                        country={'us'}
-                        value={formik.values.phone}
-                        onChange={(phone) => {
-                            setCountyCode(phone);
-                            formik.setFieldValue('phone', phone); // Update Formik's state
+                >
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                        <img
+                            src={Logo}
+                            alt="Logo"
+                            style={{ width: '40px', height: '40px', backgroundColor: 'transparent', borderRadius: "50%" }}
+                        />
+                        <Typography variant="h4" sx={{
+                            fontWeight: "700",
+                            color: '#CB80AB',
+                        }}>
+                            Truily
+                        </Typography>
+                    </div>
+
+                    <Typography variant="h5" sx={{
+                        textAlign: "center",
+                        fontSize: "20px",
+                        textTransform: "capitalize",
+                        fontWeight: " 500",
+                        fontFamily: "'Roboto', sans-serif",
+                        marginBottom: "15px",
+                        color: "#6A6A6A",
+                        arginLeft: "20px"
+
+                    }}>
+                        Delete User Account
+                    </Typography>
+                    <Snackbar
+                        open={openSnakeBar}
+                        autoHideDuration={1000}
+                        message={alertMessage}
+                        color="red"
+                        ContentProps={{
+                            sx: apiSuccess
+                                ? { backgroundColor: "blue" }
+                                : { backgroundColor: "red" },
                         }}
-                        inputProps={{
-                            name: 'phone', // Ensure the name prop is set
+                        anchorOrigin={{
+                            horizontal: "right",
+                            vertical: "bottom",
                         }}
-                        inputStyle={{
-                            border: '2px solid #4caf50', // Custom border style
-                            padding: '10px', // Custom padding
-                            fontSize: '16px', // Font size for input text
-                            color: '#333', // Text color
-                            borderRadius: '5px', // Rounded corners
-                            width: '100%', // Full width of the input
-                            marginBottom: '15px' // Margin below the input
-                        }}
+                        action={
+                            <React.Fragment>
+                                <IconButton
+                                    aria-label="close"
+                                    color="inherit"
+                                    sx={{ p: 0.5 }}
+                                    onClick={() => setOpenSnakeBar(false)}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </React.Fragment>
+                        }
                     />
-                    <button
-                        type='submit'
-                        style={{
-                            padding: '10px 20px',
-                            backgroundColor: '#4caf50',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '5px',
-                            cursor: 'pointer',
-                            marginTop: "20px"
-                        }}
-                    >
-                        Delete
-                    </button>
-                </form>
-            </Container>
-        </div>
+                    <form onSubmit={formik.handleSubmit} >
+
+                        <PhoneInput  
+                      
+                            country={'us'}
+                            value={formik.values.phone}
+                            onChange={(phone) => {
+                                setCountyCode(phone);
+                                formik.setFieldValue('phone', phone);
+                            }}
+
+                            inputProps={{
+                                name: 'phone',
+                                placeholder: 'Phone Number'
+                            }}
+
+                            inputStyle={{
+                                // padding: '20px',
+                                fontSize: '12px',
+                                color: '#333',
+                                borderRadius: '10px',
+                                width: '280px',
+                                marginBottom: '10px',
+
+                            }}
+                        />
+                        <button
+                            type='submit'
+                            style={{
+                                padding: '5px 30px',
+                                backgroundColor: '#ff5722',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '5px',
+                                cursor: 'pointer',
+                                marginTop: "13px",
+                                transition: 'background-color 0.3s ease',
+                                fontStyle: "bold"
+                            }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = '#4caf50'} // Hover color
+                            onMouseLeave={(e) => e.target.style.backgroundColor = '#ff5722'}
+                        >
+                            Delete
+                        </button>
+                    </form>
+                </Container>
+            )}
+        </div >
     );
 };
 
 export default PhoneNumberForm;
+
