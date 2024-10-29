@@ -12,6 +12,7 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import SettingsAccessibilityIcon from "@mui/icons-material/SettingsAccessibility";
 import AppSettingsAltIcon from "@mui/icons-material/AppSettingsAlt";
 import TroubleshootIcon from "@mui/icons-material/Troubleshoot";
+import ChatIcon from '@mui/icons-material/Chat';
 import ReportIcon from "@mui/icons-material/Report";
 import Logo from "./logo.png";
 
@@ -49,9 +50,9 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: "Groups",
+    name: "ChatHub",
     to: "/groups",
-    icon: <Diversity1Icon />,
+    icon: <ChatIcon />,
   },
   {
     component: CNavItem,

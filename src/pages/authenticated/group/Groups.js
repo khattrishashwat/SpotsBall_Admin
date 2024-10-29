@@ -190,7 +190,7 @@ const Groups = () => {
 
         <CContainer>
           <div className="d-flex justify-content-between align-items-center">
-            <h4 className="">Groups : </h4>
+            <h4 className="">ChatHub Groups : </h4>
             <Button
               variant="contained"
               className="my-2"
