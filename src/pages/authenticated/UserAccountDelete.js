@@ -101,7 +101,7 @@ const PhoneNumberForm = () => {
                                 fontWeight: "700",
                                 color: '#CB80AB',
                             }}>
-                                Truily
+                                SpotsBall Admin
                             </Typography>
                         </div>
 

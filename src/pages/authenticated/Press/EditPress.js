@@ -7,32 +7,35 @@ import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../../../components/loader/Loader";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-const EditGroup = () => {
-  const [name, setName] = useState("");
-  const [color, setColor] = useState("");
-  const [image, setImage] = useState(null);
+const EditPress = () => {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [link, setLink] = useState("");
+  const [pressBanner, setPressBanner] = useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
   const params = useParams();
 
-  const handleNameChange = (e) => setName(e.target.value);
-  const handleColorChange = (e) => setColor(e.target.value);
-  const handleImageChange = (e) => setImage(e.target.files[0]);
+  const handleTitleChange = (e) => setTitle(e.target.value);
+  const handleDescriptionChange = (e) => setDescription(e.target.value);
+  const handleLinkChange = (e) => setLink(e.target.value);
+  const handlePressBannerChange = (e) => setPressBanner(e.target.files[0]);
 
   const handleSubmit = () => {
     setIsLoading(true);
     let formData = new FormData();
 
-    formData.append("name", name);
-    if (image) formData.append("thumbnail", image);
-    formData.append("color", color);
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("link", link);
+    if (pressBanner) formData.append("press_banner", pressBanner);
 
-    addGroupToDB(formData);
+    updateGroupInDB(formData);
   };
 
-  const addGroupToDB = (groupData) => {
+  const updateGroupInDB = (groupData) => {
     httpClient
       .put(`/admin/update-group/${params.id}`, groupData)
       .then((res) => res.data)
@@ -53,17 +56,16 @@ const EditGroup = () => {
       .get(`/admin/get-group/${params.id}`)
       .then((res) => res?.data?.result[0])
       .then((result) => {
-        // setData(result);
         setIsLoading(false);
-        setName(result.name);
-        // setImage(result.thumbnail);
-        setColor(result.color);
+        setTitle(result.title);
+        setDescription(result.description);
+        setLink(result.link);
       })
       .catch((err) => {
         console.log("axios error => ", err);
         setIsLoading(false);
       });
-  }, []);
+  }, [params.id]);
 
   return (
     <>
@@ -79,9 +81,9 @@ const EditGroup = () => {
           }}
         >
           <ArrowBackIcon />
-          back
+          Back
         </Button>
-        <Container maxWidth="sm " className="d-flex justify-content-center">
+        <Container maxWidth="sm" className="d-flex justify-content-center">
           {isLoading && <Loader />}
           <Box
             component="form"
@@ -89,35 +91,55 @@ const EditGroup = () => {
             autoComplete="off"
             sx={{ mt: 4, width: "80%" }}
           >
-            <label>Name</label>
+            <label>Title</label>
             <TextField
-              // label="Name"
-              value={name}
-              onChange={handleNameChange}
+              value={title}
+              onChange={handleTitleChange}
               fullWidth
               margin="normal"
-              placeholder="Party, Picnic, Birthday, Love, Romance..."
+              placeholder="Enter title here..."
               sx={{
                 border: "none",
               }}
             />
-            <label className="mt-4">Thumbnail</label>
+
+            <label>Description</label>
             <TextField
-              onChange={handleImageChange}
+              value={description}
+              onChange={handleDescriptionChange}
+              fullWidth
+              margin="normal"
+              placeholder="Enter description here..."
+              multiline
+              rows={4}
+              sx={{
+                border: "none",
+              }}
+            />
+
+            <label>Link</label>
+            <TextField
+              value={link}
+              onChange={handleLinkChange}
+              fullWidth
+              margin="normal"
+              placeholder="Enter link here..."
+              type="url" // Enforces URL format
+              sx={{
+                border: "none",
+              }}
+              helperText="Please enter a valid URL (e.g., https://example.com)"
+            />
+
+            <label>Press Banner</label>
+            <TextField
+              onChange={handlePressBannerChange}
               fullWidth
               margin="normal"
               variant="outlined"
               type="file"
-              //   value={image}
             />
-            <label className="me-2">Color : </label>
-            <input
-              className="mt-4"
-              value={color}
-              type="text"
-              placeholder="#000000"
-              onChange={handleColorChange}
-            />
+
             <Button
               variant="contained"
               color="primary"
@@ -134,5 +156,4 @@ const EditGroup = () => {
   );
 };
 
-export default EditGroup;
-  
+export default EditPress;

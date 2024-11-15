@@ -19,6 +19,7 @@ const NewContent = () => {
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
+  const [type, setType] = useState("");
   const params = useParams();
   const [newContent, setNewContent] = useState({});
   const editor = useRef(null);
@@ -28,12 +29,13 @@ const NewContent = () => {
   const newContentData = {
     description: newContent,
     title: title,
+    type:type,
   };
 
   const updateContent = (e) => {
     setLoading(true);
     httpClient
-      .post(`/admin/add-content`, newContentData)
+      .post(`admin/add-static-content`, newContentData)
       .then((res) => {
         setLoading(false);
         swal.fire({
@@ -72,7 +74,13 @@ const NewContent = () => {
             <div className="d-flex flex-column mb-4 w-5 ">
               <Button
                 variant="contained"
-                sx={{ mt: 0, ml: 0, mb: 4, width: "90px", backgroundColor: "orange" }}
+                sx={{
+                  mt: 0,
+                  ml: 0,
+                  mb: 4,
+                  width: "90px",
+                  backgroundColor: "orange",
+                }}
                 onClick={() => {
                   navigate(-1);
                 }}
@@ -108,6 +116,16 @@ const NewContent = () => {
               // onFocus={(event, editor) => {
               //     console.log('Focus.', editor); `
               // }}
+            />
+            <span className="w-5">Types: </span>
+            <input
+              className=""
+              value={type}
+              placeholder="title"
+              onChange={(e) => setType(e.target.value)}
+              style={{
+                outline: "none",
+              }}
             />
             <button onClick={updateContent} className="Submit">
               Submit

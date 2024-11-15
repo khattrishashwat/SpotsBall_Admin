@@ -110,8 +110,8 @@ const Content = () => {
 
   const deleteSingleUser = (e, params) => {
     httpClient
-    .delete(`/admin/delete-content/${params.id}`)
-    .then((res) => {
+      .delete(`/admin/delete-content/${params.id}`)
+      .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);
         setApiError(false);
@@ -131,18 +131,20 @@ const Content = () => {
   //fetching user information
   useEffect(() => {
     httpClient
-      .get(`/admin/get-all-content`)
+      .get(`admin/get-all-static-content`)
       .then((res) => {
-        setUserCount(res.data?.result?.count);
+        console.log("Fetched Data:", res.data.data);
+        setUserCount(res.data.data.length);
         setLoading(false);
         setRows(
-          res.data.result.map((doc, index) => {
+          res.data.data.map((doc, index) => {
             return {
               id: doc._id,
-              col1: paginationModel.page * paginationModel.pageSize + (index + 1),
+              col1:
+                paginationModel.page * paginationModel.pageSize + (index + 1),
               col2: doc.title || "N/A",
-              col3: doc.created_at.substring(0, 10),
-              col4: doc.updated_at.substring(0, 10),
+              col3: doc.createdAt ? doc.createdAt.substring(0, 10) : "N/A",
+              col4: doc.updatedAt ? doc.updatedAt.substring(0, 10) : "N/A",
             };
           })
         );
@@ -150,7 +152,7 @@ const Content = () => {
       })
       .catch((error) => {
         setLoading(false);
-        console.log(error);
+        console.error("Error fetching data:", error);
       });
   }, []);
 

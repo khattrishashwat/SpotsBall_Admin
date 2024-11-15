@@ -7,34 +7,37 @@ import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../../../components/loader/Loader";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-const EditGroup = () => {
-  const [name, setName] = useState("");
-  const [color, setColor] = useState("");
-  const [image, setImage] = useState(null);
-
+const EditPlay = () => {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [thumbnail, setThumbnail] = useState(null);
+  const [howToPlayBanner, setHowToPlayBanner] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
   const params = useParams();
 
-  const handleNameChange = (e) => setName(e.target.value);
-  const handleColorChange = (e) => setColor(e.target.value);
-  const handleImageChange = (e) => setImage(e.target.files[0]);
+  const handleTitleChange = (e) => setTitle(e.target.value);
+  const handleDescriptionChange = (e) => setDescription(e.target.value);
+  const handleThumbnailChange = (e) => setThumbnail(e.target.files[0]);
+  const handleHowToPlayBannerChange = (e) =>
+    setHowToPlayBanner(e.target.files[0]);
 
   const handleSubmit = () => {
     setIsLoading(true);
     let formData = new FormData();
 
-    formData.append("name", name);
-    if (image) formData.append("thumbnail", image);
-    formData.append("color", color);
+    formData.append("title", title);
+    formData.append("description", description);
+    if (thumbnail) formData.append("thumbnail", thumbnail);
+    if (howToPlayBanner) formData.append("howToPlayBanner", howToPlayBanner);
 
-    addGroupToDB(formData);
+    updatePlayInDB(formData);
   };
 
-  const addGroupToDB = (groupData) => {
+  const updatePlayInDB = (formData) => {
     httpClient
-      .put(`/admin/update-group/${params.id}`, groupData)
+      .put(`/admin/update-group/${params.id}`, formData)
       .then((res) => res.data)
       .then((data) => {
         if (data.status) {
@@ -53,17 +56,16 @@ const EditGroup = () => {
       .get(`/admin/get-group/${params.id}`)
       .then((res) => res?.data?.result[0])
       .then((result) => {
-        // setData(result);
         setIsLoading(false);
-        setName(result.name);
-        // setImage(result.thumbnail);
-        setColor(result.color);
+        setTitle(result.title);
+        setDescription(result.description);
+        // Thumbnail and howToPlayBanner will be handled separately if needed
       })
       .catch((err) => {
         console.log("axios error => ", err);
         setIsLoading(false);
       });
-  }, []);
+  }, [params.id]);
 
   return (
     <>
@@ -81,7 +83,7 @@ const EditGroup = () => {
           <ArrowBackIcon />
           back
         </Button>
-        <Container maxWidth="sm " className="d-flex justify-content-center">
+        <Container maxWidth="sm" className="d-flex justify-content-center">
           {isLoading && <Loader />}
           <Box
             component="form"
@@ -89,34 +91,39 @@ const EditGroup = () => {
             autoComplete="off"
             sx={{ mt: 4, width: "80%" }}
           >
-            <label>Name</label>
+            <label>Title</label>
             <TextField
-              // label="Name"
-              value={name}
-              onChange={handleNameChange}
+              value={title}
+              onChange={handleTitleChange}
               fullWidth
               margin="normal"
               placeholder="Party, Picnic, Birthday, Love, Romance..."
-              sx={{
-                border: "none",
-              }}
+            />
+            <label className="mt-4">Description</label>
+            <TextField
+              value={description}
+              onChange={handleDescriptionChange}
+              fullWidth
+              margin="normal"
+              multiline
+              rows={4}
+              placeholder="Enter a description..."
             />
             <label className="mt-4">Thumbnail</label>
             <TextField
-              onChange={handleImageChange}
+              onChange={handleThumbnailChange}
               fullWidth
               margin="normal"
               variant="outlined"
               type="file"
-              //   value={image}
             />
-            <label className="me-2">Color : </label>
-            <input
-              className="mt-4"
-              value={color}
-              type="text"
-              placeholder="#000000"
-              onChange={handleColorChange}
+            <label className="mt-4">How to Play Banner (Video)</label>
+            <TextField
+              onChange={handleHowToPlayBannerChange}
+              fullWidth
+              margin="normal"
+              variant="outlined"
+              type="file"
             />
             <Button
               variant="contained"
@@ -134,5 +141,4 @@ const EditGroup = () => {
   );
 };
 
-export default EditGroup;
-  
+export default EditPlay;

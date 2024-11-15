@@ -1,0 +1,142 @@
+import React, { useState } from "react";
+import { Box, Button, Container, TextField } from "@mui/material";
+import AppSidebar from "../../../components/AppSidebar";
+import AppHeader from "../../../components/AppHeader";
+import httpClient from "../../../util/HttpClient";
+import { useNavigate } from "react-router-dom";
+import Loader from "../../../components/loader/Loader";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
+const AddPress = () => {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [link, setLink] = useState("");
+  const [pressBanner, setPressBanner] = useState(null);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleTitleChange = (e) => setTitle(e.target.value);
+  const handleDescriptionChange = (e) => setDescription(e.target.value);
+  const handleLinkChange = (e) => setLink(e.target.value);
+  const handlePressBannerChange = (e) => setPressBanner(e.target.files[0]);
+
+  const handleSubmit = () => {
+    setIsLoading(true);
+    let formData = new FormData();
+
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("link", link);
+    formData.append("press_banner", pressBanner);
+
+    addPressToDB(formData);
+  };
+
+  const addPressToDB = (groupData) => {
+    httpClient
+      .post(`admin/add-press`, groupData)
+      .then((res) => res.data)
+      .then((data) => {
+        if (data.status) {
+          setIsLoading(false);
+          navigate(-1);
+        }
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        console.log("error => ", err);
+      });
+  };
+
+  return (
+    <>
+      <AppSidebar />
+      <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
+        <AppHeader />
+        <Button
+          variant="contained"
+          color="secondary"
+          sx={{ mt: 2, ml: 16 }}
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          <ArrowBackIcon />
+          Back
+        </Button>
+        <Container maxWidth="sm" className="d-flex justify-content-center">
+          {isLoading && <Loader />}
+          <Box
+            component="form"
+            noValidate
+            autoComplete="off"
+            sx={{ mt: 4, width: "80%" }}
+          >
+            <label>Title</label>
+            <TextField
+              value={title}
+              onChange={handleTitleChange}
+              fullWidth
+              margin="normal"
+              placeholder="Enter title here..."
+              sx={{
+                border: "none",
+              }}
+            ></TextField>
+
+            <label>Description</label>
+            <TextField
+              value={description}
+              onChange={handleDescriptionChange}
+              fullWidth
+              margin="normal"
+              placeholder="Enter description here..."
+              multiline
+              rows={4}
+              sx={{
+                border: "none",
+              }}
+            ></TextField>
+
+            <label>Link</label>
+            <TextField
+              value={link}
+              onChange={handleLinkChange}
+              fullWidth
+              margin="normal"
+              placeholder="Enter link here..."
+              type="url" // Enforces URL format
+              sx={{
+                border: "none",
+              }}
+              helperText="Please enter a valid URL (e.g., https://example.com)"
+            />
+
+            <label>Press Banner</label>
+            <TextField
+              onChange={handlePressBannerChange}
+              fullWidth
+              margin="normal"
+              variant="outlined"
+              type="file"
+            />
+
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mt: 8, ml: 2, display: "block", backgroundColor: "orange" }}
+              onClick={handleSubmit}
+              disabled={isLoading}
+            >
+              Add Press
+            </Button>
+          </Box>
+        </Container>
+      </div>
+    </>
+  );
+};
+
+export default AddPress;

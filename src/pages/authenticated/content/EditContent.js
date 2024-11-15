@@ -21,6 +21,7 @@ const EditContent = () => {
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
+  const [type, setType] = useState("");
   const params = useParams();
   const [newContent, setNewContent] = useState({});
   const editor = useRef(null);
@@ -30,14 +31,14 @@ const EditContent = () => {
 
   useEffect(() => {
     httpClient
-      .get(`/admin/get-content/${params.id}`)
+      .get(`edit-static-content/${params.id}`)
       .then((res) => res?.data?.result)
       .then((result) => {
         console.log("update content data => ", result);
         //  setData(result);
         setContent(result.description);
         setTitle(result.title);
-        setLoading(false)
+        setLoading(false);
       })
       .catch((err) => {
         console.log("update content error => ", err);
@@ -47,11 +48,12 @@ const EditContent = () => {
   const newContentData = {
     description: newContent,
     title: title,
+    type:type,
   };
 
   const updateContent = (e) => {
     httpClient
-      .put(`/admin/update-content/${params.id}`, newContentData)
+      .put(`edit-static-content/${params.id}`, newContentData)
       .then((res) => {
         setLoading(false);
         swal.fire({
@@ -90,9 +92,7 @@ const EditContent = () => {
           <Button
             variant="contained"
             color="secondary"
-            sx={{ mt: 0, ml: 5, mb: 4,
-              width: "90px"
-             }}
+            sx={{ mt: 0, ml: 5, mb: 4, width: "90px" }}
             onClick={() => {
               navigate(-1);
             }}
@@ -137,6 +137,19 @@ const EditContent = () => {
               //     console.log('Focus.', editor); `
               // }}
             />
+            <div className="d-flex flex-column mb-4 w-5 ">
+              <span className="w-5">Types : </span>
+              <input
+                className=""
+                value={type}
+                placeholder="type"
+                onChange={(e) => setType(e.target.value)}
+                style={{
+                  outline: "none",
+                  opacity: 0.7,
+                }}
+              />
+            </div>
             <button onClick={updateContent} className="Submit">
               Submit
             </button>

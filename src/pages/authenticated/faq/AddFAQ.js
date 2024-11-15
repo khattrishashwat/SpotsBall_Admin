@@ -18,7 +18,7 @@ const AddFAQ = () => {
     setMessage("");
 
     await httpClient
-      .post("/admin/add-faq", {
+      .post("admin/add-faq", {
         question,
         answer,
       })

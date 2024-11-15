@@ -8,12 +8,12 @@ import httpClient from "../../../util/HttpClient";
 
 const Dashboard = () => {
   const [data, setData] = useState([]);
-  useEffect(() => {
-    httpClient.get("/admin/dashboard").then((res) => {
-      console.log("ress => ", res.data.data);
-      setData(res.data.data);
-    });
-  }, []);
+  // useEffect(() => {
+  //   httpClient.get("/admin/dashboard").then((res) => {
+  //     console.log("ress => ", res.data.data);
+  //     setData(res.data.data);
+  //   });
+  // }, []);
   return (
     <>
       <AppSidebar />

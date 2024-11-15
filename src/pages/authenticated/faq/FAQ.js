@@ -26,6 +26,7 @@ const FAQ = () => {
     pageSize: 10,
   });
 
+  const [faqs, setFaqs] = useState("");
   const [filterMode, setFilterMode] = useState("name");
   const [status, setStatus] = useState("");
   const [keyword, setKeyword] = useState("");
@@ -44,7 +45,6 @@ const FAQ = () => {
 
   const columns = [
     { field: "col1", headerName: "#", width: 200 },
-    // { field: "col2", headerName: "Title", width: 200 },
     {
       field: "col2",
       headerName: "Question",
@@ -55,43 +55,41 @@ const FAQ = () => {
       headerName: "Answer",
       width: 500,
     },
-    // {
-    //   field: "col4",
-    //   headerName: "Created At",
-    //   width: 200,
-    // },
+    {
+      field: "col4",
+      headerName: "Created At",
+      width: 200,
+    },
     {
       field: "col5",
       headerName: "Action",
       width: 115,
-      renderCell: (params) => {
-        return (
-          <>
-            <button
-              className="border-0"
-              style={{
-                color: "green",
-                background: "transparent",
-                padding: "5px",
-                fontWeight: "700",
-                border: "none",
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                console.log("edit question ==> ", params.row.id);
-                navigate(`/faqs/update-faq/${params.row.id}`);
-              }}
-            >
-              Edit
-            </button>
-            <DeleteIcon
-              cursor={"pointer"}
-              style={{ color: "red" }}
-              onClick={(e) => confirmBeforeDelete(e, params.row)}
-            />
-          </>
-        );
-      },
+      renderCell: (params) => (
+        <>
+          <button
+            className="border-0"
+            style={{
+              color: "green",
+              background: "transparent",
+              padding: "5px",
+              fontWeight: "700",
+              border: "none",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              console.log("edit question ==> ", params.row.id);
+              navigate(`/faqs/update-faq/${params.row.id}`);
+            }}
+          >
+            Edit
+          </button>
+          <DeleteIcon
+            cursor={"pointer"}
+            style={{ color: "red" }}
+            onClick={(e) => confirmBeforeDelete(e, params.row)}
+          />
+        </>
+      ),
     },
   ];
 
@@ -115,9 +113,7 @@ const FAQ = () => {
   const deleteSingleUser = (e, params) => {
     const userId = params.id;
     httpClient
-      .delete(
-        `/admin/delete-faq/${userId}`
-      )
+      .delete(`delete-faq/${userId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);
@@ -139,22 +135,24 @@ const FAQ = () => {
   useEffect(() => {
     setLoading(true);
     httpClient
-      .get(`/admin/get-all-faq`)
+      .get(`admin/get-all-faq`)
       .then((res) => {
         console.log("content => ", res);
-        setUserCount(res.data?.result?.count);
+        setUserCount(res.data.data.length); // Assuming count represents the length of FAQ data
+        setFaqs(res.data.data);
+        console.log("faqs", res.data.data);
+
         setLoading(false);
         setRows(
-          res.data.result.docs.map((doc, index) => {
+          res.data.data.map((doc, index) => {
             return {
               id: doc._id,
               col1:
                 paginationModel.page * paginationModel.pageSize + (index + 1),
               col2: doc.question || "N/A",
               col3: doc.answer || "N/A",
-              // col4: doc.created_at.substring(0, 10),
+              col4: doc.createdAt ? doc.createdAt.substring(0, 10) : "N/A",
               col5: doc.thumbnail || "N/A",
-              //   col4: doc.username || "N/A",
             };
           })
         );

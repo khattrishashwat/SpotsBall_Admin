@@ -1,11 +1,10 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import Protected from "./Protected";
 import GuestRoutes from "./GuestRoutes";
-import ContentManager from "../pages/authenticated/ContentManager";
 
+// Lazy load components
 const NotFound = lazy(() => import("../pages/common/NotFound"));
-
 const Register = lazy(() => import("../pages/auth/Register"));
 const Login = lazy(() => import("../pages/auth/Login"));
 const Forgot = lazy(() => import("../pages/auth/Forgot"));
@@ -13,6 +12,21 @@ const Reset = lazy(() => import("../pages/auth/Reset"));
 const Dashboard = lazy(() =>
   import("../pages/authenticated/dashboard/Dashboard")
 );
+const Banner = lazy(() => import("../pages/authenticated/banner/Banner"));
+const AddBanner = lazy(() => import("../pages/authenticated/banner/AddBanner"));
+const EditBanner = lazy(() =>
+  import("../pages/authenticated/banner/EditBanner")
+);
+const PlayVideo = lazy(() =>
+  import("../pages/authenticated/howtoPlay/PlayVideo")
+);
+const AddPlay = lazy(() => import("../pages/authenticated/howtoPlay/AddPlay"));
+const EditPlay = lazy(() =>
+  import("../pages/authenticated/howtoPlay/EditPlay")
+);
+const InPress = lazy(() => import("../pages/authenticated/Press/InPress"));
+const AddPress = lazy(() => import("../pages/authenticated/Press/AddPress"));
+const EditPress = lazy(() => import("../pages/authenticated/Press/EditPress"));
 const UsersData = lazy(() => import("../pages/authenticated/UsersData"));
 const Profile = lazy(() => import("../pages/authenticated/Profile"));
 const Groups = lazy(() => import("../pages/authenticated/group/Groups"));
@@ -25,213 +39,218 @@ const NewContent = lazy(() =>
 const EditContent = lazy(() =>
   import("../pages/authenticated/content/EditContent")
 );
-const Questions = lazy(() =>
-  import("../pages/authenticated/question/Questions")
-);
-const AddQuestion = lazy(() =>
-  import("../pages/authenticated/question/AddQuestion")
-);
 const EditQuestions = lazy(() =>
   import("../pages/authenticated/question/EditQuestion")
 );
-const Preference = lazy(() =>
-  import("../pages/authenticated/preference/Preference")
-);
-const Subscription = lazy(() => import("../pages/authenticated/subscription/Subscription"));
 const FAQ = lazy(() => import("../pages/authenticated/faq/FAQ"));
 const AddFAQ = lazy(() => import("../pages/authenticated/faq/AddFAQ"));
 const EditFAQ = lazy(() => import("../pages/authenticated/faq/EditFAQ"));
-const SubscriptionCategory = lazy(() =>
-  import("../pages/authenticated/SubscriptionCategory")
-);
-
-const Feedbacks = lazy(() =>
-  import("../pages/authenticated/feedbacks/Feedbacks")
-);
-const View = lazy(() => import("../pages/authenticated/feedbacks/View"));
+const Winners = lazy(() => import("../pages/authenticated/winners/Winners"));
+const View = lazy(() => import("../pages/authenticated/winners/View"));
+const WinnerCircle = lazy(() => import("../pages/authenticated/winnercircle/WinnerCircle"));
+const MatchWinner = lazy(() => import("../pages/authenticated/winnercircle/MatchWinner"));
 const ContactUs = lazy(() =>
   import("../pages/authenticated/contactus/ContactUs")
 );
 const Contact = lazy(() => import("../pages/authenticated/contactus/Contact"));
-const AppSetting = lazy(() =>
-  import("../pages/authenticated/appSetting/AppSetting")
+const UserAccountDelete = lazy(() =>
+  import("../pages/authenticated/UserAccountDelete")
 );
-const LoginTrouble = lazy(() =>
-  import("../pages/authenticated/loginTrouble/LoginTrouble")
+
+const Contestmanagement = lazy(() =>
+  import("../pages/authenticated/contest/Contestmanagement")
 );
-const AddNewLoginTrouble = lazy(() =>
-  import("../pages/authenticated/loginTrouble/AddNewLoginTrouble")
+const AddContest = lazy(() =>
+  import("../pages/authenticated/contest/AddContest")
 );
-const EditLoginTrouble = lazy(() =>
-  import("../pages/authenticated/loginTrouble/EditLoginTrouble")
+const EditContest = lazy(() =>
+  import("../pages/authenticated/contest/EditContest")
 );
-const UsersSubscription = lazy(() =>
-  import("../pages/authenticated/usersSubscription/UsersSubscription")
+const FindCoordinates = lazy(() =>
+  import("../pages/authenticated/contest/FindCoordinates")
 );
-const ReportedUsers = lazy(() =>
-  import("../pages/authenticated/reportedUsers/ReportedUsers")
+
+// Suspense wrapper for lazy components
+const LazyComponent = (Component) => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <Component />
+  </Suspense>
 );
-const UserAccountDelete = lazy(() => import("../pages/authenticated/UserAccountDelete"));
 
 const routes = createBrowserRouter(
   [
+    // Default redirect to login
     {
       path: "/",
-      element: <Navigate to={"/auth/login"} />,
+      element: <Navigate to="/auth/login" />,
     },
+    // Route for account deletion
     {
-      path:"delete-user-account",
-      Component:UserAccountDelete,
+      path: "delete-user-account",
+      element: LazyComponent(UserAccountDelete),
     },
+    // Guest routes
     {
       path: "/auth",
-      Component: GuestRoutes,
+      element: <GuestRoutes />,
       children: [
         {
           path: "",
-          element: <Navigate to={"login"} />,
+          element: <Navigate to="login" />,
         },
         {
           path: "register",
-          Component: Register,
+          element: LazyComponent(Register),
         },
         {
           path: "login",
-          Component: Login,
+          element: LazyComponent(Login),
         },
         {
           path: "forgot",
-          Component: Forgot,
+          element: LazyComponent(Forgot),
         },
         {
           path: "reset",
-          Component: Reset,
+          element: LazyComponent(Reset),
         },
-        
       ],
     },
+    // Protected routes
     {
       path: "/",
-      Component: Protected,
+      element: <Protected />,
       children: [
         {
           path: "dashboard",
-          Component: Dashboard,
+          element: LazyComponent(Dashboard),
         },
         {
           path: "users",
-          Component: UsersData,
+          element: LazyComponent(UsersData),
         },
         {
-          path: "groups",
-          Component: Groups,
+          path: "contest_management",
+          element: LazyComponent(Contestmanagement),
         },
         {
-          path: "groups/add-group",
-          Component: AddGroup,
+          path: "contest_management/add-contest",
+          element: LazyComponent(AddContest),
         },
         {
-          path: "groups/edit-group/:id",
-          Component: EditGroup,
+          path: "contest_management/edit-contest/:id",
+          element: LazyComponent(EditContest),
         },
+        {
+          path: "contest_management/add-contest/find-coordinates",
+          element: LazyComponent(FindCoordinates),
+        },
+        {
+          path: "banner",
+          element: LazyComponent(Banner),
+        },
+        {
+          path: "banner/add-banner",
+          element: LazyComponent(AddBanner),
+        },
+        {
+          path: "banner/edit-banner/:id",
+          element: LazyComponent(EditBanner),
+        },
+        {
+          path: "how_to_play",
+          element: LazyComponent(PlayVideo),
+        },
+        {
+          path: "how_to_play/add-play",
+          element: LazyComponent(AddPlay),
+        },
+        {
+          path: "how_to_play/edit-play/:id",
+          element: LazyComponent(EditPlay),
+        },
+        {
+          path: "In_Press",
+          element: LazyComponent(InPress),
+        },
+        {
+          path: "In_Press/add-press",
+          element: LazyComponent(AddPress),
+        },
+        {
+          path: "In_Press/edit-press/:id",
+          element: LazyComponent(EditPress),
+        },
+        // Content management routes
         {
           path: "content",
-          Component: Content,
+          element: LazyComponent(Content),
         },
         {
           path: "content/new-content",
-          Component: NewContent,
+          element: LazyComponent(NewContent),
         },
         {
           path: "content/edit-content/:id",
-          Component: EditContent,
-        },
-        {
-          path: "questions",
-          Component: Questions,
-        },
-        {
-          path: "questions/add-question",
-          Component: AddQuestion,
+          element: LazyComponent(EditContent),
         },
         {
           path: "questions/edit-question/:id",
-          Component: EditQuestions,
+          element: LazyComponent(EditQuestions),
         },
-        {
-          path: "preference",
-          Component: Preference,
-        },
-        {
-          path: "Subscription",
-          Component: Subscription,
-        },
+        // FAQ routes
         {
           path: "faqs",
-          Component: FAQ,
+          element: LazyComponent(FAQ),
         },
         {
           path: "faqs/add-faq",
-          Component: AddFAQ,
+          element: LazyComponent(AddFAQ),
         },
         {
           path: "faqs/update-faq/:id",
-          Component: EditFAQ,
+          element: LazyComponent(EditFAQ),
+        },
+        // Winner routes
+        {
+          path: "winner",
+          element: LazyComponent(Winners),
         },
         {
-          path: "subscription_category",
-          Component: SubscriptionCategory,
+          path: "winner/view",
+          element: LazyComponent(View),
         },
         {
-          path: "feedbacks",
-          Component: Feedbacks,
+          path: "winners_circle",
+          element: LazyComponent(WinnerCircle),
         },
+        // {
+        //   path: "how_to_play/add-play",
+        //   element: LazyComponent(AddPlay),
+        // },
         {
-          path: "feedbacks/view",
-          Component: View,
+          path: "winners_circle/match-winner/:id",
+          element: LazyComponent(MatchWinner),
         },
+        // Contact routes
         {
           path: "contacts",
-          Component: ContactUs,
+          element: LazyComponent(ContactUs),
         },
         {
           path: "contact",
-          Component: Contact,
+          element: LazyComponent(Contact),
         },
-        {
-          path: "app-setting",
-          Component: AppSetting,
-        },
-        {
-          path: "login-trouble",
-          Component: LoginTrouble,
-        },
-        {
-          path: "login-trouble/add-login-trouble",
-          Component: AddNewLoginTrouble,
-        },
-        {
-          path: "login-trouble/edit-login-trouble/:id",
-          Component: EditLoginTrouble,
-        },
-        {
-          path: "users-subscription",
-          Component: UsersSubscription,
-        },
-        {
-          path: "reported-users",
-          Component: ReportedUsers,
-        },
-        
       ],
     },
+    // Catch-all for 404 Not Found
     {
       path: "*",
-      Component: NotFound,
+      element: LazyComponent(NotFound),
     },
   ],
   {
-    basename: "/admin-panel", // <-- Replace with your actual base path
+    basename: "/admin-panel",
   }
 );
 

@@ -1,78 +1,141 @@
-
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import { CCol, CContainer } from "@coreui/react";
 import PageTitle from "../../common/PageTitle";
 import { DataGrid } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { IconButton, Snackbar, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button } from "@mui/material";
+import {
+  IconButton,
+  Snackbar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
+  Button,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import httpClient from "../../../util/HttpClient";
 import swal from "sweetalert2";
+import Loader from "../../../components/loader/Loader";
+import axios from "axios";
 import { Visibility } from "@mui/icons-material";
-import { GridOverlay } from '@mui/x-data-grid';
-import { Typography } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 
-
-const Subscription = () => {
-
-  const CustomNoRowsOverlay = () => {
-    return (
-      <GridOverlay>
-        <Typography variant="h6" color="textSecondary">
-          No data found
-        </Typography>
-      </GridOverlay>
-    );
-  };
-  const [alertMessage, setAlertMessage] = useState("");
-  const [apiStatus, setApiStatus] = useState({ success: false, error: false });
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
+const Winners = () => {
+  const [alertMessage, setAlertMessage] = useState();
+  const [apiSuccess, setApiSuccess] = useState(false);
+  const [apiError, setApiError] = useState(false);
+  const [closeSnakeBar, setCloseSnakeBar] = useState(false);
   const [userCount, setUserCount] = useState(0);
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paginationModel, setPaginationModel] = useState({
-    page: 1,
+    page: 0,
     pageSize: 10,
   });
-  const [update, setUpdate] = useState();
-  const [openDialog, setOpenDialog] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
 
-  const handleSelect = useCallback((e) => {
+  const [filterMode, setFilterMode] = useState("name");
+  const [status, setStatus] = useState("");
+  const [keyword, setKeyword] = useState("");
+
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedFeedback, setSelectedFeedback] = useState(null);
+
+  const navigate = useNavigate();
+
+  const handleSelect = (e) => {
     httpClient
       .patch(`/admin/users/${e.target.id}`, {
-        is_active: e.target.value === "active",
+        is_active: e.target.value === "active" ? true : false,
       })
       .then((res) => {
         console.log("update status ==> ", res);
+        setStatus("ok");
       });
-  }, []);
+  };
 
   const columns = [
     { field: "col1", headerName: "#", width: 100 },
-    { field: "col2", headerName: "User Name", width: 250 },
-    { field: "col3", headerName: "Phone Number", width: 200 },
-    { field: "col4", headerName: "In-app_plan_name", width: 150 },
-    { field: "col5", headerName: "Plan Type", width: 100 },
-    { field: "col6", headerName: "Start_plan_date", width: 150 },
-    { field: "col7", headerName: "Expiry_plan_date", width: 200 },
-
-   
+    {
+      field: "col2",
+      headerName: "Name",
+      width: 150,
+    },
+    {
+      field: "col3",
+      headerName: "Phone",
+      width: 150,
+    },
+    {
+      field: "col4",
+      headerName: "Contest Id",
+      width: 180,
+    },
+    {
+      field: "col5",
+      headerName: "Price",
+      width: 150,
+    },
+    {
+      field: "col6",
+      headerName: "Created At",
+      width: 250,
+    },
+    {
+      field: "col7",
+      headerName: "Closest Coordinate",
+      width: 250,
+      renderCell: (params) => {
+        console.log(params); // Log the entire params object to see what it contains
+        const coordinates = params.row.closestCoordinate;
+        if (coordinates && coordinates.x !== null && coordinates.y !== null) {
+          return (
+            <span>
+              X: {coordinates.x}, Y: {coordinates.y}
+            </span>
+          );
+        }
+        return <span>N/A</span>;
+      },
+    },
+    {
+      field: "col8",
+      headerName: "Action",
+      width: 250,
+      renderCell: (params) => {
+        return (
+          <>
+            <Visibility
+              cursor={"pointer"}
+              style={{ color: "green" }}
+              onClick={() => handleView(params.row)}
+            />
+            <DeleteIcon
+              className="ms-3"
+              cursor={"pointer"}
+              style={{ color: "red" }}
+              onClick={(e) => confirmBeforeDelete(e, params.row)}
+            />
+          </>
+        );
+      },
+    },
   ];
 
   const handleView = (row) => {
-    setSelectedUser(row);
+    setSelectedFeedback(row);
     setOpenDialog(true);
   };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
-    setSelectedUser(null);
+    setSelectedFeedback(null);
   };
 
-  const confirmBeforeDelete = useCallback((params) => {
+  //handle get confirmation before delete user
+  const confirmBeforeDelete = (e, params) => {
     swal
       .fire({
         title: "Are you sure?",
@@ -83,58 +146,80 @@ const Subscription = () => {
       })
       .then((result) => {
         if (result.isConfirmed) {
-          deleteSingleUser(params.id);
+          deleteSingleUser(e, params);
         }
       });
-  }, []);
+  };
 
-  const deleteSingleUser = useCallback((userId) => {
+  const deleteSingleUser = (e, params) => {
+    const userId = params.id;
     httpClient
-      .delete(`/admin/subscriptions/${userId}`)
+      .delete(`/admin/Winners/${userId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
-        setApiStatus({ success: true, error: false });
-        setSnackbarOpen(true);
+        setApiSuccess(true);
+        setApiError(false);
         setLoading(false);
-        setUpdate(1);
+        setCloseSnakeBar(true);
+        setStatus("deleted");
       })
       .catch((error) => {
         setAlertMessage(error.response.data.message);
-        setApiStatus({ success: false, error: true });
-        setSnackbarOpen(true);
+        setApiError(true);
+        setApiSuccess(false);
+        setCloseSnakeBar(true);
         setLoading(false);
       });
-  }, []);
+  };
 
+  //fetching user information
   useEffect(() => {
     setLoading(true);
-
     httpClient
-      .get(`/admin/users-subscription?pageSize=${paginationModel.pageSize}&pageNumber=${paginationModel.page}`)
+      .get(`api/v1/admin/contest/the-winners-circle/?year=2024`)
       .then((res) => {
-        console.log("resssss", res.data?.result?.subscriptionCount)
-        setUserCount(res.data?.result?.subscriptionCount);
+        const { data } = res.data; // destructure response data
+        setUserCount(data.count);
         setLoading(false);
+        console.log("winners ==> ", data);
 
-        setRows(
-          res.data?.result?.getUserSubscription?.map((doc, index) => ({
-            id: doc._id,
-            col1: paginationModel.page * paginationModel.pageSize + (index + 1),
-            col2: doc?.user_id?.username|| "N/A",
-            col3: doc.user_id?.phone || "N/A",
-            col4: doc.inapp_plan_name.substring(4) || "N/A",
-            col5: doc.planeType || "N/A",
-            col6: doc.start_plan_date.substring(0, 10) || "N/A",
-            col7: doc.expiry_plan_date.substring(0, 10) || "N/A",
-            // col8: doc.created_at.substring(0, 10),
-          }))
-        );
+        // Check if data.docs exists and is an array before calling map
+        if (Array.isArray(data)) {
+          setRows(
+            data.map((doc, index) => {
+              return {
+                id: doc._id,
+                col1:
+                  paginationModel.page * paginationModel.pageSize + (index + 1),
+                col2: doc?.userId?.email || "N/A", // Email column
+                col3: doc?.userId?.phone || "N/A", // Phone column
+                col4: doc?.contestId?._id || doc?.contestId?._id || "N/A", // Contest ID (adjust property name as needed)
+                col5: doc?.contestPaymentsId?.amount || "N/A", // Assuming price is in contestPaymentsId (adjust if needed)
+                col6: doc.createdAt ? doc.createdAt.substring(0, 10) : "N/A", // Created At column
+                col7: doc?.closestCoordinate || "N/A",
+                //  doc?.closestCoordinate ? (
+                //   <span>
+                //     X: {doc.closestCoordinate.x || "N/A"}, Y:{" "}
+                //     {doc.closestCoordinate.y || "N/A"}
+                //   </span>
+                // ) : (
+                //   <span>N/A</span>
+                // ), // Closest Coordinate column
+              };
+            })
+          );
+        } else {
+          // Handle case where data.docs is not an array (e.g., show a message or set an empty state)
+          setRows([]); // Optionally, set rows to empty if docs is not an array
+        }
+        setStatus(""); // Reset status if needed
       })
       .catch((error) => {
         setLoading(false);
-        console.error(error);
+        console.log(error);
+        setRows([]); // Optionally, set rows to empty in case of an error
       });
-  }, [update, paginationModel]);
+  }, [paginationModel, status]);
 
   const handleRecordPerPage = (e) => {
     setLoading(true);
@@ -147,27 +232,25 @@ const Subscription = () => {
       <AppSidebar />
       <div className="wrapper bg-light d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="Users subscription" />
+        <PageTitle title="Winners" />
 
         <CContainer>
-          <h4 className="">Subscription List :</h4>
+          <h4 className="">Winners :</h4>
           <div
             style={{
-              height: "auto",
+              height: "600px",
               minHeight: "600px",
               border: "1px solid gray",
               padding: 15,
               borderRadius: 5,
-              backgroundColor: "#f8f9fa",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
           >
             <Snackbar
-              open={snackbarOpen}
+              open={closeSnakeBar}
               autoHideDuration={1000}
               message={alertMessage}
               ContentProps={{
-                sx: apiStatus.success
+                sx: apiSuccess
                   ? { backgroundColor: "green" }
                   : { backgroundColor: "red" },
               }}
@@ -176,14 +259,16 @@ const Subscription = () => {
                 vertical: "bottom",
               }}
               action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  sx={{ p: 0.5 }}
-                  onClick={() => setSnackbarOpen(false)}
-                >
-                  <CloseIcon />
-                </IconButton>
+                <React.Fragment>
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    sx={{ p: 0.5 }}
+                    onClick={() => setCloseSnakeBar(false)}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                </React.Fragment>
               }
             />
             <div
@@ -193,7 +278,6 @@ const Subscription = () => {
                 display: "flex",
                 justifyContent: "space-between",
                 padding: "10px 0",
-                marginBottom: "10px",
               }}
             >
               <CCol xs={5}>
@@ -231,9 +315,11 @@ const Subscription = () => {
                 },
                 "& .MuiDataGrid-columnHeader": {
                   backgroundColor: "#d5dbd6",
-                  outline: "none !important",
                 },
                 "& .MuiDataGrid-cell": {
+                  outline: "none !important",
+                },
+                "& .MuiDataGrid-row": {
                   outline: "none !important",
                 },
               }}
@@ -247,81 +333,62 @@ const Subscription = () => {
               onPaginationModelChange={setPaginationModel}
               loading={loading}
               autoHeight
-              components={{
-                NoRowsOverlay: CustomNoRowsOverlay,
-              }}
             />
-
           </div>
         </CContainer>
       </div>
 
-      {selectedUser && (
+      {selectedFeedback && (
         <Dialog open={openDialog} onClose={handleCloseDialog}>
-          <DialogTitle>User Details</DialogTitle>
+          <DialogTitle>Details</DialogTitle>
           <DialogContent>
             <TextField
               margin="dense"
-              label="Reported User"
+              label="Email :"
               type="text"
               fullWidth
               variant="outlined"
-              value={selectedUser.col2}
+              value={selectedFeedback.col2}
               readOnly
               InputLabelProps={{
                 sx: {
                   // fontSize: "18px", // Example: Set custom font size
-                  marginTop: "5px"
+                  marginTop: "5px",
                 },
               }}
             />
             <TextField
               margin="dense"
-              label="Reported By"
+              label="Phone Number :"
               type="text"
               fullWidth
               variant="outlined"
-              value={selectedUser.col6}
+              value={selectedFeedback.col3}
               readOnly
               InputLabelProps={{
                 sx: {
                   // fontSize: "18px", // Example: Set custom font size
-                  marginTop: "5px"
+                  marginTop: "5px",
                 },
               }}
             />
             <TextField
               margin="dense"
-              label="Reason"
+              label="Price :"
               type="text"
               fullWidth
               variant="outlined"
               multiline
               rows={4}
-              value={selectedUser.col4}
+              value={selectedFeedback.col5}
               readOnly
               InputLabelProps={{
                 sx: {
                   // fontSize: "18px", // Example: Set custom font size
-                  marginTop: "5px"
+                  marginTop: "5px",
                 },
               }}
             />
-            {/* <TextField 
-              margin="dense"
-              label="Reported At"
-              type="text"
-              fullWidth
-              variant="outlined"
-              value={selectedUser.col7}
-              readOnly
-              InputLabelProps={{
-                sx: {
-                  // fontSize: "18px", // Example: Set custom font size
-                  marginTop:"5px"
-                },
-              }}
-            /> */}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog} color="primary">
@@ -334,6 +401,4 @@ const Subscription = () => {
   );
 };
 
-
-
-export default Subscription;
+export default React.memo(Winners);

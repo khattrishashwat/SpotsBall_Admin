@@ -1,27 +1,21 @@
 import axios from "axios";
 
 const httpClient = axios.create({
-
-  // baseURL: "http://localhost:7200", // Replace this with your API base URL
-  // baseURL: "http://172.16.100.241:7200", // Replace this with your API base URL
-  baseURL: "http://3.130.22.169", // staging server
-
+  // baseURL: "https://webmobrildemo.com/spotsball/admin/", // staging server
+  baseURL: "https://webmobrildemo.com/spotsball/", // staging server
 });
 
 // Request interceptor
 httpClient.interceptors.request.use(
   (request) => {
-    // Do something with the request config (e.g., add headers, authentication token)
-    // For example:
-    // request.headers['Authorization'] = 'Bearer sfsdfsdf';
+    // Get token from local storage
     let token = window.localStorage.getItem("token");
-    if (token) {
-      token = JSON.parse(token);
-    }
 
-    request.headers["Authorization"] = `Bearer ${token}`;
-    console.log("token => ", `Bearer ${token}`);
-    // console.log("request interceptors", token);
+    // Set Authorization header if token exists
+    if (token) {
+      request.headers["Authorization"] = `Bearer ${token}`;
+      console.log("token => ", `Bearer ${token}`);
+    }
 
     return request;
   },

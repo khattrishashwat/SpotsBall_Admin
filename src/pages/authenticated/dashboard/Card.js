@@ -85,7 +85,7 @@ function Card(props) {
                   }}
                   className="mb-0 text-capitalize"
                 >
-                  Users
+                  Users Management
                 </p>
                 <h4 className="mb-0 mt-2">{props?.data?.Users}</h4>
               </div>
@@ -123,7 +123,7 @@ function Card(props) {
                   }}
                   className="mb-0 text-capitalize"
                 >
-                  User Subscriptions
+                  How to Play 
                 </p>
                 <h4 className="mb-0 mt-2">{props?.data?.UserSubscriptions}</h4>
               </div>
@@ -302,6 +302,114 @@ function Card(props) {
                   FAQ
                 </p>
                 <h4 className="mb-0 mt-2">{props?.data?.Faq}</h4>
+              </div>
+            </div>
+
+            <hr className="dark horizontal my-0" />
+            <div className="card-footer p-3">
+              <p className="mb-0">
+                <span className="text-success text-sm font-weight-bolder"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+          <div className="card" onClick={()=>navigate("/contacts")}>
+            <div
+              className="card-header p-4 d-flex justify-content-between align-items-center"
+              // onClick={() => navigate("/category")}
+              style={{ cursor: "pointer" }}
+            >
+              <div className="">
+                <ContactMailIcon
+                  className="fs-1 mt-2"
+                  style={{ color: "green" }}
+                />
+              </div>
+              <div className="text-end pt-1 d-flex flex-column justify-content-center align-items-center">
+                <p
+                  style={{
+                    color: "black",
+                    fontWeight: "500",
+                    fontSize: "1.2rem",
+                  }}
+                  className=" mb-0 text-capitalize "
+                >
+                  Contact Us
+                </p>
+                <h4 className="mb-0 mt-2">{props?.data?.ContactUs}</h4>
+              </div>
+            </div>
+
+            <hr className="dark horizontal my-0" />
+            <div className="card-footer p-3">
+              <p className="mb-0">
+                <span className="text-success text-sm font-weight-bolder"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+          <div className="card" onClick={()=>navigate("/contacts")}>
+            <div
+              className="card-header p-4 d-flex justify-content-between align-items-center"
+              // onClick={() => navigate("/category")}
+              style={{ cursor: "pointer" }}
+            >
+              <div className="">
+                <ContactMailIcon
+                  className="fs-1 mt-2"
+                  style={{ color: "green" }}
+                />
+              </div>
+              <div className="text-end pt-1 d-flex flex-column justify-content-center align-items-center">
+                <p
+                  style={{
+                    color: "black",
+                    fontWeight: "500",
+                    fontSize: "1.2rem",
+                  }}
+                  className=" mb-0 text-capitalize "
+                >
+                  Contact Us
+                </p>
+                <h4 className="mb-0 mt-2">{props?.data?.ContactUs}</h4>
+              </div>
+            </div>
+
+            <hr className="dark horizontal my-0" />
+            <div className="card-footer p-3">
+              <p className="mb-0">
+                <span className="text-success text-sm font-weight-bolder"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+          <div className="card" onClick={()=>navigate("/contacts")}>
+            <div
+              className="card-header p-4 d-flex justify-content-between align-items-center"
+              // onClick={() => navigate("/category")}
+              style={{ cursor: "pointer" }}
+            >
+              <div className="">
+                <ContactMailIcon
+                  className="fs-1 mt-2"
+                  style={{ color: "green" }}
+                />
+              </div>
+              <div className="text-end pt-1 d-flex flex-column justify-content-center align-items-center">
+                <p
+                  style={{
+                    color: "black",
+                    fontWeight: "500",
+                    fontSize: "1.2rem",
+                  }}
+                  className=" mb-0 text-capitalize "
+                >
+                  Contact Us
+                </p>
+                <h4 className="mb-0 mt-2">{props?.data?.ContactUs}</h4>
               </div>
             </div>
 

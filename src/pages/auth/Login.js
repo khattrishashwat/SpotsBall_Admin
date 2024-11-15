@@ -58,33 +58,38 @@ const Login = () => {
   });
 
   const login = async (userInfo) => {
-    httpClient
-      .post("/admin/login", userInfo)
-      .then((res) => {
-        console.log("login => ", res)
-        if (res.data && res.data?.status) {
-          //store token in local storage
-          window.localStorage.setItem("token", JSON.stringify(res.data.result.authToken));
-          setApiSuccess(true);
-          setApiError(false);
-          setAlertMessage("Logged In Successfully");
-          setCloseSnakeBar(true);
-          navigate("/dashboard");
-        }
-      })
-      .catch((error) => {
-        setLoading(false);
-        setPointerEvents("");
-        setOpacity(1);
-        setApiError(true);
-        setApiSuccess(false);
-        if (error.response && error?.response?.data) {
-          setAlertMessage(error.response?.data?.message);
-        }
-        setAlertMessage("Invalid Credentials");
+    try {
+      const res = await httpClient.post("admin/login", userInfo);
+      console.log("login => ", res);
+
+      // Check if the token is directly in the response (adjust as needed)
+      const token = res.data?.data?.token || res.data.token || res.token;
+
+      if (token) {
+        localStorage.setItem("token", token);
+        setApiSuccess(true);
+        setApiError(false);
+        setAlertMessage("Logged In Successfully");
         setCloseSnakeBar(true);
-      });
+        navigate("/dashboard");
+      } else {
+        throw new Error("Token not found in response.");
+      }
+    } catch (error) {
+      setLoading(false);
+      setPointerEvents("");
+      setOpacity(1);
+      setApiError(true);
+      setApiSuccess(false);
+
+      // Customize the error message
+      const errorMessage =
+        error.response?.data?.message || "Invalid Credentials";
+      setAlertMessage(errorMessage);
+      setCloseSnakeBar(true);
+    }
   };
+
 
   return (
     <>
@@ -128,7 +133,11 @@ const Login = () => {
                     />
 
                     <CForm onSubmit={loginForm.handleSubmit}>
-                      <h1>Login</h1>
+                      <img
+                        src={`${process.env.PUBLIC_URL}/images/logo.png`}
+                        alt="Logo"
+                        style={{ width: "80%", marginBottom: "1rem" }}
+                      />
                       <p className="text-medium-emphasis">
                         Sign In to your account
                       </p>

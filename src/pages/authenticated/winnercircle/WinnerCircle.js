@@ -5,25 +5,17 @@ import { CCol, CContainer } from "@coreui/react";
 import PageTitle from "../../common/PageTitle";
 import { DataGrid } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {
-  IconButton,
-  Snackbar,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  TextField,
-  DialogActions,
-  Button,
-} from "@mui/material";
+import { Button, IconButton, Snackbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import httpClient from "../../../util/HttpClient";
 import swal from "sweetalert2";
 import Loader from "../../../components/loader/Loader";
 import axios from "axios";
-import { Visibility } from "@mui/icons-material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 
-const Feedbacks = () => {
+const WinnerCircle = () => {
   const [alertMessage, setAlertMessage] = useState();
   const [apiSuccess, setApiSuccess] = useState(false);
   const [apiError, setApiError] = useState(false);
@@ -39,10 +31,6 @@ const Feedbacks = () => {
   const [filterMode, setFilterMode] = useState("name");
   const [status, setStatus] = useState("");
   const [keyword, setKeyword] = useState("");
-
-  const [openDialog, setOpenDialog] = useState(false);
-  const [selectedFeedback, setSelectedFeedback] = useState(null);
-
   const navigate = useNavigate();
 
   const handleSelect = (e) => {
@@ -57,55 +45,86 @@ const Feedbacks = () => {
   };
 
   const columns = [
-    { field: "col1", headerName: "#", width: 100 },
-    {
-      field: "col2",
-      headerName: "Email",
-      width: 250,
-    },
+    { field: "col1", headerName: "#", width: 150 },
+    { field: "col2", headerName: "Contest Id", width: 205 },
     {
       field: "col3",
-      headerName: "Phone",
+      headerName: "Contest Image",
       width: 200,
-    },
-    {
-      field: "col4",
-      headerName: "Message",
-      width: 415,
-    },
-    {
-      field: "col5",
-      headerName: "Action",
-      width: 250,
       renderCell: (params) => {
-        return (
-          <>
-            <Visibility
-              cursor={"pointer"}
-              style={{ color: "green" }}
-              onClick={() => handleView(params.row)}
-            />
-            <DeleteIcon
-              className="ms-3"
-              cursor={"pointer"}
-              style={{ color: "red" }}
-              onClick={(e) => confirmBeforeDelete(e, params.row)}
-            />
-          </>
+        return params.formattedValue !== "N/A" ? (
+          <img
+            style={{
+              width: "70px",
+              objectFit: "cover",
+              cursor: "pointer",
+            }}
+            src={params.formattedValue}
+            alt="thumbnail"
+          />
+        ) : (
+          ""
         );
       },
     },
+    {
+      field: "col4",
+      headerName: "Price",
+      width: 120,
+    },
+    {
+      field: "col5",
+      headerName: "Max Ticket",
+      width: 180,
+    },
+    {
+      field: "col6",
+      headerName: "No of User Participate",
+      width: 180,
+    },
+    {
+      field: "col7",
+      headerName: "Contest End_Date",
+      width: 180,
+    },
+    {
+      field: "col9",
+      headerName: "Status",
+      width: 150,
+      renderCell: (params) => (
+        <span>{params.formattedValue ? "Active" : "Inactive"}</span>
+      ),
+    },
+    {
+      field: "col10",
+      headerName: "Winner Calculated",
+      width: 180,
+      renderCell: (params) => (
+        <span>{params.formattedValue ? "Calculated" : "Not Calculated"}</span>
+      ),
+    },
+    {
+      field: "col8",
+      headerName: "Action",
+      width: 200,
+      renderCell: (params) => (
+        <>
+          <EditIcon
+            cursor={"pointer"}
+            style={{ color: "gold", marginRight: "20px" }}
+            onClick={() => navigate(`match-winner/${params.row.id}`)}
+            titleAccess="Edit"
+          />
+          <DeleteIcon
+            cursor={"pointer"}
+            style={{ color: "red" }}
+            onClick={(e) => confirmBeforeDelete(e, params.row)}
+            titleAccess="Delete"
+          />
+        </>
+      ),
+    },
   ];
-
-  const handleView = (row) => {
-    setSelectedFeedback(row);
-    setOpenDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setSelectedFeedback(null);
-  };
 
   //handle get confirmation before delete user
   const confirmBeforeDelete = (e, params) => {
@@ -125,9 +144,9 @@ const Feedbacks = () => {
   };
 
   const deleteSingleUser = (e, params) => {
-    const userId = params.id;
+    const groupId = params.id;
     httpClient
-      .delete(`/admin/feedbacks/${userId}`)
+      .delete(`/admin/delete-group/${groupId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);
@@ -149,19 +168,27 @@ const Feedbacks = () => {
   useEffect(() => {
     setLoading(true);
     httpClient
-      .get(`/admin/feedbacks`)
+      .get(`api/v1/admin/contest/get-all-contest-details`)
       .then((res) => {
-        setUserCount(res.data?.result?.count);
+        setUserCount(res.data.data.length); // Count based on the response data length
         setLoading(false);
+        console.log("as", res.data.data);
+
         setRows(
-          res.data.result?.docs?.map((doc, index) => {
+          res.data.data.map((contestData, index) => {
+            const contest = contestData.contest;
             return {
-              id: doc._id,
+              id: contest._id,
               col1:
                 paginationModel.page * paginationModel.pageSize + (index + 1),
-              col2: doc?.user_id?.email || "N/A",
-              col3: doc?.user_id?.phone || "N/A",
-              col4: doc.message || "N/A",
+              col2: contest._id || "N/A",
+              col3: contest.contest_banner?.file_url || "N/A", // Contest image URL
+              col4: contest.jackpot_price || "N/A", // Jackpot Price
+              col5: contest.maxTickets || "N/A", // Max Ticket
+              col6: contestData.userParticipated || "N/A", // Number of users who participated
+              col7: contest.contest_end_date
+                ? contest.contest_end_date.substring(0, 10)
+                : "N/A", // Contest End Date
             };
           })
         );
@@ -171,7 +198,7 @@ const Feedbacks = () => {
         setLoading(false);
         console.log(error);
       });
-  }, [paginationModel, status]);
+  }, [paginationModel, alertMessage, status, keyword]);
 
   const handleRecordPerPage = (e) => {
     setLoading(true);
@@ -182,12 +209,26 @@ const Feedbacks = () => {
   return (
     <>
       <AppSidebar />
-      <div className="wrapper bg-light d-flex-column align-items-center">
+      <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="Feedbacks" />
+        <PageTitle title="WinnerCircle" />
 
         <CContainer>
-          <h4 className="">Feedbacks :</h4>
+          <div className="d-flex justify-content-between align-items-center">
+            <h4 className="">WinnerCircle : </h4>
+            {/* <Button
+              variant="contained"
+              className="my-2"
+              sx={{
+                backgroundColor: "orange",
+              }}
+              onClick={() => {
+                window.location.href = "contest_management/add-contest";
+              }}
+            >
+              Add Contest
+            </Button> */}
+          </div>
           <div
             style={{
               height: "600px",
@@ -197,6 +238,26 @@ const Feedbacks = () => {
               borderRadius: 5,
             }}
           >
+            <div className="">
+              {/* <ArrowBackIcon className="pointer-cursor"
+            style={{
+              // fontSize: "20px",
+              marginLeft: "10px",
+              cursor: "pointer",
+              color: "#333",
+            }}
+            /> */}
+              {/* <button
+                className="border-0 border p-2"
+                style={{
+                  backgroundColor: "gold",
+                  borderRadius: "5px",
+                }}
+                // onClick={() => {}}
+              >
+                Add Group
+              </button> */}
+            </div>
             <Snackbar
               open={closeSnakeBar}
               autoHideDuration={1000}
@@ -231,35 +292,7 @@ const Feedbacks = () => {
                 justifyContent: "space-between",
                 padding: "10px 0",
               }}
-            >
-              <CCol xs={5}>
-                Show
-                <input
-                  className="mx-2"
-                  type="number"
-                  id="number"
-                  name="number"
-                  placeholder="10"
-                  defaultValue={"10"}
-                  outline="none"
-                  title="Enter a Number"
-                  cursor="pointer"
-                  min={0}
-                  style={{
-                    width: "45px",
-                    outline: "none",
-                    borderRadius: 5,
-                    border: "1px solid gray",
-                    fontSize: "1rem",
-                    fontWeight: 600,
-                    textAlign: "center",
-                    height: 25,
-                  }}
-                  onChange={handleRecordPerPage}
-                />
-                Records per page
-              </CCol>
-            </div>
+            ></div>
             <DataGrid
               sx={{
                 "& .MuiDataGrid-row:nth-of-type(2n)": {
@@ -267,18 +300,23 @@ const Feedbacks = () => {
                 },
                 "& .MuiDataGrid-columnHeader": {
                   backgroundColor: "#d5dbd6",
+                  // height: "40px !important",
+                  outline: "none !important",
                 },
                 "& .MuiDataGrid-cell": {
                   outline: "none !important",
                 },
                 "& .MuiDataGrid-row": {
                   outline: "none !important",
+                  // backgroundColor: "gold",
                 },
               }}
               rows={rows}
               columns={columns}
+              // pageSizeOptions={[5, 10, 15]}
               rowCount={userCount}
               disableRowSelectionOnClick
+              pagination
               paginationMode="server"
               paginationModel={paginationModel}
               disableColumnMenu
@@ -289,68 +327,8 @@ const Feedbacks = () => {
           </div>
         </CContainer>
       </div>
-
-      {selectedFeedback && (
-        <Dialog open={openDialog} onClose={handleCloseDialog}>
-          <DialogTitle>Feedback Details</DialogTitle>
-          <DialogContent>
-            <TextField
-              margin="dense"
-              label="Email :"
-              type="text"
-              fullWidth
-              variant="outlined"
-              value={selectedFeedback.col2}
-              readOnly
-              InputLabelProps={{
-                sx: {
-                  // fontSize: "18px", // Example: Set custom font size
-                  marginTop:"5px"
-                },
-              }}
-            />
-            <TextField
-              margin="dense"
-              label="Phone Number :"
-              type="text"
-              fullWidth
-              variant="outlined"
-              value={selectedFeedback.col3}
-              readOnly
-              InputLabelProps={{
-                sx: {
-                  // fontSize: "18px", // Example: Set custom font size
-                  marginTop:"5px"
-                },
-              }}
-            />
-            <TextField
-              margin="dense"
-              label="Message :"
-              type="text"
-              fullWidth
-              variant="outlined"
-              multiline
-              rows={4}
-              value={selectedFeedback.col4}
-              readOnly
-              InputLabelProps={{
-                sx: {
-                  // fontSize: "18px", // Example: Set custom font size
-                  marginTop:"5px"
-                },
-              }}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog} color="primary">
-              Close
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
     </>
   );
 };
 
-export default React.memo(Feedbacks);
+export default React.memo(WinnerCircle);

@@ -12,9 +12,8 @@ import swal from "sweetalert2";
 import Loader from "../../components/loader/Loader";
 import { CardMedia } from "@mui/material";
 import styled from "styled-components";
-import { GridOverlay } from '@mui/x-data-grid';
-import { Typography } from '@mui/material';
-
+import { GridOverlay } from "@mui/x-data-grid";
+import { Typography } from "@mui/material";
 
 const CustomNoRowsOverlay = () => {
   return (
@@ -38,11 +37,12 @@ const UserData = () => {
     page: 0,
     pageSize: 10,
   });
-
+  // const [showImage, setShowImage] = useState(false);
+  // const [profilePicture, setProfilePicture] = useState("");
   const [filterMode, setFilterMode] = useState("name");
   const [status, setStatus] = useState("");
   const [keyword, setKeyword] = useState("");
-  const [showImage, setShowIMage] = useState(false);
+  const [showImage, setShowImage] = useState(false);
   const [profilePicture, setProfilePicture] = useState("");
 
   const handleStatusChange = (e, params) => {
@@ -57,8 +57,11 @@ const UserData = () => {
   };
 
   const updateStatus = (id, status) => {
+    console.log("id", id);
+    console.log("status", status);
+
     httpClient
-      .patch(`/admin/users/${id}`, {
+      .get(`admin/active-in-active-user/${id}`, {
         is_active: status === true ? false : true,
       })
       .then((res) => {
@@ -85,12 +88,12 @@ const UserData = () => {
             }}
             src={params.formattedValue}
             alt="profile"
-            onMouseEnter={(e) => {
-              setShowIMage(() => true);
+            onMouseEnter={() => {
+              setShowImage(true);
               setProfilePicture(params.formattedValue);
             }}
-            onMouseLeave={(e) => {
-              setShowIMage(() => false);
+            onMouseLeave={() => {
+              setShowImage(false);
             }}
           />
         ) : (
@@ -116,7 +119,7 @@ const UserData = () => {
       renderCell: (params) => {
         return (
           <Switch
-            checked={params.row.col3 === true ? true : false}
+            checked={params.row.col3} // checked={params.row.col3 === true ? true : false}
             onChange={(e) => handleStatusChange(e, params.row)}
           />
         );
@@ -184,33 +187,32 @@ const UserData = () => {
   useEffect(() => {
     setLoading(true);
     httpClient
-      .get(
-        `/admin/users?page=${paginationModel.page}&pageSize=${paginationModel.pageSize}&search=${keyword}`
-      )
+      .get(`admin/get-all-users`)
       .then((res) => {
-        setUserCount(res.data?.result?.count);
+        // const { count, docs } = res.data.data || {};
+        // setUserCount(count);
         setLoading(false);
-        setRows(
-          res.data.result.docs.map((user, index) => {
-            return {
-              id: user._id,
-              col1:
-                paginationModel.page * paginationModel.pageSize + (index + 1),
+        const docs = res.data.data;
+        console.log("re", res.data.data);
 
-              col2: user.profile_picture || "N/A",
-              col3: user.is_active || "false",
-              col4: user.username || "User",
-              col5: user.email || "Not Available",
-              col6: user.phone || "Not Available",
-              col7: user.created_at.substring(0, 10),
-            };
-          })
+        setRows(
+          docs.map((user, index) => ({
+            id: user._id,
+            col1: paginationModel.page * paginationModel.pageSize + (index + 1),
+            col2: user.profile_url || "N/A",
+            col3: user.is_active,
+            col4: `${user.first_name || "User"} ${user.last_name || ""}`.trim(),
+            col5: user.email || "Not Available",
+            col6: user.phone || "Not Available",
+            col7: user.createdAt?.substring(0, 10) || "N/A",
+          }))
         );
+
         setStatus("");
       })
       .catch((error) => {
         setLoading(false);
-        console.log(error);
+        console.error("Error fetching users:", error);
       });
   }, [paginationModel, alertMessage, status, keyword]);
 
@@ -232,7 +234,8 @@ const UserData = () => {
       searchValue = searchValue.trim();
       // setSearch(searchValue);
       httpClient
-        .get(`/admin/users?keyword=${searchValue}&key=${filterMode}`)
+        // .get(`/admin/users?keyword=${searchValue}&key=${filterMode}`)
+        .get(`get-all-users`)
         .then((res) => {
           setUserCount(res.data.users.length);
           if (res.status === 200) {

@@ -10,10 +10,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import httpClient from "../../../util/HttpClient";
 import swal from "sweetalert2";
 import Loader from "../../../components/loader/Loader";
-import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
+import { useNavigate } from "react-router-dom";
 
-const LoginTrouble = () => {
+const InPress = () => {
   const [alertMessage, setAlertMessage] = useState();
   const [apiSuccess, setApiSuccess] = useState(false);
   const [apiError, setApiError] = useState(false);
@@ -26,64 +28,116 @@ const LoginTrouble = () => {
     pageSize: 10,
   });
 
+  const [filterMode, setFilterMode] = useState("name");
   const [status, setStatus] = useState("");
-
+  const [keyword, setKeyword] = useState("");
   const navigate = useNavigate();
 
-  const columns = [
-    { field: "col1", headerName: "#", width: 100 },
-    {
-      field: "col2",
-      headerName: "Title",
-      width: 400,
-    },
-    {
-      field: "col3",
-      headerName: "Answer",
-      width: 400,
-    },
-    {
-      field: "col4",
-      headerName: "Created At",
-      width: 100,
-    },
-    {
-      field: "col5",
-      headerName: "Updated At",
-      width: 100,
-    },
-    {
-      field: "col6",
-      headerName: "Action",
-      width: 100,
-      renderCell: (params) => {
-        return (
-          <>
-            <EditIcon
-              cursor={"pointer"}
-              style={{
-                color: "orange",
-                background: "transparent",
-                padding: "5px",
-                fontWeight: "700",
-                fontSize: "2rem",
-              }}
-              className="border-0 me-2"
-              onClick={() => {
-                console.log("edit content ==> ", params.row);
-                navigate(`/login-trouble/edit-login-trouble/${params.row.id}`);
-              }}
-            />
-            <DeleteIcon
-              cursor={"pointer"}
-              style={{ color: "red" }}
-              onClick={(e) => confirmBeforeDelete(e, params.row)}
-            />
-          </>
-        );
-      },
-    },
-  ];
+  const handleSelect = (e) => {
+    httpClient
+      .patch(`/admin/users/${e.target.id}`, {
+        is_active: e.target.value === "active" ? true : false,
+      })
+      .then((res) => {
+        console.log("update status ==> ", res);
+        setStatus("ok");
+      });
+  };
+
+const columns = [
+  { field: "col1", headerName: "#", width: 80 },
+  { field: "col2", headerName: "Title", width: 250 },
+  {
+    field: "col3",
+    headerName: "Image",
+    width: 200,
+    renderCell: (params) =>
+      params.formattedValue !== "N/A" ? (
+        <img
+          style={{ width: "70px", objectFit: "cover", cursor: "pointer" }}
+          src={params.formattedValue}
+          alt="thumbnail"
+        />
+      ) : null,
+  },
+  {
+    field: "col4",
+    headerName: "Link",
+    width: 180,
+    renderCell: (params) =>
+      params.formattedValue !== "N/A" ? (
+        <button
+          onClick={() => window.open(params.formattedValue, "_blank")}
+          style={{
+            padding: "5px 10px",
+            color: "white",
+            backgroundColor: "blue",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          Open Link
+        </button>
+      ) : (
+        "N/A"
+      ),
+  },
+  { field: "col5", headerName: "Created At", width: 180 },
+  { field: "col6", headerName: "Updated At", width: 180 },
+  {
+    field: "col7",
+    headerName: "Action",
+    width: 200,
+    renderCell: (params) => (
+      <>
+        <EditIcon
+          cursor="pointer"
+          style={{ color: "gold", marginRight: "20px" }}
+          onClick={() => navigate(`/In_Press/edit-press/${params.row.id}`)}
+          titleAccess="Edit"
+        />
+        <DeleteIcon
+          cursor="pointer"
+          style={{ color: "red" }}
+          onClick={(e) => confirmBeforeDelete(e, params.row)}
+          titleAccess="Delete"
+        />
+      </>
+    ),
+  },
+];
+
+useEffect(() => {
+  setLoading(true);
+  httpClient
+    .get(`admin/get-press`)
+    .then((res) => {
+      setUserCount(res.data.data.length);
+      setLoading(false);
+      setRows(
+        res.data.data.map((user, index) => ({
+          id: user._id,
+          col1: paginationModel.page * paginationModel.pageSize + (index + 1),
+          col2: user.title || "N/A",
+          col3: user.press_banner || "N/A",
+          col4: user.link || "N/A",
+          col5: user.createdAt
+            ? new Date(user.createdAt).toLocaleDateString()
+            : "N/A",
+          col6: user.updatedAt
+            ? new Date(user.updatedAt).toLocaleDateString()
+            : "N/A",
+        }))
+      );
+      setStatus("");
+    })
+    .catch((error) => {
+      setLoading(false);
+      console.error(error);
+    });
+}, [paginationModel, alertMessage, status, keyword]);
+
 
   //handle get confirmation before delete user
   const confirmBeforeDelete = (e, params) => {
@@ -97,14 +151,15 @@ const LoginTrouble = () => {
       })
       .then((result) => {
         if (result.isConfirmed) {
-          deleteSingleQuestionAnswer(e, params);
+          deleteSingleUser(e, params);
         }
       });
   };
 
-  const deleteSingleQuestionAnswer = (e, params) => {
+  const deleteSingleUser = (e, params) => {
+    const groupId = params.id;
     httpClient
-      .delete(`/admin/delete-login-trouble/${params.id}`)
+      .delete(`delete-press/${groupId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);
@@ -123,31 +178,6 @@ const LoginTrouble = () => {
   };
 
   //fetching user information
-  useEffect(() => {
-    httpClient
-      .get(`/admin/login-trouble`)
-      .then((res) => {
-        setUserCount(res.data?.result?.count);
-        setLoading(false);
-        setRows(
-          res.data.result.docs.map((doc, index) => {
-            return {
-              id: doc._id,
-              col1:
-                paginationModel.page * paginationModel.pageSize + (index + 1),
-              col2: doc.question || "N/A",
-              col3: doc.answer || "N/A",
-              col4: doc.created_at.substring(0, 10),
-              col5: doc.updated_at.substring(0, 10),
-            };
-          })
-        );
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.log(error);
-      });
-  }, [status]);
 
   const handleRecordPerPage = (e) => {
     setLoading(true);
@@ -160,11 +190,11 @@ const LoginTrouble = () => {
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="Login trouble" />
+        <PageTitle title="InPress" />
 
         <CContainer>
           <div className="d-flex justify-content-between align-items-center">
-            <h4 className="">Login Trouble : </h4>
+            <h4 className="">In-Press : </h4>
             <Button
               variant="contained"
               className="my-2"
@@ -172,10 +202,10 @@ const LoginTrouble = () => {
                 backgroundColor: "orange",
               }}
               onClick={() => {
-                window.location.href = "login-trouble/add-login-trouble";
+                window.location.href = "In_Press/add-press";
               }}
             >
-              Add Login Trouble
+              Add Press
             </Button>
           </div>
           <div
@@ -187,6 +217,26 @@ const LoginTrouble = () => {
               borderRadius: 5,
             }}
           >
+            <div className="">
+              {/* <ArrowBackIcon className="pointer-cursor"
+            style={{
+              // fontSize: "20px",
+              marginLeft: "10px",
+              cursor: "pointer",
+              color: "#333",
+            }}
+            /> */}
+              {/* <button
+                className="border-0 border p-2"
+                style={{
+                  backgroundColor: "gold",
+                  borderRadius: "5px",
+                }}
+                // onClick={() => {}}
+              >
+                Add Group
+              </button> */}
+            </div>
             <Snackbar
               open={closeSnakeBar}
               autoHideDuration={1000}
@@ -221,57 +271,7 @@ const LoginTrouble = () => {
                 justifyContent: "space-between",
                 padding: "10px 0",
               }}
-            >
-              {/* <CCol xs={5}>
-                <button
-                  onClick={() => {
-                    console.log("add content");
-                    navigate("/content/new-content");
-                  }}
-                  className="border-0 p-2 px-3"
-                  style={{
-                    backgroundColor: "#484a7d",
-                    color: "#ffff",
-                    padding: "5px",
-                    fontWeight: "700",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    "&:hover": {
-                      backgroundColor: "#3a3c6c !important",
-                    },
-                  }}
-                >
-                  New Content
-                </button>
-              </CCol> */}
-              {/* <CCol
-                xs={6}
-                style={{
-                  width: "30%",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                Search:
-                <input
-                  className="ms-2 ps-1"
-                  type="text"
-                  name="search"
-                  id="search"
-                  placeholder="name..."
-                  style={{
-                    width: "100%",
-                    outline: "none",
-                    borderRadius: 5,
-                    border: "1px solid gray",
-                  }}
-                  onChange={(e) => {
-                    let keyword = e.target.value.trim();
-                    setKeyword(keyword);
-                  }}
-                />
-              </CCol> */}
-            </div>
+            ></div>
             <DataGrid
               sx={{
                 "& .MuiDataGrid-row:nth-of-type(2n)": {
@@ -287,15 +287,15 @@ const LoginTrouble = () => {
                 },
                 "& .MuiDataGrid-row": {
                   outline: "none !important",
-                  //   backgroundColor: "gold",
+                  // backgroundColor: "gold",
                 },
               }}
               rows={rows}
               columns={columns}
-              // pageSizeOptions={[10, 15, 20]}
-              // rowCount={userCount}
+              // pageSizeOptions={[5, 10, 15]}
+              rowCount={userCount}
               disableRowSelectionOnClick
-              pagination={false}
+              pagination
               paginationMode="server"
               paginationModel={paginationModel}
               disableColumnMenu
@@ -310,4 +310,4 @@ const LoginTrouble = () => {
   );
 };
 
-export default React.memo(LoginTrouble);
+export default React.memo(InPress);

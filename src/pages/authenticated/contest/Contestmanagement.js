@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from "react";
-import AppSidebar from "../../components/AppSidebar";
-import AppHeader from "../../components/AppHeader";
+import AppSidebar from "../../../components/AppSidebar";
+import AppHeader from "../../../components/AppHeader";
 import { CCol, CContainer } from "@coreui/react";
-import PageTitle from "../common/PageTitle";
+import PageTitle from "../../common/PageTitle";
 import { DataGrid } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { IconButton, Snackbar } from "@mui/material";
+import { Button, IconButton, Snackbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import httpClient from "../../util/HttpClient";
+import httpClient from "../../../util/HttpClient";
 import swal from "sweetalert2";
-import Loader from "../../components/loader/Loader";
+import Loader from "../../../components/loader/Loader";
 import axios from "axios";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import EditIcon from "@mui/icons-material/Edit";
+import { useNavigate } from "react-router-dom";
 
-const SubscriptionCategory = () => {
+const ContestManagement = () => {
   const [alertMessage, setAlertMessage] = useState();
   const [apiSuccess, setApiSuccess] = useState(false);
   const [apiError, setApiError] = useState(false);
@@ -28,6 +31,7 @@ const SubscriptionCategory = () => {
   const [filterMode, setFilterMode] = useState("name");
   const [status, setStatus] = useState("");
   const [keyword, setKeyword] = useState("");
+  const navigate = useNavigate();
 
   const handleSelect = (e) => {
     httpClient
@@ -41,54 +45,73 @@ const SubscriptionCategory = () => {
   };
 
   const columns = [
-    { field: "col1", headerName: "#", width: 200 },
-    // { field: "col2", headerName: "Title", width: 200 },
-    {
-      field: "col2",
-      headerName: "Title",
-      width: 400,
-    },
+    { field: "col1", headerName: "#", width: 150 },
+    { field: "col2", headerName: "Title", width: 205 },
     {
       field: "col3",
-      headerName: "Created At",
+      headerName: "Image",
       width: 200,
-    },
-    {
-      field: "col4",
-      headerName: "Edit Content",
-      width: 215,
       renderCell: (params) => {
-        return (
-          <button
+        return params.formattedValue !== "N/A" ? (
+          <img
             style={{
-              color: "#fcda14",
-              background: "transparent",
-              padding: "5px",
-              fontWeight: "700",
+              width: "70px",
+              objectFit: "cover",
+              cursor: "pointer",
             }}
-            className="border-0"
-          >
-            Edit Content
-          </button>
+            src={params.formattedValue}
+            alt="thumbnail"
+          />
+        ) : (
+          ""
         );
       },
     },
+
+    {
+      field: "col4",
+      headerName: "Price",
+      width: 120,
+    },
     {
       field: "col5",
+      headerName: "Max Ticket",
+      width: 180,
+    },
+    {
+      field: "col6",
+      headerName: "Contest State_Date",
+      width: 180,
+    },
+    {
+      field: "col7",
+      headerName: "Contest End_Date",
+      width: 180,
+    },
+    {
+      field: "col8",
       headerName: "Action",
       width: 200,
-      renderCell: (params) => {
-        return (
+      renderCell: (params) => (
+        <>
+          <EditIcon
+            cursor={"pointer"}
+            style={{ color: "gold", marginRight: "20px" }}
+            onClick={() =>
+              navigate(`contest_management/edit-contest/${params.row.id}`)
+            }
+            titleAccess="Edit"
+          />
           <DeleteIcon
             cursor={"pointer"}
             style={{ color: "red" }}
             onClick={(e) => confirmBeforeDelete(e, params.row)}
+            titleAccess="Delete"
           />
-        );
-      },
+        </>
+      ),
     },
   ];
-
   //handle get confirmation before delete user
   const confirmBeforeDelete = (e, params) => {
     swal
@@ -107,9 +130,9 @@ const SubscriptionCategory = () => {
   };
 
   const deleteSingleUser = (e, params) => {
-    const userId = params.id;
+    const groupId = params.id;
     httpClient
-      .delete(`/admin/users/delete/${userId}`)
+      .delete(`/admin/delete-group/${groupId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);
@@ -129,21 +152,31 @@ const SubscriptionCategory = () => {
 
   //fetching user information
   useEffect(() => {
+    setLoading(true);
     httpClient
-      .get(`/admin/get-all-content`)
+      .get(`admin/get-all-contests`)
       .then((res) => {
-        console.log("content => ", res);
-        setUserCount(res.data?.result?.count);
+        setUserCount(res.data.data.length); // Count based on the response data length
         setLoading(false);
+        console.log("contest", res.data.data);
+
         setRows(
-          res.data.result.map((doc, index) => {
+          res.data.data.map((contest, index) => {
+            console.log("data => ", contest);
             return {
-              id: doc._id,
-              col1: index + 1,
-              col2: doc.title || "N/A",
-              col3: doc.created_at.substring(0, 10),
-              col4: doc.thumbnail || "N/A",
-              //   col4: doc.username || "N/A",
+              id: contest._id,
+              col1:
+                paginationModel.page * paginationModel.pageSize + (index + 1),
+              col2: contest.title || "N/A",
+              col3: contest.contest_banner?.file_url || "N/A", // Contest image URL
+              col4: contest.jackpot_price || "N/A", // Jackpot Price
+              col5: contest.maxTickets || "N/A", // Max Ticket
+              col6: contest.contest_start_date
+                ? contest.contest_start_date.substring(0, 10)
+                : "N/A", // Contest Start Date
+              col7: contest.contest_end_date
+                ? contest.contest_end_date.substring(0, 10)
+                : "N/A", // Contest End Date
             };
           })
         );
@@ -153,7 +186,7 @@ const SubscriptionCategory = () => {
         setLoading(false);
         console.log(error);
       });
-  }, []);
+  }, [paginationModel, alertMessage, status, keyword]);
 
   const handleRecordPerPage = (e) => {
     setLoading(true);
@@ -164,12 +197,26 @@ const SubscriptionCategory = () => {
   return (
     <>
       <AppSidebar />
-      <div className="wrapper bg-light min-vh-100 m-2 d-flex-column align-items-center">
+      <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="groups" />
+        <PageTitle title="ContestManagement" />
 
         <CContainer>
-          <h4 className="">Content</h4>
+          <div className="d-flex justify-content-between align-items-center">
+            <h4 className="">ContestManagement : </h4>
+            <Button
+              variant="contained"
+              className="my-2"
+              sx={{
+                backgroundColor: "orange",
+              }}
+              onClick={() => {
+                window.location.href = "contest_management/add-contest";
+              }}
+            >
+              Add Contest
+            </Button>
+          </div>
           <div
             style={{
               height: "600px",
@@ -179,6 +226,26 @@ const SubscriptionCategory = () => {
               borderRadius: 5,
             }}
           >
+            <div className="">
+              {/* <ArrowBackIcon className="pointer-cursor"
+            style={{
+              // fontSize: "20px",
+              marginLeft: "10px",
+              cursor: "pointer",
+              color: "#333",
+            }}
+            /> */}
+              {/* <button
+                className="border-0 border p-2"
+                style={{
+                  backgroundColor: "gold",
+                  borderRadius: "5px",
+                }}
+                // onClick={() => {}}
+              >
+                Add Group
+              </button> */}
+            </div>
             <Snackbar
               open={closeSnakeBar}
               autoHideDuration={1000}
@@ -213,62 +280,7 @@ const SubscriptionCategory = () => {
                 justifyContent: "space-between",
                 padding: "10px 0",
               }}
-            >
-              <CCol xs={5}>
-                Show
-                <input
-                  className="mx-2"
-                  type="number"
-                  id="number"
-                  name="number"
-                  placeholder="10"
-                  defaultValue={"10"}
-                  outline="none"
-                  title="Enter a Number"
-                  cursor="pointer"
-                  min={0}
-                  style={{
-                    width: "45px",
-                    outline: "none",
-                    borderRadius: 5,
-                    border: "1px solid gray",
-                    fontSize: "1rem",
-                    fontWeight: 600,
-                    textAlign: "center",
-                    height: 25,
-                  }}
-                  onChange={handleRecordPerPage}
-                />
-                Records per page
-              </CCol>
-              <CCol
-                xs={6}
-                style={{
-                  width: "30%",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                Search:
-                <input
-                  className="ms-2 ps-1"
-                  type="text"
-                  name="search"
-                  id="search"
-                  placeholder="name..."
-                  style={{
-                    width: "100%",
-                    outline: "none",
-                    borderRadius: 5,
-                    border: "1px solid gray",
-                  }}
-                  onChange={(e) => {
-                    let keyword = e.target.value.trim();
-                    setKeyword(keyword);
-                  }}
-                />
-              </CCol>
-            </div>
+            ></div>
             <DataGrid
               sx={{
                 "& .MuiDataGrid-row:nth-of-type(2n)": {
@@ -284,7 +296,7 @@ const SubscriptionCategory = () => {
                 },
                 "& .MuiDataGrid-row": {
                   outline: "none !important",
-                  //   backgroundColor: "gold",
+                  // backgroundColor: "gold",
                 },
               }}
               rows={rows}
@@ -292,7 +304,7 @@ const SubscriptionCategory = () => {
               // pageSizeOptions={[5, 10, 15]}
               rowCount={userCount}
               disableRowSelectionOnClick
-              //   pagination
+              pagination
               paginationMode="server"
               paginationModel={paginationModel}
               disableColumnMenu
@@ -307,4 +319,4 @@ const SubscriptionCategory = () => {
   );
 };
 
-export default React.memo(SubscriptionCategory);
+export default React.memo(ContestManagement);
