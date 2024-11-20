@@ -97,9 +97,7 @@ const ContestManagement = () => {
           <EditIcon
             cursor={"pointer"}
             style={{ color: "gold", marginRight: "20px" }}
-            onClick={() =>
-              navigate(`edit-contest/${params.row.id}`)
-            }
+            onClick={() => navigate(`edit-contest/${params.row.id}`)}
             titleAccess="Edit"
           />
           <DeleteIcon
@@ -132,7 +130,7 @@ const ContestManagement = () => {
   const deleteSingleUser = (e, params) => {
     const groupId = params.id;
     httpClient
-      .delete(`/admin/delete-group/${groupId}`)
+      .delete(`admin/delete-contest/${groupId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);

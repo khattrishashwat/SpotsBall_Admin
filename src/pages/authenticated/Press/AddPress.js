@@ -37,12 +37,10 @@ const AddPress = () => {
   const addPressToDB = (groupData) => {
     httpClient
       .post(`admin/add-press`, groupData)
-      .then((res) => res.data)
-      .then((data) => {
-        if (data.status) {
+      .then((res) => {
           setIsLoading(false);
           navigate(-1);
-        }
+        
       })
       .catch((err) => {
         setIsLoading(false);

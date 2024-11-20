@@ -37,7 +37,7 @@ const EditPress = () => {
 
   const updateGroupInDB = (groupData) => {
     httpClient
-      .put(`/admin/update-group/${params.id}`, groupData)
+      .patch(`/admin/update-group/${params.id}`, groupData)
       .then((res) => res.data)
       .then((data) => {
         if (data.status) {
@@ -53,13 +53,14 @@ const EditPress = () => {
 
   useEffect(() => {
     httpClient
-      .get(`/admin/get-group/${params.id}`)
-      .then((res) => res?.data?.result[0])
-      .then((result) => {
+      .get(`admin/get-press-by-id/${params.id}`)
+      .then((res) => {
+        const result=res.data.data;
         setIsLoading(false);
         setTitle(result.title);
         setDescription(result.description);
         setLink(result.link);
+        setPressBanner(result.press_banner);
       })
       .catch((err) => {
         console.log("axios error => ", err);

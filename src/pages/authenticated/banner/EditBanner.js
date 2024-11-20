@@ -25,8 +25,8 @@ const EditBanner = () => {
 
   const handleAddCourusal = () => {
     if (courusalInput.trim()) {
-      setCourusal([...courusal, courusalInput]); 
-      setCourusalInput(""); 
+      setCourusal([...courusal, courusalInput]);
+      setCourusalInput("");
     }
   };
 
@@ -35,24 +35,20 @@ const EditBanner = () => {
     let formData = new FormData();
     formData.append("title", title);
     formData.append("sub_title", subTitle);
-   formData.append("banner", bannerImages);
-    formData.append("courusal", JSON.stringify(courusal)); // Send carousel data as JSON
+    formData.append("banner", bannerImages);
+    courusal.forEach((item, index) => {
+      formData.append(`courusal[${index}]`, item);
+    });
 
-    console.log("formData", formData);
     updateBannerInDB(formData);
-    console.log("updateBannerInDB", updateBannerInDB);
-    
   };
 
   const updateBannerInDB = (formData) => {
     httpClient
-      .put(`/admin/edit-bannerr/${params.id}`, formData)
-      .then((res) => res.data.data)
-      .then((data) => {
-        if (data.status) {
-          setIsLoading(false);
-          navigate(-1);
-        }
+      .patch(`admin/edit-bannerr/${params.id}`, formData)
+      .then((res) => {
+        setIsLoading(false);
+        navigate(-1);
       })
       .catch((err) => {
         setIsLoading(false);
@@ -62,13 +58,16 @@ const EditBanner = () => {
 
   useEffect(() => {
     httpClient
-      .get(`/admin/get-banner/${params.id}`)
-      .then((res) => res?.data?.result[0])
-      .then((result) => {
+      .get(`admin/get-banner-by-id/${params.id}`)
+      .then((res) => {
+        const result = res.data.data;
+        console.log("result", result.sub_title);
+
         setIsLoading(false);
         setTitle(result.title);
-        setSubTitle(result.subTitle);
-       setCourusal(result.courusal || []); // Pre-load the carousel titles
+        setSubTitle(result.sub_title);
+        setBannerImages(result.banner);
+        setCourusal(result.corousal || []);
       })
       .catch((err) => {
         console.log("axios error => ", err);
@@ -123,6 +122,7 @@ const EditBanner = () => {
             {/* Banner Image */}
             <label className="mt-4">Banner Image</label>
             <TextField
+              value={bannerImages}
               onChange={handleImageChange}
               fullWidth
               margin="normal"
@@ -130,7 +130,6 @@ const EditBanner = () => {
               type="file"
             />
 
-           
             {/* Carousel Titles */}
             <label className="mt-4">Carousel Titles</label>
             <TextField

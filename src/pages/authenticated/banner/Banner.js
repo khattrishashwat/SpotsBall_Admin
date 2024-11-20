@@ -81,7 +81,7 @@ const Banner = () => {
   const deleteSingleUser = (params) => {
     const groupId = params.id;
     httpClient
-      .delete(`/admin/delete-group/${groupId}`)
+      .delete(`admin/delete-banner/${groupId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);
@@ -89,7 +89,7 @@ const Banner = () => {
         fetchBanners();
       })
       .catch((error) => {
-        setAlertMessage(error.response?.data?.message || "Error occurred");
+        setAlertMessage(error.res?.data?.message || "Error occurred");
         setApiSuccess(false);
         setCloseSnackbar(true);
       });

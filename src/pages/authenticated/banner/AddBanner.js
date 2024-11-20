@@ -34,9 +34,12 @@ const AddBanner = () => {
     setIsLoading(true);
     let formData = new FormData();
     formData.append("title", title);
-    formData.append("subTitle", subTitle);
-    formData.append("bannerImage", bannerImages);
-    formData.append("courusal", JSON.stringify(courusal));
+    formData.append("sub_title", subTitle);
+    formData.append("banner", bannerImages);
+
+    courusal.forEach((item, index) => {
+      formData.append(`courusal[${index}]`, item);
+    });
 
     AddBannerToDB(formData);
   };
@@ -44,12 +47,9 @@ const AddBanner = () => {
   const AddBannerToDB = (formData) => {
     httpClient
       .post(`admin/add-banner`, formData)
-      .then((res) => res.data)
-      .then((data) => {
-        if (data.status) {
-          setIsLoading(false);
-          navigate(-1);
-        }
+      .then((res) => {
+        setIsLoading(false);
+        navigate(-1);
       })
       .catch((err) => {
         setIsLoading(false);

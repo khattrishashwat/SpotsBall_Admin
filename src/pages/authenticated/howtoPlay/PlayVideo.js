@@ -44,156 +44,154 @@ const PlayVideo = () => {
       });
   };
 
-const columns = [
-  { field: "col1", headerName: "#", width: 150 },
-  { field: "col2", headerName: "Title", width: 205 },
-  {
-    field: "col3",
-    headerName: "Image",
-    width: 200,
-    renderCell: (params) => {
-      return params.formattedValue !== "N/A" ? (
-        <img
-          style={{
-            width: "70px",
-            objectFit: "cover",
-            cursor: "pointer",
-          }}
-          src={params.formattedValue}
-          alt="thumbnail"
-        />
-      ) : (
-        ""
-      );
+  const columns = [
+    { field: "col1", headerName: "#", width: 150 },
+    { field: "col2", headerName: "Title", width: 205 },
+    {
+      field: "col3",
+      headerName: "Image",
+      width: 200,
+      renderCell: (params) => {
+        return params.formattedValue !== "N/A" ? (
+          <img
+            style={{
+              width: "70px",
+              objectFit: "cover",
+              cursor: "pointer",
+            }}
+            src={params.formattedValue}
+            alt="thumbnail"
+          />
+        ) : (
+          ""
+        );
+      },
     },
-  },
-  {
-    field: "col4",
-    headerName: "Video",
-    width: 180,
-    renderCell: (params) =>
-      params.formattedValue !== "N/A" ? (
-        <button
-          onClick={() => window.open(params.formattedValue, "_blank")}
-          style={{
-            padding: "5px 10px",
-            color: "white",
-            backgroundColor: "blue",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          Watch Video
-        </button>
-      ) : (
-        "N/A"
+    {
+      field: "col4",
+      headerName: "Video",
+      width: 180,
+      renderCell: (params) =>
+        params.formattedValue !== "N/A" ? (
+          <button
+            onClick={() => window.open(params.formattedValue, "_blank")}
+            style={{
+              padding: "5px 10px",
+              color: "white",
+              backgroundColor: "blue",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Watch Video
+          </button>
+        ) : (
+          "N/A"
+        ),
+    },
+    {
+      field: "col5",
+      headerName: "Created At",
+      width: 180,
+    },
+    {
+      field: "col6",
+      headerName: "Updated At",
+      width: 180,
+    },
+    {
+      field: "col7",
+      headerName: "Action",
+      width: 200,
+      renderCell: (params) => (
+        <>
+          <EditIcon
+            cursor={"pointer"}
+            style={{ color: "gold", marginRight: "20px" }}
+            onClick={() => navigate(`edit-play/${params.row.id}`)}
+            titleAccess="Edit"
+          />
+          <DeleteIcon
+            cursor={"pointer"}
+            style={{ color: "red" }}
+            onClick={(e) => confirmBeforeDelete(e, params.row)}
+            titleAccess="Delete"
+          />
+        </>
       ),
-  },
-  {
-    field: "col5",
-    headerName: "Created At",
-    width: 180,
-  },
-  {
-    field: "col6",
-    headerName: "Updated At",
-    width: 180,
-  },
-  {
-    field: "col7",
-    headerName: "Action",
-    width: 200,
-    renderCell: (params) => (
-      <>
-        <EditIcon
-          cursor={"pointer"}
-          style={{ color: "gold", marginRight: "20px" }}
-          onClick={() => navigate(`/playvideo/edit-Play/${params.row.id}`)}
-          titleAccess="Edit"
-        />
-        <DeleteIcon
-          cursor={"pointer"}
-          style={{ color: "red" }}
-          onClick={(e) => confirmBeforeDelete(e, params.row)}
-          titleAccess="Delete"
-        />
-      </>
-    ),
-  },
-];
+    },
+  ];
 
-
-//  const columns = [
-//    { field: "col1", headerName: "#", width: 150 },
-//    { field: "col2", headerName: "Title", width: 305 },
-//    {
-//      field: "col3",
-//      headerName: "Image",
-//      width: 200,
-//      renderCell: (params) => {
-//        return params.formattedValue !== "N/A" ? (
-//          <img
-//            style={{
-//              width: "70px",
-//              objectFit: "cover",
-//              cursor: "pointer",
-//            }}
-//            src={params.formattedValue}
-//            alt="thumbnail"
-//          />
-//        ) : (
-//          ""
-//        );
-//      },
-//    },
-//    {
-//      field: "col4",
-//      headerName: "Video",
-//      width: 180,
-//      renderCell: (params) => (
-//        <a
-//          href={params.formattedValue}
-//          target="_blank"
-//          rel="noopener noreferrer"
-//        >
-//          {params.formattedValue !== "N/A" ? "Watch Video" : "N/A"}
-//        </a>
-//      ),
-//    },
-//    {
-//      field: "col5",
-//      headerName: "Created At",
-//      width: 180,
-//    },
-//    {
-//      field: "col6",
-//      headerName: "Updated At",
-//      width: 180,
-//    },
-//    {
-//      field: "col7",
-//      headerName: "Action",
-//      width: 200,
-//      renderCell: (params) => (
-//        <>
-//          <EditIcon
-//            cursor={"pointer"}
-//            style={{ color: "gold", marginRight: "20px" }}
-//            onClick={() => navigate(`/playvideo/edit-Play/${params.row.id}`)}
-//            titleAccess="Edit"
-//          />
-//          <DeleteIcon
-//            cursor={"pointer"}
-//            style={{ color: "red" }}
-//            onClick={(e) => confirmBeforeDelete(e, params.row)}
-//            titleAccess="Delete"
-//          />
-//        </>
-//      ),
-//    },
-//  ];
-
+  //  const columns = [
+  //    { field: "col1", headerName: "#", width: 150 },
+  //    { field: "col2", headerName: "Title", width: 305 },
+  //    {
+  //      field: "col3",
+  //      headerName: "Image",
+  //      width: 200,
+  //      renderCell: (params) => {
+  //        return params.formattedValue !== "N/A" ? (
+  //          <img
+  //            style={{
+  //              width: "70px",
+  //              objectFit: "cover",
+  //              cursor: "pointer",
+  //            }}
+  //            src={params.formattedValue}
+  //            alt="thumbnail"
+  //          />
+  //        ) : (
+  //          ""
+  //        );
+  //      },
+  //    },
+  //    {
+  //      field: "col4",
+  //      headerName: "Video",
+  //      width: 180,
+  //      renderCell: (params) => (
+  //        <a
+  //          href={params.formattedValue}
+  //          target="_blank"
+  //          rel="noopener noreferrer"
+  //        >
+  //          {params.formattedValue !== "N/A" ? "Watch Video" : "N/A"}
+  //        </a>
+  //      ),
+  //    },
+  //    {
+  //      field: "col5",
+  //      headerName: "Created At",
+  //      width: 180,
+  //    },
+  //    {
+  //      field: "col6",
+  //      headerName: "Updated At",
+  //      width: 180,
+  //    },
+  //    {
+  //      field: "col7",
+  //      headerName: "Action",
+  //      width: 200,
+  //      renderCell: (params) => (
+  //        <>
+  //          <EditIcon
+  //            cursor={"pointer"}
+  //            style={{ color: "gold", marginRight: "20px" }}
+  //            onClick={() => navigate(`/playvideo/edit-Play/${params.row.id}`)}
+  //            titleAccess="Edit"
+  //          />
+  //          <DeleteIcon
+  //            cursor={"pointer"}
+  //            style={{ color: "red" }}
+  //            onClick={(e) => confirmBeforeDelete(e, params.row)}
+  //            titleAccess="Delete"
+  //          />
+  //        </>
+  //      ),
+  //    },
+  //  ];
 
   //handle get confirmation before delete user
   const confirmBeforeDelete = (e, params) => {
@@ -234,35 +232,36 @@ const columns = [
   };
 
   //fetching user information
-useEffect(() => {
-  setLoading(true);
-  httpClient
-    .get(`admin/get-how-to-play`)
-    .then((res) => {
-      setUserCount(res.data.data.length); // Count based on the response data length
-      setLoading(false);
-      setRows(
-        res.data.data.map((user, index) => {
-          console.log("data => ", user);
-          return {
-            id: user._id,
-            col1: paginationModel.page * paginationModel.pageSize + (index + 1),
-            col2: user.title || "N/A",
-            col3: user.thumbnail_url || "N/A",
-            col4: user.video_url || "N/A",
-            col5: user.createdAt ? user.createdAt.substring(0, 10) : "N/A",
-            col6: user.updatedAt ? user.updatedAt.substring(0, 10) : "N/A",
-            col7: user.username || "N/A",
-          };
-        })
-      );
-      setStatus("");
-    })
-    .catch((error) => {
-      setLoading(false);
-      console.log(error);
-    });
-}, [paginationModel, alertMessage, status, keyword]);
+  useEffect(() => {
+    setLoading(true);
+    httpClient
+      .get(`admin/get-how-to-play`)
+      .then((res) => {
+        setUserCount(res.data.data.length); // Count based on the response data length
+        setLoading(false);
+        setRows(
+          res.data.data.map((user, index) => {
+            console.log("data => ", user);
+            return {
+              id: user._id,
+              col1:
+                paginationModel.page * paginationModel.pageSize + (index + 1),
+              col2: user.title || "N/A",
+              col3: user.thumbnail_url || "N/A",
+              col4: user.video_url || "N/A",
+              col5: user.createdAt ? user.createdAt.substring(0, 10) : "N/A",
+              col6: user.updatedAt ? user.updatedAt.substring(0, 10) : "N/A",
+              col7: user.username || "N/A",
+            };
+          })
+        );
+        setStatus("");
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error);
+      });
+  }, [paginationModel, alertMessage, status, keyword]);
 
   const handleRecordPerPage = (e) => {
     setLoading(true);
@@ -287,7 +286,7 @@ useEffect(() => {
                 backgroundColor: "orange",
               }}
               onClick={() => {
-                window.location.href = "PlayVideo/add-group";
+                window.location.href = "how_to_play/add-play";
               }}
             >
               Add Group

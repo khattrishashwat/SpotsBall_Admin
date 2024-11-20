@@ -21,28 +21,32 @@ const AddPlay = () => {
   const handleThumbnailChange = (e) => setThumbnail(e.target.files[0]);
   const handleHowToPlayBannerChange = (e) =>
     setHowToPlayBanner(e.target.files[0]);
-
   const handleSubmit = () => {
     setIsLoading(true);
     const formData = new FormData();
 
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("thumbnail", thumbnail);
-    formData.append("howToPlayBanner", howToPlayBanner);
 
+    // If both are files, append them individually under the same key
+    if (thumbnail) {
+      formData.append("howToPlayBanner", thumbnail);
+    }
+    if (howToPlayBanner) {
+      formData.append("howToPlayBanner", howToPlayBanner);
+    }
+
+    // Submit the form data
     AddPlayToDB(formData);
   };
 
   const AddPlayToDB = (groupData) => {
     httpClient
       .post(`admin/add-how-to-play`, groupData)
-      .then((res) => res.data)
-      .then((data) => {
-        if (data.status) {
+      .then((res) =>{
           setIsLoading(false);
           navigate(-1);
-        }
+        
       })
       .catch((err) => {
         setIsLoading(false);

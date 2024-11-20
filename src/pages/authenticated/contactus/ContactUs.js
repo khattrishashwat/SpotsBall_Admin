@@ -273,7 +273,7 @@ const ContactUs = () => {
 
       {selectedFeedback && (
         <Dialog open={openDialog} onClose={handleCloseDialog}>
-          <DialogTitle>Feedback Details</DialogTitle>
+          <DialogTitle>Contact Details</DialogTitle>
           <DialogContent>
             <TextField
               margin="dense"
@@ -292,7 +292,7 @@ const ContactUs = () => {
             />
             <TextField
               margin="dense"
-              label="Contacted For"
+              label="Contact"
               type="text"
               fullWidth
               variant="outlined"
@@ -324,7 +324,7 @@ const ContactUs = () => {
             />
             <TextField
               margin="dense"
-              label="Created At"
+              label="Message"
               type="text"
               fullWidth
               variant="outlined"

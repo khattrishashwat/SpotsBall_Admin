@@ -1,18 +1,20 @@
-import React, { useState } from "react";
-import { Box, Button, Container, TextField } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Button, Container, TextField, Typography } from "@mui/material";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
-import httpClient from "../../../util/HttpClient";
-import { useNavigate, useLocation } from "react-router-dom";
 import Loader from "../../../components/loader/Loader";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import httpClient from "../../../util/HttpClient";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 
-const AddContest = () => {
+const EditContest = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const params = useParams();
   const { x, y } = location.state || {};
 
+  // State management
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [contestBanner, setContestBanner] = useState(null);
@@ -25,23 +27,58 @@ const AddContest = () => {
   const [imageWidth, setImageWidth] = useState("");
   const [imageHeight, setImageHeight] = useState("");
   const [maxTickets, setMaxTickets] = useState("");
-  const [quantities, setQuantities] = useState([0, 0, 0]);
+  const [quantities, setQuantities] = useState(["", "", "", ""]);
   const [gstRate, setGstRate] = useState("");
   const [platformFeeRate, setPlatformFeeRate] = useState("");
   const [gstOnPlatformFeeRate, setGstOnPlatformFeeRate] = useState("");
-
   const [isLoading, setIsLoading] = useState(false);
 
-  // Create the initial state for winningCoordinates
+  // Initialize winning coordinates
   const initialCoordinates = x && y ? `{"x": ${x}, "y": ${y}}` : "";
-
   const [winningCoordinates, setWinningCoordinates] =
     useState(initialCoordinates);
+  console.log("initialCoordinates", winningCoordinates);
+
+  useEffect(() => {
+    setIsLoading(true);
+    httpClient
+      .get(`admin/get-contest/${params.id}`)
+      .then((res) => {
+        const result = res.data.data;
+        const formattedDate = formatDate(result.contest_start_date);
+        const forDate = formatDate(result.contest_end_date);
+        console.log("dcfds", result.contest_end_date);
+        console.log("forDatefff", formattedDate);
+        console.log("forDate", result.contest_banner?.file_url);
+        console.log("fo", result.player_image?.file_url);
+
+        setTitle(result.title || "");
+        setDescription(result.description || "");
+     
+        setJackpotPrice(result.jackpot_price || "");
+        setTicketPrice(result.ticket_price || "");
+        setContestStartDate(formattedDate || "");
+        setContestEndDate(forDate || "");
+        setImageWidth(result.image_width || "");
+        setImageHeight(result.image_height || "");
+        setMaxTickets(result.maxTickets || "");
+        setQuantities(result.quantities || ["", "", "", ""]);
+        setGstRate(result.gstRate || "");
+        setPlatformFeeRate(result.platformFeeRate || "");
+        setGstOnPlatformFeeRate(result.gstOnPlatformFeeRate || "");
+        setWinningCoordinates(result.winning_coordinates || "");
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error("Fetch error => ", err);
+        setIsLoading(false);
+      });
+  }, [params.id]);
 
   const handleSubmit = () => {
     setIsLoading(true);
-    let formData = new FormData();
 
+    const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
     formData.append("contest_banner", contestBanner);
@@ -58,93 +95,35 @@ const AddContest = () => {
     quantities.forEach((quantity, index) =>
       formData.append(`quantities[${index}]`, quantity)
     );
-
     formData.append("gstRate", gstRate);
     formData.append("platformFeeRate", platformFeeRate);
     formData.append("gstOnPlatformFeeRate", gstOnPlatformFeeRate);
 
-    AddContestToDB(formData);
-  };
-
-  const AddContestToDB = (groupData) => {
-    setIsLoading(true);
     httpClient
-      .post(`admin/add-contest`, groupData)
-      .then((res) => {
-        if (res.status) {
-          setIsLoading(false);
-          // Show success pop-up
-          Swal.fire({
-            icon: "success",
-            title: "Success!",
-            text: res.data.message, // Display message from response
-          }).then(() => {
-            // Navigate to /contest_management after closing the pop-up
-            navigate("/contest_management");
-          });
-        }
+      .patch(`admin/edit-contest/${params.id}`, formData)
+      .then(() => {
+        setIsLoading(false);
+        Swal.fire("Success", "Contest updated successfully", "success");
+        navigate(-1);
       })
       .catch((err) => {
         setIsLoading(false);
-        console.log("error => ", err);
-        // Show error pop-up with the message from the API response
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: err.response?.data?.message,
-        });
+        console.error("Update error => ", err);
+        Swal.fire("Error", "Failed to update contest", "error");
       });
   };
 
-  const handlePlayerImageChange = (e) => {
-    const file = e.target.files[0];
-    setPlayerImage(file);
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
 
-    // Load the image dimensions automatically
-    const img = new Image();
-    img.onload = () => {
-      setImageWidth(img.width);
-      setImageHeight(img.height);
-    };
-    img.src = URL.createObjectURL(file);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // months are 0-based
+    const year = date.getFullYear().toString().slice(-2); // get last two digits of the year
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${day}-${month}-${year} ${hours}:${minutes}`;
   };
-
-  //  const handlePlayerImageChange = (e) => {
-  //   const file = e.target.files[0];
-  //   setPlayerImage(file);
-
-  //   const img = new Image();
-  //   img.onload = () => {
-  //     setImageWidth(img.width);
-  //     setImageHeight(img.height);
-  //   };
-  //   img.src = URL.createObjectURL(file);
-  // };
-
-  // const handleOriginalPlayerImageChange = (e) => {
-  //   const file = e.target.files[0];
-  //   setOriginalPlayerImage(file);
-
-  //   const img = new Image();
-  //   img.onload = () => {
-  //     setImageWidth(img.width);
-  //     setImageHeight(img.height);
-
-  //     // Convert image to Data URI
-  //     const canvas = document.createElement("canvas");
-  //     canvas.width = img.width;
-  //     canvas.height = img.height;
-  //     const ctx = canvas.getContext("2d");
-  //     ctx.drawImage(img, 0, 0);
-
-  //     // Get Data URI and pass it via navigate
-  //     const dataUri = canvas.toDataURL("image/png");
-  //     navigate("find-coordinates", {
-  //       state: { imageDataUri: dataUri, width: img.width, height: img.height },
-  //     });
-  //   };
-  //   img.src = URL.createObjectURL(file);
-  // };
 
   return (
     <>
@@ -155,242 +134,132 @@ const AddContest = () => {
           variant="contained"
           color="secondary"
           sx={{ mt: 2, ml: 16 }}
-          onClick={() => {
-            navigate(-1);
-          }}
+          onClick={() => navigate(-1)}
         >
           <ArrowBackIcon />
           back
         </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ mt: 2, ml: 2 }}
-          onClick={() => {
-            window.location.href = "add-contest/find-coordinates";
-          }}
-        >
-          Find Coordinates
-        </Button>
         <Container maxWidth="sm" className="d-flex justify-content-center">
           {isLoading && <Loader />}
-          <Box
-            component="form"
-            noValidate
-            autoComplete="off"
-            sx={{ mt: 4, width: "80%" }}
-          >
-            <label>Title</label>
+          <Box component="form" sx={{ mt: 4 }}>
+            <Typography variant="h6">Edit Contest</Typography>
             <TextField
+              label="Title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               fullWidth
               margin="normal"
-              placeholder="Enter contest title"
-              sx={{ border: "none" }}
             />
-
-            <label>Description</label>
             <TextField
+              label="Description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               fullWidth
               margin="normal"
-              placeholder="Enter contest description"
-              sx={{ border: "none" }}
             />
-
-            <label>Contest Banner</label>
             <TextField
+              type="file"
+              value={contestBanner}
               onChange={(e) => setContestBanner(e.target.files[0])}
               fullWidth
               margin="normal"
-              variant="outlined"
-              type="file"
             />
-
-            <label>Original Player Image</label>
             <TextField
-              onChange={(e) => setOriginalPlayerImage(e.target.files[0])}
-              // onChange={handleOriginalPlayerImageChange}
+              type="file"
+              value={playerImage}
+              onChange={(e) => setPlayerImage(e.target.files[0])}
               fullWidth
               margin="normal"
-              variant="outlined"
-              type="file"
             />
-
-            <label>Winning Coordinates</label>
             <TextField
-              value={winningCoordinates}
+              label="Jackpot Price"
+              value={jackpotPrice}
+              onChange={(e) => setJackpotPrice(e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Ticket Price"
+              value={ticketPrice}
+              onChange={(e) => setTicketPrice(e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              type="datetime-local"
+              label="Contest Start Date"
+              value={contestStartDate}
+              onChange={(e) => setContestStartDate(e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              type="datetime-local"
+              label="Contest End Date"
+              value={contestEndDate}
+              onChange={(e) => setContestEndDate(e.target.value)}
+              fullWidth
+              margin="normal"
+              // value={description}
+            />
+            <TextField
+              label="Winning Coordinates"
+              value={`{"x": ${winningCoordinates.x}, "y": ${winningCoordinates.y}}`}
               onChange={(e) => setWinningCoordinates(e.target.value)}
               fullWidth
               margin="normal"
               placeholder='{"x": , "y": }'
             />
-
-            <label>Jackpot Price</label>
             <TextField
-              value={jackpotPrice}
-              onChange={(e) => setJackpotPrice(e.target.value)}
-              fullWidth
-              margin="normal"
-              placeholder="Enter jackpot price"
-              sx={{ border: "none" }}
-            />
-
-            <label>Ticket Price</label>
-            <TextField
-              value={ticketPrice}
-              onChange={(e) => setTicketPrice(e.target.value)}
-              fullWidth
-              margin="normal"
-              placeholder="Enter ticket price"
-              sx={{ border: "none" }}
-            />
-
-            <label>Contest Start Date</label>
-            <TextField
-              value={contestStartDate}
-              onChange={(e) => setContestStartDate(e.target.value)}
-              fullWidth
-              margin="normal"
-              type="datetime-local"
-              sx={{ border: "none" }}
-            />
-
-            <label>Contest End Date</label>
-            <TextField
-              value={contestEndDate}
-              onChange={(e) => setContestEndDate(e.target.value)}
-              fullWidth
-              margin="normal"
-              type="datetime-local"
-              sx={{ border: "none" }}
-            />
-
-            <label>Player Image</label>
-            <TextField
-              onChange={handlePlayerImageChange}
-              fullWidth
-              margin="normal"
-              variant="outlined"
-              type="file"
-            />
-
-            <label>Image Width</label>
-            <TextField
+              label="Image Width"
               value={imageWidth}
               onChange={(e) => setImageWidth(e.target.value)}
               fullWidth
               margin="normal"
-              placeholder="Enter image width"
-              sx={{ border: "none" }}
             />
-
-            <label>Image Height</label>
             <TextField
+              label="Image Height"
               value={imageHeight}
               onChange={(e) => setImageHeight(e.target.value)}
               fullWidth
               margin="normal"
-              placeholder="Enter image height"
-              sx={{ border: "none" }}
             />
-
-            <label>Max Tickets</label>
             <TextField
+              label="Max Tickets"
               value={maxTickets}
               onChange={(e) => setMaxTickets(e.target.value)}
               fullWidth
               margin="normal"
-              placeholder="Enter max tickets"
-              sx={{ border: "none" }}
             />
-
-            <label>Ticket Quantities</label>
-            <div>
-              <TextField
-                value={quantities[0]}
-                onChange={(e) => {
-                  const newQuantities = [...quantities];
-                  newQuantities[0] = e.target.value;
-                  setQuantities(newQuantities);
-                }}
-                margin="normal"
-                placeholder="Quantity 1"
-              />
-              <TextField
-                value={quantities[1]}
-                onChange={(e) => {
-                  const newQuantities = [...quantities];
-                  newQuantities[1] = e.target.value;
-                  setQuantities(newQuantities);
-                }}
-                margin="normal"
-                placeholder="Quantity 2"
-              />
-              <TextField
-                value={quantities[2]}
-                onChange={(e) => {
-                  const newQuantities = [...quantities];
-                  newQuantities[2] = e.target.value;
-                  setQuantities(newQuantities);
-                }}
-                margin="normal"
-                placeholder="Quantity 3"
-              />
-              <TextField
-                value={quantities[3]}
-                onChange={(e) => {
-                  const newQuantities = [...quantities];
-                  newQuantities[3] = e.target.value;
-                  setQuantities(newQuantities);
-                }}
-                margin="normal"
-                placeholder="Quantity 4"
-              />
-            </div>
-
-            <label>GST Rate</label>
             <TextField
+              label="GST Rate"
               value={gstRate}
               onChange={(e) => setGstRate(e.target.value)}
               fullWidth
               margin="normal"
-              placeholder="Enter GST rate"
-              sx={{ border: "none" }}
             />
-
-            <label>Platform Fee Rate</label>
             <TextField
+              label="Platform Fee Rate"
               value={platformFeeRate}
               onChange={(e) => setPlatformFeeRate(e.target.value)}
               fullWidth
               margin="normal"
-              placeholder="Enter platform fee rate"
-              sx={{ border: "none" }}
             />
-
-            <label>GST on Platform Fee Rate</label>
             <TextField
+              label="GST on Platform Fee Rate"
               value={gstOnPlatformFeeRate}
               onChange={(e) => setGstOnPlatformFeeRate(e.target.value)}
               fullWidth
               margin="normal"
-              placeholder="Enter GST on platform fee rate"
-              sx={{ border: "none" }}
             />
-
             <Button
-              onClick={handleSubmit}
+              variant="contained"
+              color="primary"
               fullWidth
-              sx={{
-                marginTop: 2,
-                backgroundColor: "#33ccff",
-                color: "#fff",
-              }}
+              onClick={handleSubmit}
+              sx={{ mt: 2 }}
             >
-              Create Contest
+              Update Contest
             </Button>
           </Box>
         </Container>
@@ -399,4 +268,4 @@ const AddContest = () => {
   );
 };
 
-export default AddContest;
+export default EditContest;

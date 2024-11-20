@@ -33,7 +33,7 @@ const EditFAQ = () => {
     setQuestion("");
     setAnswer("");
     httpClient
-      .put(`admin/edit-faq/${params.id}`, { question, answer })
+      .patch(`admin/edit-faq/${params.id}`, { question, answer })
       .then((res) => {
         setIsLoading(true);
         navigate(-1);
@@ -45,7 +45,7 @@ const EditFAQ = () => {
   };
 
   useEffect(() => {
-    httpClient.get(`/admin/get-faq/${params.id}`).then((res) => {
+    httpClient.get(`admin/get-faq/${params.id}`).then((res) => {
       setAnswer(res.data.data.answer);
       setQuestion(res.data.data.question);
       setIsLoading(false);

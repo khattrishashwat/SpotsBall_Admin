@@ -113,7 +113,7 @@ const FAQ = () => {
   const deleteSingleUser = (e, params) => {
     const userId = params.id;
     httpClient
-      .delete(`delete-faq/${userId}`)
+      .delete(`admin/delete-faq/${userId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);
