@@ -17,7 +17,16 @@ import {
 } from "@coreui/react";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useFormik } from "formik";
-import { IconButton, Snackbar } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Button,
+  IconButton,
+  Snackbar,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import httpClient from "../../util/HttpClient";
 import Loader from "../../components/loader/Loader";
@@ -30,11 +39,14 @@ const Forgot = () => {
   const [loading, setLoading] = useState(false);
   const [opacity, setOpacity] = useState(1);
   const [pointerEvents, setPointerEvents] = useState("");
+  const [openOtpDialog, setOpenOtpDialog] = useState(false); // State for OTP dialog
+  const [otp, setOtp] = useState("");
 
   const navigate = useNavigate();
   const initialValues = {
     email: "",
   };
+
   const validationSchema = Yup.object().shape({
     email: Yup.string().required("Email is required"),
   });
@@ -45,20 +57,23 @@ const Forgot = () => {
     onSubmit: (values) => {
       setPointerEvents("none");
       setOpacity(0.3);
-      window.localStorage.setItem("email", JSON.stringify(values));
+
+      window.localStorage.setItem("email", values.email);
+
       setTimeout(() => {
         localStorage.removeItem("email");
-      }, 500000); //after 5 minutes email will be removed from local storage
-      sendOTP(values);
+      }, 500000); // after 5 minutes, the email will be removed from local storage
+
+      sendOTP(values.email);
       setLoading(true);
     },
   });
 
   const sendOTP = (email) => {
     httpClient
-      .post("/admin/forgot-password", {email})
+      .post("admin/send-otp", { email })
       .then((res) => {
-        if (res.data && res.data.success) {
+        if (res) {
           setApiError(false);
           setLoading(false);
           setPointerEvents("");
@@ -66,7 +81,7 @@ const Forgot = () => {
           setAlertMessage("Email sent to Your Email");
           setApiSuccess(true);
           setOpenSnakeBar(true);
-          navigate("/auth/reset");
+          setOpenOtpDialog(true); // Open the OTP dialog
         }
       })
       .catch((error) => {
@@ -77,8 +92,28 @@ const Forgot = () => {
         setApiError(true);
         if (error.response && error.response.data) {
           setAlertMessage(error.response.data.message);
+        } else {
+          setAlertMessage("Something went wrong!");
         }
-        setAlertMessage("Something went wrong!");
+        setOpenSnakeBar(true);
+      });
+  };
+
+  const verifyOTP = () => {
+    httpClient
+      .post("admin/submit-otp", { otp })
+      .then((res) => {
+        if (res) {
+          setOpenOtpDialog(false);
+          setAlertMessage("OTP Verified Successfully");
+          setApiSuccess(true);
+          setOpenSnakeBar(true);
+          navigate("/auth/reset");
+        }
+      })
+      .catch((error) => {
+        setAlertMessage("Invalid OTP");
+        setApiSuccess(false);
         setOpenSnakeBar(true);
       });
   };
@@ -94,12 +129,10 @@ const Forgot = () => {
             <CCardGroup>
               <CCard className="p-4">
                 <CCardBody>
-                  {/* {loading && <Loader />} */}
                   <Snackbar
                     open={openSnakeBar}
                     autoHideDuration={1000}
                     message={alertMessage}
-                    color="red"
                     ContentProps={{
                       sx: apiSuccess
                         ? { backgroundColor: "blue" }
@@ -138,7 +171,6 @@ const Forgot = () => {
                         name="email"
                         id="email"
                         placeholder="Email"
-                        // autoComplete="username"
                         onChange={loginForm.handleChange}
                         onClick={() => setOpenSnakeBar(false)}
                         value={loginForm.values.email}
@@ -168,6 +200,29 @@ const Forgot = () => {
           </CCol>
         </CRow>
       </CContainer>
+
+      {/* OTP Dialog */}
+      <Dialog open={openOtpDialog} onClose={() => setOpenOtpDialog(false)}>
+        <DialogTitle>Verify OTP</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Enter OTP"
+            type="text"
+            fullWidth
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            margin="dense"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenOtpDialog(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={verifyOTP} color="primary">
+            Verify
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

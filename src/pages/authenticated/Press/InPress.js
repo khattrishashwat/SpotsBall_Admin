@@ -44,100 +44,99 @@ const InPress = () => {
       });
   };
 
-const columns = [
-  { field: "col1", headerName: "#", width: 80 },
-  { field: "col2", headerName: "Title", width: 250 },
-  {
-    field: "col3",
-    headerName: "Image",
-    width: 200,
-    renderCell: (params) =>
-      params.formattedValue !== "N/A" ? (
-        <img
-          style={{ width: "70px", objectFit: "cover", cursor: "pointer" }}
-          src={params.formattedValue}
-          alt="thumbnail"
-        />
-      ) : null,
-  },
-  {
-    field: "col4",
-    headerName: "Link",
-    width: 180,
-    renderCell: (params) =>
-      params.formattedValue !== "N/A" ? (
-        <button
-          onClick={() => window.open(params.formattedValue, "_blank")}
-          style={{
-            padding: "5px 10px",
-            color: "white",
-            backgroundColor: "blue",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          Open Link
-        </button>
-      ) : (
-        "N/A"
+  const columns = [
+    { field: "col1", headerName: "#", width: 80 },
+    { field: "col2", headerName: "Title", width: 250 },
+    {
+      field: "col3",
+      headerName: "Image",
+      width: 200,
+      renderCell: (params) =>
+        params.formattedValue !== "N/A" ? (
+          <img
+            style={{ width: "70px", objectFit: "cover", cursor: "pointer" }}
+            src={params.formattedValue}
+            alt="thumbnail"
+          />
+        ) : null,
+    },
+    {
+      field: "col4",
+      headerName: "Link",
+      width: 180,
+      renderCell: (params) =>
+        params.formattedValue !== "N/A" ? (
+          <button
+            onClick={() => window.open(params.formattedValue, "_blank")}
+            style={{
+              padding: "5px 10px",
+              color: "white",
+              backgroundColor: "blue",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Open Link
+          </button>
+        ) : (
+          "N/A"
+        ),
+    },
+    { field: "col5", headerName: "Created At", width: 180 },
+    { field: "col6", headerName: "Updated At", width: 180 },
+    {
+      field: "col7",
+      headerName: "Action",
+      width: 200,
+      renderCell: (params) => (
+        <>
+          <EditIcon
+            cursor="pointer"
+            style={{ color: "gold", marginRight: "20px" }}
+            onClick={() => navigate(`/In_Press/edit-press/${params.row.id}`)}
+            titleAccess="Edit"
+          />
+          <DeleteIcon
+            cursor="pointer"
+            style={{ color: "red" }}
+            onClick={(e) => confirmBeforeDelete(e, params.row)}
+            titleAccess="Delete"
+          />
+        </>
       ),
-  },
-  { field: "col5", headerName: "Created At", width: 180 },
-  { field: "col6", headerName: "Updated At", width: 180 },
-  {
-    field: "col7",
-    headerName: "Action",
-    width: 200,
-    renderCell: (params) => (
-      <>
-        <EditIcon
-          cursor="pointer"
-          style={{ color: "gold", marginRight: "20px" }}
-          onClick={() => navigate(`/In_Press/edit-press/${params.row.id}`)}
-          titleAccess="Edit"
-        />
-        <DeleteIcon
-          cursor="pointer"
-          style={{ color: "red" }}
-          onClick={(e) => confirmBeforeDelete(e, params.row)}
-          titleAccess="Delete"
-        />
-      </>
-    ),
-  },
-];
+    },
+  ];
 
-useEffect(() => {
-  setLoading(true);
-  httpClient
-    .get(`admin/get-press`)
-    .then((res) => {
-      setUserCount(res.data.data.length);
-      setLoading(false);
-      setRows(
-        res.data.data.map((user, index) => ({
-          id: user._id,
-          col1: paginationModel.page * paginationModel.pageSize + (index + 1),
-          col2: user.title || "N/A",
-          col3: user.press_banner || "N/A",
-          col4: user.link || "N/A",
-          col5: user.createdAt
-            ? new Date(user.createdAt).toLocaleDateString()
-            : "N/A",
-          col6: user.updatedAt
-            ? new Date(user.updatedAt).toLocaleDateString()
-            : "N/A",
-        }))
-      );
-      setStatus("");
-    })
-    .catch((error) => {
-      setLoading(false);
-      console.error(error);
-    });
-}, [paginationModel, alertMessage, status, keyword]);
-
+  useEffect(() => {
+    setLoading(true);
+    httpClient
+      .get(`admin/get-press`)
+      .then((res) => {
+        setUserCount(res.data.data.length);
+        setLoading(false);
+        setRows(
+          res.data.data.map((user, index) => ({
+            id: user._id,
+            col1: paginationModel.page * paginationModel.pageSize + (index + 1),
+            col2: user.title || "N/A",
+            col3: user.press_banner || "N/A",
+            col4: user.link || "N/A",
+            col5: user.createdAt
+              ? new Date(user.createdAt).toLocaleDateString()
+              : "N/A",
+            col6: user.updatedAt
+              ? new Date(user.updatedAt).toLocaleDateString()
+              : "N/A",
+          }))
+        );
+        setStatus("");
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.error(error);
+      });
+  }, [paginationModel, alertMessage, status, keyword]);
 
   //handle get confirmation before delete user
   const confirmBeforeDelete = (e, params) => {
@@ -159,7 +158,7 @@ useEffect(() => {
   const deleteSingleUser = (e, params) => {
     const groupId = params.id;
     httpClient
-      .delete(`delete-press/${groupId}`)
+      .delete(`admin/delete-press/${groupId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);

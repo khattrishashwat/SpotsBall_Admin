@@ -12,6 +12,7 @@ const AddBanner = () => {
   const [subTitle, setSubTitle] = useState("");
   const [bannerImages, setBannerImages] = useState(null);
   const [courusal, setCourusal] = useState("");
+  const [courusalInput, setCourusalInput] = useState(""); // Temporary state for carousel title input
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -20,7 +21,14 @@ const AddBanner = () => {
   const handleTitleChange = (e) => setTitle(e.target.value);
   const handleSubtitleChange = (e) => setSubTitle(e.target.value);
   const handleImageChange = (e) => setBannerImages(e.target.files[0]);
-  const handleCourusalChange = (e) => setCourusal(e.target.value);
+  const handleCourusalInputChange = (e) => setCourusalInput(e.target.value);
+
+  const handleAddCourusal = () => {
+    if (courusalInput.trim()) {
+      setCourusal([...courusal, courusalInput]);
+      setCourusalInput("");
+    }
+  };
 
   const handleSubmit = () => {
     setIsLoading(true);
@@ -28,7 +36,7 @@ const AddBanner = () => {
     formData.append("title", title);
     formData.append("subTitle", subTitle);
     formData.append("bannerImage", bannerImages);
-    formData.append("courusal", courusal);
+    formData.append("courusal", JSON.stringify(courusal));
 
     AddBannerToDB(formData);
   };
@@ -99,13 +107,34 @@ const AddBanner = () => {
             />
             <label className="mt-4">Carousel Title</label>
             <TextField
-              value={courusal}
-              onChange={handleCourusalChange}
+              value={courusalInput}
+              onChange={handleCourusalInputChange}
               fullWidth
               margin="normal"
               placeholder="Enter carousel title"
               sx={{ border: "none" }}
             />
+
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mt: 2, backgroundColor: "orange" }}
+              onClick={handleAddCourusal}
+            >
+              Add Carousel
+            </Button>
+
+            {/* Display Carousel Titles */}
+            <Box sx={{ mt: 2 }}>
+              {courusal.length > 0 && (
+                <ul>
+                  {courusal.map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
+                </ul>
+              )}
+            </Box>
+
             <Button
               variant="contained"
               color="primary"

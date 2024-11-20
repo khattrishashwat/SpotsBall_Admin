@@ -25,8 +25,8 @@ const EditBanner = () => {
 
   const handleAddCourusal = () => {
     if (courusalInput.trim()) {
-      setCourusal([...courusal, courusalInput]); // Add to the carousel list
-      setCourusalInput(""); // Clear the input field
+      setCourusal([...courusal, courusalInput]); 
+      setCourusalInput(""); 
     }
   };
 
@@ -38,13 +38,16 @@ const EditBanner = () => {
    formData.append("banner", bannerImages);
     formData.append("courusal", JSON.stringify(courusal)); // Send carousel data as JSON
 
+    console.log("formData", formData);
     updateBannerInDB(formData);
+    console.log("updateBannerInDB", updateBannerInDB);
+    
   };
 
   const updateBannerInDB = (formData) => {
     httpClient
-      .put(`/admin/update-banner/${params.id}`, formData)
-      .then((res) => res.data)
+      .put(`/admin/edit-bannerr/${params.id}`, formData)
+      .then((res) => res.data.data)
       .then((data) => {
         if (data.status) {
           setIsLoading(false);
@@ -144,7 +147,7 @@ const EditBanner = () => {
               sx={{ mt: 2, backgroundColor: "orange" }}
               onClick={handleAddCourusal}
             >
-              Add Carousel Title
+              Add Carousel
             </Button>
 
             {/* Display Carousel Titles */}

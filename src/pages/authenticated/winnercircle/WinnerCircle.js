@@ -88,23 +88,25 @@ const WinnerCircle = () => {
       width: 180,
     },
     {
-      field: "col9",
+      field: "col8",
       headerName: "Status",
       width: 150,
       renderCell: (params) => (
-        <span>{params.formattedValue ? "Active" : "Inactive"}</span>
+        <span>{params.formattedValue === true ? "Active" : "Inactive"}</span>
+      ),
+    },
+    {
+      field: "col9",
+      headerName: "Winner Calculated",
+      width: 180,
+      renderCell: (params) => (
+        <span>
+          {params.formattedValue === true ? "Calculated" : "Not Calculated"}
+        </span>
       ),
     },
     {
       field: "col10",
-      headerName: "Winner Calculated",
-      width: 180,
-      renderCell: (params) => (
-        <span>{params.formattedValue ? "Calculated" : "Not Calculated"}</span>
-      ),
-    },
-    {
-      field: "col8",
       headerName: "Action",
       width: 200,
       renderCell: (params) => (
@@ -183,12 +185,15 @@ const WinnerCircle = () => {
                 paginationModel.page * paginationModel.pageSize + (index + 1),
               col2: contest._id || "N/A",
               col3: contest.contest_banner?.file_url || "N/A", // Contest image URL
-              col4: contest.jackpot_price || "N/A", // Jackpot Price
+              col4: contest.ticket_price || "N/A", // Jackpot Price
               col5: contest.maxTickets || "N/A", // Max Ticket
               col6: contestData.userParticipated || "N/A", // Number of users who participated
               col7: contest.contest_end_date
                 ? contest.contest_end_date.substring(0, 10)
                 : "N/A", // Contest End Date
+
+              col8: contest.is_active || "N/A", // Number of users who participated
+              col9: contest.isWinnerCalculated || "N/A", // Number of users who participated
             };
           })
         );

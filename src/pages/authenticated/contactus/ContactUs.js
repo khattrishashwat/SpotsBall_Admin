@@ -5,7 +5,16 @@ import { CCol, CContainer } from "@coreui/react";
 import PageTitle from "../../common/PageTitle";
 import { DataGrid } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { IconButton, Snackbar, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button } from "@mui/material";
+import {
+  IconButton,
+  Snackbar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
+  Button,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import httpClient from "../../../util/HttpClient";
 import swal from "sweetalert2";
@@ -40,10 +49,10 @@ const ContactUs = () => {
   const columns = [
     { field: "col1", headerName: "#", width: 100 },
     { field: "col2", headerName: "User", width: 250 },
-    { field: "col3", headerName: "Contacted For", width: 250 },
-    { field: "col4", headerName: "Description", width: 350 },
-    { field: "col5", headerName: "Email", width: 250 },
-    { field: "col6", headerName: "Phone Number", width: 250 },
+    { field: "col3", headerName: "Phone Number", width: 250 },
+    { field: "col4", headerName: "Email", width: 350 },
+    { field: "col5", headerName: "Subject", width: 250 },
+    { field: "col6", headerName: "Message", width: 250 },
     {
       field: "col7",
       headerName: "Created At",
@@ -99,7 +108,7 @@ const ContactUs = () => {
 
   const deleteSingleUser = useCallback((userId) => {
     httpClient
-      .delete(`/admin//contacts/${userId}`)
+      .delete(`api/v1/admin/contact-us/${userId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiStatus({ success: true, error: false });
@@ -119,22 +128,21 @@ const ContactUs = () => {
     setLoading(true);
 
     httpClient
-      .get(`/admin/contacts`)
+      .get(`api/v1/admin/contact-us`)
       .then((res) => {
         console.log(res);
-        setUserCount(res.data?.result?.count);
+        setUserCount(res.data.data.length); // Update user count
         setLoading(false);
         setRows(
-          res.data?.result?.docs?.map((doc, index) => ({
+          res.data.data.map((doc, index) => ({
             id: doc._id,
             col1: paginationModel.page * paginationModel.pageSize + (index + 1),
-            col2: doc.user_id.username || "N/A",
-            col3: doc.contactFor || "N/A",
-            col4: doc.message || "N/A",
-            col5: doc?.user_id?.email || "N/A",
-            col6: doc?.user_id?.phone || "N/A",
-            col7: doc.created_at.substring(0, 10),
-            col8: doc.created_at.substring(0, 10),
+            col2: `${doc.first_name || "N/A"} ${doc.last_name || ""}`.trim(),
+            col3: doc.phone || "N/A",
+            col4: doc.email || "N/A",
+            col5: doc.subject || "N/A",
+            col6: doc.message || "N/A",
+            col7: doc.createdAt.substring(0, 10),
           }))
         );
       })
@@ -278,7 +286,7 @@ const ContactUs = () => {
               InputLabelProps={{
                 sx: {
                   // fontSize: "18px", // Example: Set custom font size
-                  marginTop:"5px"
+                  marginTop: "5px",
                 },
               }}
             />
@@ -293,7 +301,7 @@ const ContactUs = () => {
               InputLabelProps={{
                 sx: {
                   // fontSize: "18px", // Example: Set custom font size
-                  marginTop:"5px"
+                  marginTop: "5px",
                 },
               }}
             />
@@ -310,7 +318,7 @@ const ContactUs = () => {
               InputLabelProps={{
                 sx: {
                   // fontSize: "18px", // Example: Set custom font size
-                  marginTop:"5px"
+                  marginTop: "5px",
                 },
               }}
             />
@@ -325,7 +333,7 @@ const ContactUs = () => {
               InputLabelProps={{
                 sx: {
                   // fontSize: "18px", // Example: Set custom font size
-                  marginTop:"5px"
+                  marginTop: "5px",
                 },
               }}
             />

@@ -33,13 +33,12 @@ const Register = () => {
   const initialValues = {
     name: "",
     email: "",
-    mobile: "",
+    
     password: "",
   };
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
     email: Yup.string().required("Email is required"),
-    mobile: Yup.number().required("Mobile is required"),
     password: Yup.string().required("Password is required"),
   });
   const handleShowPassword = () => {
@@ -57,7 +56,7 @@ const Register = () => {
   //storing new user data in database
   const register = async (userInfo) => {
     httpClient
-      .post("/register", userInfo)
+      .post("admin/sign-up", userInfo)
       .then((res) => {
         if (res.data && res.data.success) {
           setApiSuccess(true);
@@ -157,28 +156,7 @@ const Register = () => {
                           </div>
                         )}
                       </CInputGroup>
-                      <CInputGroup className="mb-3">
-                        <CInputGroupText>
-                          <span>
-                            <i className="bi bi-phone"></i>
-                          </span>
-                        </CInputGroupText>
-                        <CFormInput
-                          placeholder="Mobile"
-                          type="Number"
-                          name="mobile"
-                          id="mobile"
-                          onChange={loginForm.handleChange}
-                          value={loginForm.values.mobile}
-                          onClick={() => setOpenSnakeBar(false)}
-                        />
-                        {loginForm.errors.mobile &&
-                          loginForm.touched.mobile && (
-                            <div className="invalid-feedback">
-                              {loginForm.errors.mobile}
-                            </div>
-                          )}
-                      </CInputGroup>
+                      
                       <CInputGroup className="mb-4">
                         <CInputGroupText>
                           <span role="button" onClick={handleShowPassword}>

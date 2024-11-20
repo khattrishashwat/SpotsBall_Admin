@@ -3,11 +3,17 @@ import { Box, Button, Container, TextField } from "@mui/material";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import httpClient from "../../../util/HttpClient";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Loader from "../../../components/loader/Loader";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Swal from "sweetalert2";
+
 
 const AddContest = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { x, y } = location.state || {};
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [contestBanner, setContestBanner] = useState(null);
@@ -24,10 +30,14 @@ const AddContest = () => {
   const [gstRate, setGstRate] = useState("");
   const [platformFeeRate, setPlatformFeeRate] = useState("");
   const [gstOnPlatformFeeRate, setGstOnPlatformFeeRate] = useState("");
-  const [winningCoordinates, setWinningCoordinates] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+
+  // Create the initial state for winningCoordinates
+  const initialCoordinates = x && y ? `{"x": ${x}, "y": ${y}}` : "";
+
+  const [winningCoordinates, setWinningCoordinates] =
+    useState(initialCoordinates);
 
   const handleSubmit = () => {
     setIsLoading(true);
@@ -45,32 +55,49 @@ const AddContest = () => {
     formData.append("winning_coordinates", winningCoordinates);
     formData.append("image_width", imageWidth);
     formData.append("image_height", imageHeight);
-    formData.append("max_tickets", maxTickets);
-    formData.append("quantities[0]", quantities[0]);
-    formData.append("quantities[1]", quantities[1]);
-    formData.append("quantities[2]", quantities[2]);
-    formData.append("gst_rate", gstRate);
-    formData.append("platform_fee_rate", platformFeeRate);
-    formData.append("gst_on_platform_fee_rate", gstOnPlatformFeeRate);
+    formData.append("maxTickets", maxTickets);
+    quantities.forEach((quantity, index) =>
+      formData.append(`quantities[${index}]`, quantity)
+    );
+
+    formData.append("gstRate", gstRate);
+    formData.append("platformFeeRate", platformFeeRate);
+    formData.append("gstOnPlatformFeeRate", gstOnPlatformFeeRate);
 
     AddContestToDB(formData);
   };
 
-  const AddContestToDB = (groupData) => {
-    httpClient
-      .post(`admin/add-contest`, groupData)
-      .then((res) => res.data)
-      .then((data) => {
-        if (data.status) {
-          setIsLoading(false);
-          navigate(-1);
-        }
-      })
-      .catch((err) => {
+const AddContestToDB = (groupData) => {
+  setIsLoading(true);
+  httpClient
+    .post(`admin/add-contest`, groupData)
+    .then((res) => {
+      if (res.status) {
         setIsLoading(false);
-        console.log("error => ", err);
+        // Show success pop-up
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: res.data.message, // Display message from response
+        }).then(() => {
+          // Navigate to /contest_management after closing the pop-up
+          navigate("/contest_management");
+        });
+      }
+    })
+    .catch((err) => {
+      setIsLoading(false);
+      console.log("error => ", err);
+      // Show error pop-up with the message from the API response
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text:
+          err.response?.data?.message,
       });
-  };
+    });
+};
+
 
   const handlePlayerImageChange = (e) => {
     const file = e.target.files[0];
@@ -97,39 +124,30 @@ const AddContest = () => {
   //   img.src = URL.createObjectURL(file);
   // };
 
-  const handleOriginalPlayerImageChange = (e) => {
-    const file = e.target.files[0];
-    setOriginalPlayerImage(file);
+  // const handleOriginalPlayerImageChange = (e) => {
+  //   const file = e.target.files[0];
+  //   setOriginalPlayerImage(file);
 
-    const img = new Image();
-    img.onload = () => {
-      setImageWidth(img.width);
-      setImageHeight(img.height);
+  //   const img = new Image();
+  //   img.onload = () => {
+  //     setImageWidth(img.width);
+  //     setImageHeight(img.height);
 
-      // Convert image to Data URI
-      const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0);
+  //     // Convert image to Data URI
+  //     const canvas = document.createElement("canvas");
+  //     canvas.width = img.width;
+  //     canvas.height = img.height;
+  //     const ctx = canvas.getContext("2d");
+  //     ctx.drawImage(img, 0, 0);
 
-      // Get Data URI and pass it via navigate
-      const dataUri = canvas.toDataURL("image/png");
-      navigate("find-coordinates", {
-        state: { imageDataUri: dataUri, width: img.width, height: img.height },
-      });
-    };
-    img.src = URL.createObjectURL(file);
-  };
-
-  const handleFindCoordinatesReturn = (coordinates) => {
-    // Assuming coordinates is an object with x and y properties
-    const formattedCoordinates = JSON.stringify({
-      x: coordinates.x,
-      y: coordinates.y,
-    });
-    setWinningCoordinates(formattedCoordinates);
-  };
+  //     // Get Data URI and pass it via navigate
+  //     const dataUri = canvas.toDataURL("image/png");
+  //     navigate("find-coordinates", {
+  //       state: { imageDataUri: dataUri, width: img.width, height: img.height },
+  //     });
+  //   };
+  //   img.src = URL.createObjectURL(file);
+  // };
 
   return (
     <>
@@ -147,7 +165,7 @@ const AddContest = () => {
           <ArrowBackIcon />
           back
         </Button>
-        {/* <Button
+        <Button
           variant="contained"
           color="primary"
           sx={{ mt: 2, ml: 2 }}
@@ -156,7 +174,7 @@ const AddContest = () => {
           }}
         >
           Find Coordinates
-        </Button> */}
+        </Button>
         <Container maxWidth="sm" className="d-flex justify-content-center">
           {isLoading && <Loader />}
           <Box
@@ -196,7 +214,8 @@ const AddContest = () => {
 
             <label>Original Player Image</label>
             <TextField
-              onChange={handleOriginalPlayerImageChange}
+              onChange={(e) => setOriginalPlayerImage(e.target.files[0])}
+              // onChange={handleOriginalPlayerImageChange}
               fullWidth
               margin="normal"
               variant="outlined"

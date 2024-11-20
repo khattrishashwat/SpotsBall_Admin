@@ -90,14 +90,6 @@ const Winners = () => {
       renderCell: (params) => {
         console.log(params); // Log the entire params object to see what it contains
         const coordinates = params.row.closestCoordinate;
-        if (coordinates && coordinates.x !== null && coordinates.y !== null) {
-          return (
-            <span>
-              X: {coordinates.x}, Y: {coordinates.y}
-            </span>
-          );
-        }
-        return <span>N/A</span>;
       },
     },
     {
@@ -112,12 +104,12 @@ const Winners = () => {
               style={{ color: "green" }}
               onClick={() => handleView(params.row)}
             />
-            <DeleteIcon
+            {/* <DeleteIcon
               className="ms-3"
               cursor={"pointer"}
               style={{ color: "red" }}
               onClick={(e) => confirmBeforeDelete(e, params.row)}
-            />
+            /> */}
           </>
         );
       },
@@ -196,7 +188,10 @@ const Winners = () => {
                 col4: doc?.contestId?._id || doc?.contestId?._id || "N/A", // Contest ID (adjust property name as needed)
                 col5: doc?.contestPaymentsId?.amount || "N/A", // Assuming price is in contestPaymentsId (adjust if needed)
                 col6: doc.createdAt ? doc.createdAt.substring(0, 10) : "N/A", // Created At column
-                col7: doc?.closestCoordinate || "N/A",
+                col7: doc?.closestCoordinate
+                  ? `x: ${doc.closestCoordinate.x}, y: ${doc.closestCoordinate.y}`
+                  : "N/A",
+
                 //  doc?.closestCoordinate ? (
                 //   <span>
                 //     X: {doc.closestCoordinate.x || "N/A"}, Y:{" "}

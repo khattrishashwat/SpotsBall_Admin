@@ -12,15 +12,15 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import DescriptionIcon from "@mui/icons-material/Description";
 import { useNavigate } from "react-router-dom";
 import Diversity1Icon from "@mui/icons-material/Diversity1";
-import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import QuizIcon from "@mui/icons-material/Quiz";
 import SourceIcon from "@mui/icons-material/Source";
 import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 
 const images = ["GroupsIcon"];
-
 
 function Card(props) {
   const [loading, setLoading] = useState(false);
@@ -39,8 +39,6 @@ function Card(props) {
   const handleToggle = () => {
     // navigate("/user");
   };
-
-
 
   return (
     <>
@@ -67,15 +65,17 @@ function Card(props) {
         </div>
 
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 pb-2">
-          <div className="card"  onClick={()=>navigate("/users")}>
-            <div className="card-header p-4 d-flex justify-content-between align-items-center" style={{ cursor: "pointer" }}>
+          <div className="card" onClick={() => navigate("/users")}>
+            <div
+              className="card-header p-4 d-flex justify-content-between align-items-center"
+              style={{ cursor: "pointer" }}
+            >
               <div>
                 <GroupsIcon className="fs-1 mt-2" style={{ color: "orange" }} />
               </div>
               <div
                 className="text-end pt-1 d-flex flex-column justify-content-center align-items-center"
                 // onClick={handleToggle}
-                
               >
                 <p
                   style={{
@@ -102,83 +102,7 @@ function Card(props) {
           </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div className="card" style={{height:"155px"}} onClick={()=>navigate("/subscription")}>
-            <div className="card-header p-4 d-flex justify-content-between align-items-center" style={{ cursor: "pointer" }}>
-              <div>
-                <SubscriptionsIcon
-                  className="fs-1 mt-2"
-                  style={{ color: "purple" }}
-                />
-              </div>
-              <div
-                className="text-end pt-1 d-flex flex-column justify-content-center align-items-center"
-                // onClick={handleToggle}
-                
-              >
-                <p
-                  style={{
-                    color: "black",
-                    fontWeight: "600",
-                    fontSize: "1.1rem",
-                  }}
-                  className="mb-0 text-capitalize"
-                >
-                  How to Play 
-                </p>
-                <h4 className="mb-0 mt-2">{props?.data?.UserSubscriptions}</h4>
-              </div>
-            </div>
-
-            <hr className="dark horizontal my-0" />
-            <div className="card-footer p-3">
-              <p className="mb-0">
-                <span className="text-success text-sm font-weight-bolder">
-                  {/* update */}
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div className="card" onClick={()=>navigate("/questions")}>
-            <div
-              className="card-header p-4 d-flex justify-content-between align-items-center"
-              // onClick={() => navigate("/category")}
-              style={{ cursor: "pointer" }}
-            >
-              <div className="">
-                <QuestionAnswerIcon
-                  className="fs-1 mt-2"
-                  style={{ color: "red" }}
-                />
-              </div>
-              <div className="text-end pt-1 d-flex flex-column justify-content-center align-items-center">
-                <p
-                  style={{
-                    color: "black",
-                    fontWeight: "500",
-                    fontSize: "1.2rem",
-                  }}
-                  className=" mb-0 text-capitalize "
-                >
-                  Questions
-                </p>
-                <h4 className="mb-0 mt-2">{props?.data?.Questions}</h4>
-              </div>
-            </div>
-
-            <hr className="dark horizontal my-0" />
-            <div className="card-footer p-3">
-              <p className="mb-0">
-                <span className="text-success text-sm font-weight-bolder"></span>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div className="card" onClick={()=>navigate("/groups")}>
+          <div className="card" onClick={() => navigate("/banner")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
@@ -199,7 +123,7 @@ function Card(props) {
                   }}
                   className=" mb-0 text-capitalize "
                 >
-                  Total Groups
+                  Banner Management
                 </p>
                 <h4 className="mb-0 mt-2">{props?.data?.Groups}</h4>
               </div>
@@ -215,7 +139,44 @@ function Card(props) {
         </div>
 
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div className="card" onClick={()=>navigate("/content")}>
+          <div className="card" onClick={() => navigate("/contest_management")}>
+            <div
+              className="card-header p-4 d-flex justify-content-between align-items-center"
+              // onClick={() => navigate("/category")}
+              style={{ cursor: "pointer" }}
+            >
+              <div className="">
+                <EmojiEventsIcon
+                  className="fs-1 mt-2"
+                  style={{ color: "red" }}
+                />
+              </div>
+              <div className="text-end pt-1 d-flex flex-column justify-content-center align-items-center">
+                <p
+                  style={{
+                    color: "black",
+                    fontWeight: "500",
+                    fontSize: "1.2rem",
+                  }}
+                  className=" mb-0 text-capitalize "
+                >
+                  Contest Management
+                </p>
+                <h4 className="mb-0 mt-2">{props?.data?.Questions}</h4>
+              </div>
+            </div>
+
+            <hr className="dark horizontal my-0" />
+            <div className="card-footer p-3">
+              <p className="mb-0">
+                <span className="text-success text-sm font-weight-bolder"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+          <div className="card" onClick={() => navigate("/content")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
@@ -248,40 +209,7 @@ function Card(props) {
           </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div className="card" onClick={()=>navigate("/feedbacks")}>
-            <div
-              className="card-header p-4 d-flex justify-content-between align-items-center"
-              // onClick={() => navigate("/category")}
-              style={{ cursor: "pointer" }}
-            >
-              <div className="">
-                <FeedbackIcon className="fs-1 mt-2" style={{ color: "gold" }} />
-              </div>
-              <div className="text-end pt-1 d-flex flex-column justify-content-center align-items-center">
-                <p
-                  style={{
-                    color: "black",
-                    fontWeight: "500",
-                    fontSize: "1.2rem",
-                  }}
-                  className=" mb-0 text-capitalize "
-                >
-                  Feedbacks
-                </p>
-                <h4 className="mb-0 mt-2">{props?.data?.Feedbacks}</h4>
-              </div>
-            </div>
-
-            <hr className="dark horizontal my-0" />
-            <div className="card-footer p-3">
-              <p className="mb-0">
-                <span className="text-success text-sm font-weight-bolder"></span>
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div className="card" onClick={()=>navigate("/faqs")}>
+          <div className="card" onClick={() => navigate("/faqs")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
@@ -314,14 +242,92 @@ function Card(props) {
           </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div className="card" onClick={()=>navigate("/contacts")}>
+          <div
+            className="card"
+            style={{ height: "155px" }}
+            onClick={() => navigate("/how_to_play")}
+          >
+            <div
+              className="card-header p-4 d-flex justify-content-between align-items-center"
+              style={{ cursor: "pointer" }}
+            >
+              <div>
+                <SubscriptionsIcon
+                  className="fs-1 mt-2"
+                  style={{ color: "purple" }}
+                />
+              </div>
+              <div
+                className="text-end pt-1 d-flex flex-column justify-content-center align-items-center"
+                // onClick={handleToggle}
+              >
+                <p
+                  style={{
+                    color: "black",
+                    fontWeight: "600",
+                    fontSize: "1.1rem",
+                  }}
+                  className="mb-0 text-capitalize"
+                >
+                  How to Play
+                </p>
+                <h4 className="mb-0 mt-2">{props?.data?.UserSubscriptions}</h4>
+              </div>
+            </div>
+
+            <hr className="dark horizontal my-0" />
+            <div className="card-footer p-3">
+              <p className="mb-0">
+                <span className="text-success text-sm font-weight-bolder">
+                  {/* update */}
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+          <div className="card" onClick={() => navigate("/In_Press")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
               style={{ cursor: "pointer" }}
             >
               <div className="">
-                <ContactMailIcon
+                <FeedbackIcon className="fs-1 mt-2" style={{ color: "gold" }} />
+              </div>
+              <div className="text-end pt-1 d-flex flex-column justify-content-center align-items-center">
+                <p
+                  style={{
+                    color: "black",
+                    fontWeight: "500",
+                    fontSize: "1.2rem",
+                  }}
+                  className=" mb-0 text-capitalize "
+                >
+                  In Press
+                </p>
+                <h4 className="mb-0 mt-2">{props?.data?.Feedbacks}</h4>
+              </div>
+            </div>
+
+            <hr className="dark horizontal my-0" />
+            <div className="card-footer p-3">
+              <p className="mb-0">
+                <span className="text-success text-sm font-weight-bolder"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+          <div className="card" onClick={() => navigate("/payment")}>
+            <div
+              className="card-header p-4 d-flex justify-content-between align-items-center"
+              // onClick={() => navigate("/category")}
+              style={{ cursor: "pointer" }}
+            >
+              <div className="">
+                <MonetizationOnIcon
                   className="fs-1 mt-2"
                   style={{ color: "green" }}
                 />
@@ -335,7 +341,7 @@ function Card(props) {
                   }}
                   className=" mb-0 text-capitalize "
                 >
-                  Contact Us
+                  Payments
                 </p>
                 <h4 className="mb-0 mt-2">{props?.data?.ContactUs}</h4>
               </div>
@@ -350,16 +356,16 @@ function Card(props) {
           </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div className="card" onClick={()=>navigate("/contacts")}>
+          <div className="card" onClick={() => navigate("/promo_codes")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
               style={{ cursor: "pointer" }}
             >
               <div className="">
-                <ContactMailIcon
+                <LocalOfferIcon
                   className="fs-1 mt-2"
-                  style={{ color: "green" }}
+                  style={{ color: "orange" }}
                 />
               </div>
               <div className="text-end pt-1 d-flex flex-column justify-content-center align-items-center">
@@ -371,7 +377,7 @@ function Card(props) {
                   }}
                   className=" mb-0 text-capitalize "
                 >
-                  Contact Us
+                  Promo Codes
                 </p>
                 <h4 className="mb-0 mt-2">{props?.data?.ContactUs}</h4>
               </div>
@@ -386,14 +392,14 @@ function Card(props) {
           </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div className="card" onClick={()=>navigate("/contacts")}>
+          <div className="card" onClick={() => navigate("/winners_circle")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
               style={{ cursor: "pointer" }}
             >
               <div className="">
-                <ContactMailIcon
+                <EmojiEventsIcon
                   className="fs-1 mt-2"
                   style={{ color: "green" }}
                 />
@@ -407,7 +413,7 @@ function Card(props) {
                   }}
                   className=" mb-0 text-capitalize "
                 >
-                  Contact Us
+                  Contest Win Circle
                 </p>
                 <h4 className="mb-0 mt-2">{props?.data?.ContactUs}</h4>
               </div>
@@ -422,7 +428,43 @@ function Card(props) {
           </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div className="card" onClick={()=>navigate("/contacts")}>
+          <div className="card" onClick={() => navigate("/winner")}>
+            <div
+              className="card-header p-4 d-flex justify-content-between align-items-center"
+              // onClick={() => navigate("/category")}
+              style={{ cursor: "pointer" }}
+            >
+              <div className="">
+                <EmojiEventsIcon
+                  className="fs-1 mt-2"
+                  style={{ color: "Cherry" }}
+                />
+              </div>
+              <div className="text-end pt-1 d-flex flex-column justify-content-center align-items-center">
+                <p
+                  style={{
+                    color: "black",
+                    fontWeight: "500",
+                    fontSize: "1.2rem",
+                  }}
+                  className=" mb-0 text-capitalize "
+                >
+                  Winner
+                </p>
+                <h4 className="mb-0 mt-2">{props?.data?.ContactUs}</h4>
+              </div>
+            </div>
+
+            <hr className="dark horizontal my-0" />
+            <div className="card-footer p-3">
+              <p className="mb-0">
+                <span className="text-success text-sm font-weight-bolder"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+          <div className="card" onClick={() => navigate("/contacts")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
@@ -431,7 +473,7 @@ function Card(props) {
               <div className="">
                 <ContactMailIcon
                   className="fs-1 mt-2"
-                  style={{ color: "green" }}
+                  style={{ color: "voilet" }}
                 />
               </div>
               <div className="text-end pt-1 d-flex flex-column justify-content-center align-items-center">

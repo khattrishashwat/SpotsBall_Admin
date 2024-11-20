@@ -14,184 +14,99 @@ import {
   CInputGroupText,
   CRow,
 } from "@coreui/react";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import PageTitle from "../common/PageTitle";
 import { useFormik } from "formik";
-import axios from "axios";
-import { IconButton, Snackbar } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import httpClient from "../../util/HttpClient";
 import Loader from "../../components/loader/Loader";
 
 const Reset = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [apiSuccess, setApiSuccess] = useState(false);
-  const [apiError, setApiError] = useState(false);
-  const [openSnakeBar, setOpenSnakeBar] = useState(false);
   const navigate = useNavigate();
-  const [opacity, setOpacity] = useState(1);
-  const [pointerEvents, setPointerEvents] = useState("");
 
   const initialValues = {
-    resetOTP: "",
+    email: localStorage.getItem("email") || "",
     new_password: "",
+    confirm_password: "",
   };
+
   const validationSchema = Yup.object().shape({
-    resetOTP: Yup.string().required("OTP is required"),
+    email: Yup.string().email("Invalid email").required("Email is required"),
     new_password: Yup.string().required("New Password is required"),
+    confirm_password: Yup.string()
+      .oneOf([Yup.ref("new_password")], "Passwords must match")
+      .required("Confirm Password is required"),
   });
 
-  const handleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+  const handleShowPassword = () => setShowPassword(!showPassword);
+  const handleShowConfirmPassword = () =>
+    setShowConfirmPassword(!showConfirmPassword);
 
-  const loginForm = useFormik({
+  const formik = useFormik({
     initialValues,
     validationSchema,
     onSubmit: (values) => {
-      setPointerEvents("none");
-      setOpacity(0.3);
-      resetPassword(values);
       setLoading(true);
+      resetPassword(values);
     },
   });
 
   const resetPassword = (values) => {
     httpClient
-      .put("/password/reset", values)
+      .post("admin/reset-password", values)
       .then((res) => {
-        if (res.data && res.data.success) {
-          setLoading(false);
-          setPointerEvents("");
-          setOpacity(1);
-          setAlertMessage("Password Reset Successfully");
-          setApiSuccess(true);
-          setApiError(false);
-          setOpenSnakeBar(true);
-          window.localStorage.removeItem("email");
+        setLoading(false);
+        if (res.data?.success) {
+          alert("Password reset successful");
+          localStorage.removeItem("email");
           navigate("/auth/login");
         }
       })
       .catch((error) => {
         setLoading(false);
-        setPointerEvents("");
-        setOpacity(1);
-        setApiError(true);
-        setApiSuccess(false);
-        setOpenSnakeBar(true);
-        if (error.response && error.response.data) {
-          setAlertMessage(error.response.data.message);
-        }
-        setAlertMessage("Something went wrong!");
-      });
-  };
-
-  const resendOTP = () => {
-    setPointerEvents("none");
-    setOpacity(0.3);
-    setLoading(true);
-    // sendOTP();
-    console.log(opacity, pointerEvents);
-  };
-
-  const sendOTP = () => {
-    setPointerEvents("none");
-    setOpacity(0.3);
-    setLoading(true);
-    const email = JSON.parse(window.localStorage.getItem("email"));
-    httpClient
-      .post("/password/forgot", email)
-      .then((res) => {
-        if (res.data.success) {
-          setLoading(false);
-          setPointerEvents("");
-          setOpacity(1);
-          setAlertMessage("OTP sent to Your Email");
-          setApiSuccess(true);
-          setApiError(false);
-          setOpenSnakeBar(true);
-        }
-      })
-      .catch((error) => {
-        setLoading(false);
-        setPointerEvents("");
-        setOpacity(1);
-        setAlertMessage(error.response.data.message);
-        setApiError(true);
-        setApiSuccess(false);
-        setOpenSnakeBar(true);
+        alert(
+          error.response?.data?.message ||
+            "An error occurred. Please try again."
+        );
       });
   };
 
   return (
     <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
-      <PageTitle title={"Reset Password"} />
       {loading && <Loader />}
-      <CContainer
-        style={{ opacity: `${opacity}`, pointerEvents: `${pointerEvents}` }}
-      >
+      <CContainer>
         <CRow className="justify-content-center">
           <CCol md={6}>
             <CCardGroup>
               <CCard className="p-4">
                 <CCardBody>
-                  <Snackbar
-                    open={openSnakeBar}
-                    autoHideDuration={1000}
-                    message={alertMessage}
-                    color="red"
-                    ContentProps={{
-                      sx: apiSuccess
-                        ? { background: "green" }
-                        : { backgroundColor: "red" },
-                    }}
-                    anchorOrigin={{
-                      horizontal: "right",
-                      vertical: "bottom",
-                    }}
-                    action={
-                      <React.Fragment>
-                        <IconButton
-                          aria-label="close"
-                          color="inherit"
-                          sx={{ p: 0.5 }}
-                          onClick={() => setOpenSnakeBar(false)}
-                        >
-                          <CloseIcon />
-                        </IconButton>
-                      </React.Fragment>
-                    }
-                  />
-                  <CForm onSubmit={loginForm.handleSubmit}>
+                  <CForm onSubmit={formik.handleSubmit}>
                     <h1>Reset Password</h1>
                     <p className="text-medium-emphasis">
                       Enter details to reset your password
                     </p>
+                    {/* Email Field */}
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
-                        <span>
-                          <i className="bi bi-envelope"></i>
-                        </span>
+                        <i className="bi bi-envelope"></i>
                       </CInputGroupText>
                       <CFormInput
-                        // type="Number"
-                        name="resetOTP"
-                        id="resetOTP"
-                        placeholder="OTP"
-                        onChange={loginForm.handleChange}
-                        value={loginForm.values.resetOTP}
-                        onClick={() => setOpenSnakeBar(false)}
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        value={formik.values.email}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
                       />
-                      {loginForm.errors.resetOTP &&
-                        loginForm.touched.resetOTP && (
-                          <div className="invalid-feedback">
-                            {loginForm.errors.resetOTP}
-                          </div>
-                        )}
                     </CInputGroup>
-                    <CInputGroup className="mb-4">
+                    {formik.errors.email && formik.touched.email && (
+                      <div className="invalid-feedback d-block">
+                        {formik.errors.email}
+                      </div>
+                    )}
+
+                    {/* New Password Field */}
+                    <CInputGroup className="mb-3">
                       <CInputGroupText>
                         <span role="button" onClick={handleShowPassword}>
                           <i
@@ -204,28 +119,52 @@ const Reset = () => {
                       <CFormInput
                         type={showPassword ? "text" : "password"}
                         name="new_password"
-                        id="new_password"
                         placeholder="New Password"
-                        onChange={loginForm.handleChange}
-                        value={loginForm.values.new_password}
-                        onClick={() => setOpenSnakeBar(false)}
+                        value={formik.values.new_password}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
                       />
-                      {loginForm.errors.new_password &&
-                        loginForm.touched.new_password && (
-                          <div className="invalid-feedback">
-                            {loginForm.errors.new_password}
-                          </div>
-                        )}
                     </CInputGroup>
+                    {formik.errors.new_password &&
+                      formik.touched.new_password && (
+                        <div className="invalid-feedback d-block">
+                          {formik.errors.new_password}
+                        </div>
+                      )}
+
+                    {/* Confirm Password Field */}
+                    <CInputGroup className="mb-3">
+                      <CInputGroupText>
+                        <span role="button" onClick={handleShowConfirmPassword}>
+                          <i
+                            className={
+                              showConfirmPassword
+                                ? "bi bi-eye"
+                                : "bi bi-eye-slash"
+                            }
+                          ></i>
+                        </span>
+                      </CInputGroupText>
+                      <CFormInput
+                        type={showConfirmPassword ? "text" : "password"}
+                        name="confirm_password"
+                        placeholder="Confirm Password"
+                        value={formik.values.confirm_password}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                      />
+                    </CInputGroup>
+                    {formik.errors.confirm_password &&
+                      formik.touched.confirm_password && (
+                        <div className="invalid-feedback d-block">
+                          {formik.errors.confirm_password}
+                        </div>
+                      )}
+
                     <CRow>
                       <CCol xs={6}>
                         <CButton type="submit" color="primary" className="px-4">
                           Reset
-                        </CButton>
-                      </CCol>
-                      <CCol xs={6} className="text-right">
-                        <CButton color="link" onClick={sendOTP}>
-                          Resend OTP
                         </CButton>
                       </CCol>
                     </CRow>

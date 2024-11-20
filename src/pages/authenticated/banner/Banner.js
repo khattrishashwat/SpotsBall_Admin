@@ -157,7 +157,7 @@ const Banner = () => {
             <Button
               variant="contained"
               sx={{ backgroundColor: "orange" }}
-              onClick={() => navigate("banner/add-banner")}
+              onClick={() => navigate("add-banner")}
             >
               Add Banner
             </Button>

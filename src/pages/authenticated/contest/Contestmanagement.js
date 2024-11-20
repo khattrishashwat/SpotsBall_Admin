@@ -98,7 +98,7 @@ const ContestManagement = () => {
             cursor={"pointer"}
             style={{ color: "gold", marginRight: "20px" }}
             onClick={() =>
-              navigate(`contest_management/edit-contest/${params.row.id}`)
+              navigate(`edit-contest/${params.row.id}`)
             }
             titleAccess="Edit"
           />

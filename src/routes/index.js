@@ -2,6 +2,8 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import Protected from "./Protected";
 import GuestRoutes from "./GuestRoutes";
+import Payments from "../pages/authenticated/payment/Payments";
+import GetPayment from "../pages/authenticated/payment/GetPayment";
 
 // Lazy load components
 const NotFound = lazy(() => import("../pages/common/NotFound"));
@@ -194,9 +196,17 @@ const routes = createBrowserRouter(
           path: "content/edit-content/:id",
           element: LazyComponent(EditContent),
         },
+        // {
+        //   path: "questions/edit-question/:id",
+        //   element: LazyComponent(EditQuestions),
+        // },
         {
-          path: "questions/edit-question/:id",
-          element: LazyComponent(EditQuestions),
+          path: "payment",
+          element: LazyComponent(Payments),
+        },
+        {
+          path: "payment/payment-singlecontest/:id",
+          element: LazyComponent(GetPayment),
         },
         // FAQ routes
         {
@@ -224,10 +234,7 @@ const routes = createBrowserRouter(
           path: "winners_circle",
           element: LazyComponent(WinnerCircle),
         },
-        // {
-        //   path: "how_to_play/add-play",
-        //   element: LazyComponent(AddPlay),
-        // },
+
         {
           path: "winners_circle/match-winner/:id",
           element: LazyComponent(MatchWinner),
@@ -250,7 +257,7 @@ const routes = createBrowserRouter(
     },
   ],
   {
-    basename: "/admin-panel",
+    basename: "/spotsball/admin-panel",
   }
 );
 

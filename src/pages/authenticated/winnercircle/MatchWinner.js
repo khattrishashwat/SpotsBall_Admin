@@ -6,70 +6,109 @@ import httpClient from "../../../util/HttpClient";
 import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../../../components/loader/Loader";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Swal from "sweetalert2";
+import "./MatchWinner.css"; // External CSS for Swal styling
 
 const MatchWinner = () => {
   const [banner, setBanner] = useState(null); // For displaying original image
   const [winnerCoordinates, setWinnerCoordinates] = useState(""); // Winner coordinates field
-  const [userParticipated, setUserParticipated] = useState([]); // Participants list (or number of users)
+  const [userParticipated, setUserParticipated] = useState([]); // Participants list
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
   const params = useParams();
 
+  // Handle winner coordinates change
   const handleWinnerCoordinatesChange = (e) =>
     setWinnerCoordinates(e.target.value);
 
+  // Add match and calculate winner
   const handleAddMatch = () => {
     setIsLoading(true);
 
-    // const matchData = {
-    //   contest_id: params.id, // Use the contest ID from params
-    //   winnerCoordinates,
-    // };
-
-    // Use template literal to include params.id in the URL
     httpClient
       .post(`/api/v1/admin/contest/calculate-winner/${params.id}`)
-
       .then((res) => {
-        console.log("log", res);
+        setIsLoading(false);
 
         if (res.status) {
-          setIsLoading(false);
-          navigate("/winner"); // Replace with the target page on successful post
+          const winnerData = res.data.data[0]; // Assuming there's only one winner
+          showWinnerPopup(winnerData);
         }
       })
       .catch((err) => {
         setIsLoading(false);
-        console.error("error =>", err);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong. Please try again later.",
+        });
+        console.error("Error fetching winner:", err);
       });
   };
 
+  // Show the winner's details in a Swal popup
+  const showWinnerPopup = (winnerData) => {
+    Swal.fire({
+      title: `Congratulations, ${winnerData.userId.first_name}!`,
+      text: `You have won ₹${winnerData.prize}`,
+      imageUrl: winnerData.userId.profile_url,
+      imageWidth: 100,
+      imageHeight: 100,
+      imageAlt: "User Profile Image",
+      html: `
+    <div style="text-align: center;">
+      <h3>Prize: ₹${winnerData.prize}</h3>
+      <p><strong>User: </strong>${winnerData.userId.first_name} ${winnerData.userId.last_name}</p>
+      <p><strong>Email: </strong>${winnerData.userId.email}</p>
+      <p><strong>Phone: </strong>${winnerData.userId.phone}</p>
+    </div>
+  `,
+      confirmButtonText: "Ok",
+      showCloseButton: true,
+      customClass: {
+        popup: "custom-popup", // You can define custom styles here
+        animation: "animate__animated animate__fadeIn", // Optional animation
+      },
+      didOpen: () => {
+        const imageElement = document.querySelector(".swal2-popup img");
+
+        if (imageElement) {
+          imageElement.style.position = "relative";
+          imageElement.style.zIndex = "1";
+          imageElement.style.marginTop = "60px"; // Correct camelCase property
+          imageElement.style.borderRadius = "50%"; // Correct camelCase property
+        }
+      },
+    });
+  };
+
+  // Fetch contest details when component mounts
   useEffect(() => {
-    // Fetch data by contest ID
     httpClient
       .get(`api/v1/admin/contest/get-contest-details/${params.id}`)
-      .then((res) => res.data.data) // Access the entire response data directly
+      .then((res) => res.data.data)
       .then((result) => {
         setIsLoading(false);
 
         const contestData = result?.contest || {};
 
-        // Set the banner image URL
         setBanner(contestData.player_image?.file_url || "");
-
-        // Set the winner coordinates as a string (e.g., "1, 123")
-        const winnerCoords = contestData.winning_coordinates
-          ? `${contestData.winning_coordinates.x}, ${contestData.winning_coordinates.y}`
-          : "";
-        setWinnerCoordinates(winnerCoords);
-
-        // Set the number of users who participated (or an empty array if needed)
-        setUserParticipated(result?.usersParticipated || 0); // This can be a number, adjust if needed
+        setWinnerCoordinates(
+          contestData.winning_coordinates
+            ? `${contestData.winning_coordinates.x}, ${contestData.winning_coordinates.y}`
+            : ""
+        );
+        setUserParticipated(result?.usersParticipated || 0);
       })
       .catch((err) => {
-        console.error("axios error =>", err);
         setIsLoading(false);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to load contest details.",
+        });
+        console.error("Error fetching contest details:", err);
       });
   }, [params.id]);
 
@@ -85,17 +124,17 @@ const MatchWinner = () => {
           onClick={() => navigate(-1)}
         >
           <ArrowBackIcon />
-          back
+          Back
         </Button>
         <Container maxWidth="md" className="d-flex justify-content-center">
           {isLoading && <Loader />}
           {!isLoading && (
             <Box sx={{ display: "flex", mt: 4, width: "100%" }}>
-              {/* Left Section: Original Image and Winner Coordinates */}
+              {/* Left Section: Banner Image and Winner Coordinates */}
               <Box sx={{ width: "50%", pr: 2 }}>
                 {banner && (
                   <img
-                    src={banner} // Display the original banner image
+                    src={banner}
                     alt="Contest Banner"
                     style={{
                       width: "100%",
@@ -116,7 +155,7 @@ const MatchWinner = () => {
 
               {/* Right Section: List of Participated Users */}
               <Box sx={{ width: "50%", pl: 2 }}>
-                <Typography variant="h6">User Participated</Typography>
+                <Typography variant="h6">Users Participated</Typography>
                 {Array.isArray(userParticipated) &&
                 userParticipated.length > 0 ? (
                   <ul>
@@ -144,7 +183,7 @@ const MatchWinner = () => {
               onClick={handleAddMatch}
               disabled={isLoading}
             >
-              Add Match
+              Calculate Winner
             </Button>
           </Box>
         </Container>

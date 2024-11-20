@@ -77,7 +77,7 @@ const Content = () => {
               className="border-0 me-2"
               onClick={() => {
                 console.log("edit content ==> ", params.row);
-                navigate(`/content/edit-content/${params.row.id}`);
+                navigate(`/edit-content/${params.row.id}`);
               }}
             />
             <DeleteIcon
