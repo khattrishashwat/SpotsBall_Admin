@@ -16,7 +16,6 @@ import Loader from "../../../components/loader/Loader";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Button } from "@mui/material";
 
-
 const EditContent = () => {
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState("");
@@ -31,13 +30,13 @@ const EditContent = () => {
 
   useEffect(() => {
     httpClient
-      .get(`edit-static-content/${params.id}`)
-      .then((res) => res?.data?.result)
-      .then((result) => {
-        console.log("update content data => ", result);
+      .get(`admin/get-static-content-by-id/${params.id}`)
+      .then((res) => {
+        console.log("update content data => ", res.data.data);
         //  setData(result);
-        setContent(result.description);
-        setTitle(result.title);
+        setContent(res.data.data.description);
+        setTitle(res.data.data.title);
+        setType(res.data.data.title);
         setLoading(false);
       })
       .catch((err) => {
@@ -48,12 +47,12 @@ const EditContent = () => {
   const newContentData = {
     description: newContent,
     title: title,
-    type:type,
+    type: type,
   };
 
   const updateContent = (e) => {
     httpClient
-      .put(`edit-static-content/${params.id}`, newContentData)
+      .patch(`admin/edit-static-content/${params.id}`, newContentData)
       .then((res) => {
         setLoading(false);
         swal.fire({

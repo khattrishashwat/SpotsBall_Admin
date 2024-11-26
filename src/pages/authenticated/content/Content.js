@@ -80,11 +80,11 @@ const Content = () => {
                 navigate(`edit-content/${params.row.id}`);
               }}
             />
-            <DeleteIcon
+            {/* <DeleteIcon
               cursor={"pointer"}
               style={{ color: "red" }}
               onClick={(e) => confirmBeforeDelete(e, params.row)}
-            />
+            /> */}
           </>
         );
       },
@@ -172,7 +172,7 @@ const Content = () => {
         <CContainer>
           <div className="d-flex justify-content-between align-items-center">
             <h4 className="">Contents : </h4>
-            <Button
+            {/* <Button
               variant="contained"
               className="my-2"
               sx={{
@@ -183,7 +183,7 @@ const Content = () => {
               }}
             >
               Add Content
-            </Button>
+            </Button> */}
           </div>
           <div
             style={{

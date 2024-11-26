@@ -11,8 +11,9 @@ const EditBanner = () => {
   const [title, setTitle] = useState("");
   const [subTitle, setSubTitle] = useState("");
   const [bannerImages, setBannerImages] = useState(null);
-  const [courusal, setCourusal] = useState([]); // Carousel titles array
-  const [courusalInput, setCourusalInput] = useState(""); // Temporary state for carousel title input
+  const [bannerPreview, setBannerPreview] = useState(null); // For image preview
+  const [corousal, setCorousal] = useState([]);
+  const [courusalInput, setCourusalInput] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -20,12 +21,18 @@ const EditBanner = () => {
 
   const handleTitleChange = (e) => setTitle(e.target.value);
   const handleSubtitleChange = (e) => setSubTitle(e.target.value);
-  const handleImageChange = (e) => setBannerImages(e.target.files[0]);
-  const handleCourusalInputChange = (e) => setCourusalInput(e.target.value);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setBannerImages(file);
+    setBannerPreview(URL.createObjectURL(file)); // Create a preview URL
+  };
+
+  const handleCorousalInputChange = (e) => setCourusalInput(e.target.value);
 
   const handleAddCourusal = () => {
     if (courusalInput.trim()) {
-      setCourusal([...courusal, courusalInput]);
+      setCorousal([...corousal, courusalInput]);
       setCourusalInput("");
     }
   };
@@ -36,8 +43,8 @@ const EditBanner = () => {
     formData.append("title", title);
     formData.append("sub_title", subTitle);
     formData.append("banner", bannerImages);
-    courusal.forEach((item, index) => {
-      formData.append(`courusal[${index}]`, item);
+    corousal.forEach((item, index) => {
+      formData.append(`corousal[${index}]`, item);
     });
 
     updateBannerInDB(formData);
@@ -45,8 +52,8 @@ const EditBanner = () => {
 
   const updateBannerInDB = (formData) => {
     httpClient
-      .patch(`admin/edit-bannerr/${params.id}`, formData)
-      .then((res) => {
+      .patch(`admin/edit-banner/${params.id}`, formData)
+      .then(() => {
         setIsLoading(false);
         navigate(-1);
       })
@@ -61,13 +68,12 @@ const EditBanner = () => {
       .get(`admin/get-banner-by-id/${params.id}`)
       .then((res) => {
         const result = res.data.data;
-        console.log("result", result.sub_title);
 
         setIsLoading(false);
         setTitle(result.title);
         setSubTitle(result.sub_title);
-        setBannerImages(result.banner);
-        setCourusal(result.corousal || []);
+        setCorousal(result.corousal || []);
+        setBannerPreview(result.banner); // Use existing banner URL for preview
       })
       .catch((err) => {
         console.log("axios error => ", err);
@@ -122,19 +128,27 @@ const EditBanner = () => {
             {/* Banner Image */}
             <label className="mt-4">Banner Image</label>
             <TextField
-              value={bannerImages}
               onChange={handleImageChange}
               fullWidth
               margin="normal"
               variant="outlined"
               type="file"
             />
+            {bannerPreview && (
+              <Box sx={{ mt: 2 }}>
+                <img
+                  src={bannerPreview}
+                  alt="Banner Preview"
+                  style={{ width: "100%", borderRadius: "8px" }}
+                />
+              </Box>
+            )}
 
             {/* Carousel Titles */}
             <label className="mt-4">Carousel Titles</label>
             <TextField
               value={courusalInput}
-              onChange={handleCourusalInputChange}
+              onChange={handleCorousalInputChange}
               fullWidth
               margin="normal"
               placeholder="Enter carousel title"
@@ -151,9 +165,9 @@ const EditBanner = () => {
 
             {/* Display Carousel Titles */}
             <Box sx={{ mt: 2 }}>
-              {courusal.length > 0 && (
+              {corousal.length > 0 && (
                 <ul>
-                  {courusal.map((item, index) => (
+                  {corousal.map((item, index) => (
                     <li key={index}>{item}</li>
                   ))}
                 </ul>

@@ -10,8 +10,12 @@ import Diversity1Icon from "@mui/icons-material/Diversity1";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import InfoIcon from "@mui/icons-material/Info"; // For "Who We Are"
+import LinkIcon from "@mui/icons-material/Link"; // For "Social Link"
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import Logo from "./logo.png";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
 const _nav = [
   {
@@ -82,8 +86,8 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: "Promo Codes",
-    to: "/promo_codes",
+    name: "PromoCodes",
+    to: "/promocodes",
     icon: <LocalOfferIcon />,
   },
   {
@@ -97,6 +101,24 @@ const _nav = [
     name: "Winner",
     to: "/winner",
     icon: <EmojiEventsIcon />,
+  },
+  {
+    component: CNavItem,
+    name: "Who We Are",
+    to: "/who_we_are",
+    icon: <InfoIcon />,
+  },
+  {
+    component: CNavItem,
+    name: "Social Link",
+    to: "/social_links",
+    icon: <LinkIcon />,
+  },
+  {
+    component: CNavItem,
+    name: "Restricted Area",
+    to: "/restricted",
+    icon: <LockOutlinedIcon />,
   },
   {
     component: CNavItem,

@@ -44,10 +44,10 @@ const EditPlay = () => {
 
   const updatePlayInDB = (formData) => {
     httpClient
-      .patch(`edit-how-to-play/${params.id}`, formData)
-      .then(() => {
+      .patch(`admin/edit-how-to-play/${params.id}`, formData)
+      .then((res) => {
         setIsLoading(false);
-        navigate(-1); // Navigate back to the previous page
+        navigate(-1); 
       })
       .catch((err) => {
         setIsLoading(false);

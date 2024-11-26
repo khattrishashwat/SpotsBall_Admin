@@ -152,7 +152,7 @@ const Banner = () => {
         <PageTitle title="Banner" />
 
         <CContainer>
-          <div className="d-flex justify-content-between align-items-center">
+          {/* <div className="d-flex justify-content-between align-items-center">
             <h4>Banner Management:</h4>
             <Button
               variant="contained"
@@ -161,7 +161,7 @@ const Banner = () => {
             >
               Add Banner
             </Button>
-          </div>
+          </div> */}
           <div
             style={{
               height: "600px",

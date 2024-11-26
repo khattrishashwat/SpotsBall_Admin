@@ -125,22 +125,23 @@ const FindCoordinates = () => {
                     borderRadius: 8,
                   }}
                 />
-                {showTooltip && (
+                {showTooltip && imgRef.current && (
                   <Box
                     position="absolute"
-                    left={`${coordinates.x}px`}
-                    top={`${coordinates.y}px`}
-                    sx={{
-                      backgroundColor: "rgba(0, 0, 0, 0.7)",
-                      color: "white",
-                      px: 1,
-                      py: 0.5,
-                      borderRadius: 1,
-                      pointerEvents: "none",
-                      transform: "translate(-50%, -100%)",
-                      whiteSpace: "nowrap",
-                      fontSize: "12px",
-                    }}
+                    left={`${
+                      (coordinates.x / imgRef.current.naturalWidth) *
+                        imgRef.current.clientWidth +
+                      1
+                    }px`}
+                    top={`${
+                      (coordinates.y / imgRef.current.naturalHeight) *
+                        imgRef.current.clientHeight +
+                      1
+                    }px`}
+                    backgroundColor="rgba(0, 0, 0, 0.7)"
+                    color="#fff"
+                    pointerEvents="none"
+                    zIndex={10}
                   >
                     X: {coordinates.x}, Y: {coordinates.y}
                   </Box>

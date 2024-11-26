@@ -34,7 +34,7 @@ const UserData = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paginationModel, setPaginationModel] = useState({
-    page: 0,
+    page: 1,
     pageSize: 10,
   });
   // const [showImage, setShowImage] = useState(false);
@@ -165,7 +165,7 @@ const UserData = () => {
   const deleteSingleUser = (e, params) => {
     const userId = params.id;
     httpClient
-      .delete(`/admin/users/delete/${userId}`)
+      .delete(`admin/delete-user/${userId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);
@@ -186,14 +186,18 @@ const UserData = () => {
   //fetching user information
   useEffect(() => {
     setLoading(true);
+
     httpClient
-      .get(`admin/get-all-users`)
+      .get(
+        `admin/get-all-users?page=${paginationModel.page}&limit=${paginationModel.pageSize}&search=${keyword}`
+      )
       .then((res) => {
-        // const { count, docs } = res.data.data || {};
-        // setUserCount(count);
+        const data = res.data.data || {};
+        setUserCount(data.pagination?.totalUsers);
         setLoading(false);
-        const docs = res.data.data;
-        console.log("re", res.data.data);
+
+        const docs = data.users || [];
+        console.log("Fetched users:", docs);
 
         setRows(
           docs.map((user, index) => ({
@@ -214,7 +218,7 @@ const UserData = () => {
         setLoading(false);
         console.error("Error fetching users:", error);
       });
-  }, [paginationModel, alertMessage, status, keyword]);
+  }, [paginationModel]); // Update dependencies based on your actual needs
 
   const handleRecordPerPage = (e) => {
     setLoading(true);
@@ -226,18 +230,17 @@ const UserData = () => {
     setLoading(true);
     let searchValue = e.target.value.trim();
     //if search keyword length is less than 1, reset the user info
-    if (searchValue.length <= 0) {
-      setPaginationModel({ page: 0, pageSize: 10 });
+    if (searchValue.length <= 1) {
+      setPaginationModel({ page: 1, pageSize: 10 });
     }
 
     if (searchValue || searchValue === " ") {
       searchValue = searchValue.trim();
       // setSearch(searchValue);
-      httpClient
-        // .get(`/admin/users?keyword=${searchValue}&key=${filterMode}`)
-        .get(`get-all-users`)
+      httpClient`admin/get-all-users?page=${paginationModel.page}&limit=${paginationModel.pageSize}&search=${keyword}`
+        // .get(`get-all-users`)
         .then((res) => {
-          setUserCount(res.data.users.length);
+          setUserCount(res.data.data.pagination?.totalUsers);
           if (res.status === 200) {
             setLoading(false);
             setRows(
@@ -324,7 +327,7 @@ const UserData = () => {
                   outline="none"
                   title="Enter a Number"
                   cursor="pointer"
-                  min={0}
+                  min={1}
                   style={{
                     width: "45px",
                     outline: "none",

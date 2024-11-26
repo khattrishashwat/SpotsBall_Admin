@@ -37,14 +37,12 @@ const EditPress = () => {
 
   const updateGroupInDB = (groupData) => {
     httpClient
-      .patch(`/admin/update-group/${params.id}`, groupData)
-      .then((res) => res.data)
-      .then((data) => {
-        if (data.status) {
+      .patch(`admin/edit-press/${params.id}`, groupData)
+      .then((res) =>  {
           setIsLoading(false);
           navigate(-1);
         }
-      })
+      )
       .catch((err) => {
         setIsLoading(false);
         console.log("error => ", err);

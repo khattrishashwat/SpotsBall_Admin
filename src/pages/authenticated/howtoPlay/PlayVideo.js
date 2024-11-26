@@ -278,8 +278,8 @@ const PlayVideo = () => {
 
         <CContainer>
           <div className="d-flex justify-content-between align-items-center">
-            <h4 className="">ChatHub PlayVideo : </h4>
-            <Button
+            <h4 className="">How To Play Video : </h4>
+            {/* <Button
               variant="contained"
               className="my-2"
               sx={{
@@ -289,8 +289,8 @@ const PlayVideo = () => {
                 window.location.href = "how_to_play/add-play";
               }}
             >
-              Add Group
-            </Button>
+              Add Play
+            </Button> */}
           </div>
           <div
             style={{

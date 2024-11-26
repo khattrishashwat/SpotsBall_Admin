@@ -38,6 +38,7 @@ const EditContest = () => {
   const [winningCoordinates, setWinningCoordinates] =
     useState(initialCoordinates);
   console.log("initialCoordinates", winningCoordinates);
+  console.log("winningCoordinates", winningCoordinates);
 
   useEffect(() => {
     setIsLoading(true);
@@ -54,7 +55,9 @@ const EditContest = () => {
 
         setTitle(result.title || "");
         setDescription(result.description || "");
-     
+        setContestBanner(result.contest_banner?.file_url || "");
+        setPlayerImage(result.player_image?.file_url || "");
+        setOriginalPlayerImage(result.original_player_image?.file_url || "");
         setJackpotPrice(result.jackpot_price || "");
         setTicketPrice(result.ticket_price || "");
         setContestStartDate(formattedDate || "");
@@ -86,9 +89,22 @@ const EditContest = () => {
     formData.append("jackpot_price", jackpotPrice);
     formData.append("ticket_price", ticketPrice);
     formData.append("contest_start_date", contestStartDate);
-    formData.append("contest_end_date", contestEndDate);
+    // formData.append("contest_end_date", contestEndDate);
     formData.append("original_player_image", originalPlayerImage);
-    formData.append("winning_coordinates", winningCoordinates);
+
+    try {
+      const parsedCoordinates =
+        typeof winningCoordinates === "string"
+          ? JSON.parse(winningCoordinates) // Parse only if it's a string
+          : winningCoordinates; // Use directly if it's already an object
+      formData.append("winning_coordinates", JSON.stringify(parsedCoordinates)); // Always stringify for FormData
+    } catch (error) {
+      console.error("Invalid JSON format in winningCoordinates:", error);
+      Swal.fire("Error", "Winning coordinates are invalid", "error");
+      setIsLoading(false);
+      return; // Stop submission if invalid
+    }
+
     formData.append("image_width", imageWidth);
     formData.append("image_height", imageHeight);
     formData.append("maxTickets", maxTickets);
@@ -118,12 +134,17 @@ const EditContest = () => {
 
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0"); // months are 0-based
-    const year = date.getFullYear().toString().slice(-2); // get last two digits of the year
+    const year = date.getFullYear()
     const hours = String(date.getHours()).padStart(2, "0");
     const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0"); // Add seconds
 
-    return `${day}-${month}-${year} ${hours}:${minutes}`;
+    // return `${day}-${month}-${year}T${hours}:${minutes}:${seconds}`;
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
   };
+
+  console.log("playerImage", playerImage);
+  console.log("contesImage", contestBanner);
 
   return (
     <>
@@ -143,110 +164,234 @@ const EditContest = () => {
           {isLoading && <Loader />}
           <Box component="form" sx={{ mt: 4 }}>
             <Typography variant="h6">Edit Contest</Typography>
+
+            <label>Title</label>
             <TextField
-              label="Title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               fullWidth
               margin="normal"
             />
+
+            <label>Description</label>
             <TextField
-              label="Description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               fullWidth
               margin="normal"
             />
+
+            <div>
+              <label>Original Player Image</label>
+              <TextField
+                onChange={(e) => setOriginalPlayerImage(e.target.files[0])}
+                // onChange={handleOriginalPlayerImageChange}
+                fullWidth
+                margin="normal"
+                variant="outlined"
+                type="file"
+              />
+              {originalPlayerImage && (
+                <img
+                  src={originalPlayerImage}
+                  alt="Player Image Preview"
+                  style={{
+                    width: "100px",
+                    height: "auto",
+                    marginTop: "10px",
+                  }}
+                />
+              )}
+              {/* {originalPlayerImage && (
+                <a
+                  href={originalPlayerImage}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Original Player Image
+                </a>
+              )} */}
+            </div>
+            <div>
+              <label>Contest Banner</label>
+              <TextField
+                type="file"
+                // value={contestBanner}
+                onChange={(e) => setContestBanner(e.target.files[0])}
+                fullWidth
+                margin="normal"
+              />
+              {contestBanner && (
+                <img
+                  src={contestBanner}
+                  alt="Player Image Preview"
+                  style={{ width: "100px", height: "auto", marginTop: "10px" }}
+                />
+              )}
+              {/* {contestBanner && contestBanner.startsWith("http") && (
+                <a
+                  href={contestBanner}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Contest Image
+                </a>
+              )} */}
+            </div>
+
+            <div>
+              <label>Player Image</label>
+              <TextField
+                type="file"
+                // value={playerImage}
+                onChange={(e) => setPlayerImage(e.target.files[0])}
+                fullWidth
+                margin="normal"
+              />
+              {playerImage && (
+                <img
+                  src={playerImage}
+                  alt="Player Image Preview"
+                  style={{ width: "100px", height: "auto", marginTop: "10px" }}
+                />
+              )}
+              {/* {playerImage && playerImage.startsWith("http") && (
+                <a href={playerImage} target="_blank" rel="noopener noreferrer">
+                  View Player Image
+                </a>      
+              )} */}
+            </div>
+            <label>Jackpot Price</label>
             <TextField
-              type="file"
-              value={contestBanner}
-              onChange={(e) => setContestBanner(e.target.files[0])}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              type="file"
-              value={playerImage}
-              onChange={(e) => setPlayerImage(e.target.files[0])}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Jackpot Price"
               value={jackpotPrice}
               onChange={(e) => setJackpotPrice(e.target.value)}
               fullWidth
               margin="normal"
             />
+
+            <label>Ticket Price</label>
             <TextField
-              label="Ticket Price"
               value={ticketPrice}
               onChange={(e) => setTicketPrice(e.target.value)}
               fullWidth
               margin="normal"
             />
+
+            <label>Contest Start Date</label>
             <TextField
               type="datetime-local"
-              label="Contest Start Date"
               value={contestStartDate}
               onChange={(e) => setContestStartDate(e.target.value)}
               fullWidth
               margin="normal"
             />
+
+            {/* <label>Contest End Date</label>
             <TextField
               type="datetime-local"
-              label="Contest End Date"
               value={contestEndDate}
               onChange={(e) => setContestEndDate(e.target.value)}
               fullWidth
               margin="normal"
               // value={description}
-            />
+            /> */}
+
+            <label>Winning Coordinates</label>
             <TextField
-              label="Winning Coordinates"
               value={`{"x": ${winningCoordinates.x}, "y": ${winningCoordinates.y}}`}
+              // value={winningCoordinates}
               onChange={(e) => setWinningCoordinates(e.target.value)}
               fullWidth
               margin="normal"
               placeholder='{"x": , "y": }'
             />
+
+            <label>Image Width</label>
             <TextField
-              label="Image Width"
               value={imageWidth}
               onChange={(e) => setImageWidth(e.target.value)}
               fullWidth
               margin="normal"
             />
+
+            <label>Image Height</label>
             <TextField
-              label="Image Height"
               value={imageHeight}
               onChange={(e) => setImageHeight(e.target.value)}
               fullWidth
               margin="normal"
             />
+
+            <label>Max Tickets</label>
             <TextField
-              label="Max Tickets"
               value={maxTickets}
               onChange={(e) => setMaxTickets(e.target.value)}
               fullWidth
               margin="normal"
             />
+
+            <label>Ticket Quantities</label>
+            <div>
+              <TextField
+                value={quantities[0]}
+                onChange={(e) => {
+                  const newQuantities = [...quantities];
+                  newQuantities[0] = e.target.value;
+                  setQuantities(newQuantities);
+                }}
+                margin="normal"
+                placeholder="Quantity 1"
+              />
+              <TextField
+                value={quantities[1]}
+                onChange={(e) => {
+                  const newQuantities = [...quantities];
+                  newQuantities[1] = e.target.value;
+                  setQuantities(newQuantities);
+                }}
+                margin="normal"
+                placeholder="Quantity 2"
+              />
+              <TextField
+                value={quantities[2]}
+                onChange={(e) => {
+                  const newQuantities = [...quantities];
+                  newQuantities[2] = e.target.value;
+                  setQuantities(newQuantities);
+                }}
+                margin="normal"
+                placeholder="Quantity 3"
+              />
+              <TextField
+                value={quantities[3]}
+                onChange={(e) => {
+                  const newQuantities = [...quantities];
+                  newQuantities[3] = e.target.value;
+                  setQuantities(newQuantities);
+                }}
+                margin="normal"
+                placeholder="Quantity 4"
+              />
+            </div>
+
+            <label>GST Rate</label>
             <TextField
-              label="GST Rate"
               value={gstRate}
               onChange={(e) => setGstRate(e.target.value)}
               fullWidth
               margin="normal"
             />
+
+            <label>Platform Fee Rate</label>
             <TextField
-              label="Platform Fee Rate"
               value={platformFeeRate}
               onChange={(e) => setPlatformFeeRate(e.target.value)}
               fullWidth
               margin="normal"
             />
+
+            <label>GST on Platform Fee Rate</label>
             <TextField
-              label="GST on Platform Fee Rate"
               value={gstOnPlatformFeeRate}
               onChange={(e) => setGstOnPlatformFeeRate(e.target.value)}
               fullWidth
