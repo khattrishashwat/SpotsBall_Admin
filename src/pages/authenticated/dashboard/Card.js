@@ -64,11 +64,11 @@ function Card(props) {
           />
         </div>
 
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 pb-2">
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 pb-2 mt-4">
           <div className="card" onClick={() => navigate("/users")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", height: "100px" }}
             >
               <div>
                 <GroupsIcon className="fs-1 mt-2" style={{ color: "orange" }} />
@@ -92,21 +92,20 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            <div className="card-footer p-3">
+            {/* <div className="card-footer p-3">
               <p className="mb-0">
                 <span className="text-success text-sm font-weight-bolder">
-                  {/* update */}
                 </span>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/banner")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
                 <Diversity1Icon
@@ -130,20 +129,20 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            <div className="card-footer p-3">
+            {/* <div className="card-footer p-3">
               <p className="mb-0">
                 <span className="text-success text-sm font-weight-bolder"></span>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
 
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/contest_management")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
                 <EmojiEventsIcon
@@ -167,20 +166,20 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            <div className="card-footer p-3">
+            {/* <div className="card-footer p-3">
               <p className="mb-0">
                 <span className="text-success text-sm font-weight-bolder"></span>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
 
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/content")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
                 <SourceIcon className="fs-1 mt-2" style={{ color: "black" }} />
@@ -201,19 +200,19 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            <div className="card-footer p-3">
+            {/* <div className="card-footer p-3">
               <p className="mb-0">
                 <span className="text-success text-sm font-weight-bolder"></span>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/faqs")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
                 <QuizIcon className="fs-1 mt-2" style={{ color: "blue" }} />
@@ -234,22 +233,22 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            <div className="card-footer p-3">
+            {/* <div className="card-footer p-3">
               <p className="mb-0">
                 <span className="text-success text-sm font-weight-bolder"></span>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4 mt-4">
           <div
             className="card"
-            style={{ height: "155px" }}
+            // style={{ height: "155px" }}
             onClick={() => navigate("/how_to_play")}
           >
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", height: "100px" }}
             >
               <div>
                 <SubscriptionsIcon
@@ -276,21 +275,20 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            <div className="card-footer p-3">
+            {/* <div className="card-footer p-3">
               <p className="mb-0">
                 <span className="text-success text-sm font-weight-bolder">
-                  {/* update */}
                 </span>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/In_Press")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
                 <FeedbackIcon className="fs-1 mt-2" style={{ color: "gold" }} />
@@ -311,20 +309,20 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            <div className="card-footer p-3">
+            {/* <div className="card-footer p-3">
               <p className="mb-0">
                 <span className="text-success text-sm font-weight-bolder"></span>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
 
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/payment")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
                 <MonetizationOnIcon
@@ -348,19 +346,19 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            <div className="card-footer p-3">
+            {/* <div className="card-footer p-3">
               <p className="mb-0">
                 <span className="text-success text-sm font-weight-bolder"></span>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/promo_codes")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
                 <LocalOfferIcon
@@ -384,19 +382,19 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            <div className="card-footer p-3">
+            {/* <div className="card-footer p-3">
               <p className="mb-0">
                 <span className="text-success text-sm font-weight-bolder"></span>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/winners_circle")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
                 <EmojiEventsIcon
@@ -420,19 +418,19 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            <div className="card-footer p-3">
+            {/* <div className="card-footer p-3">
               <p className="mb-0">
                 <span className="text-success text-sm font-weight-bolder"></span>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/winner")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
                 <EmojiEventsIcon
@@ -456,19 +454,19 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            <div className="card-footer p-3">
+            {/* <div className="card-footer p-3">
               <p className="mb-0">
                 <span className="text-success text-sm font-weight-bolder"></span>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/contacts")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
                 <ContactMailIcon
@@ -492,11 +490,11 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            <div className="card-footer p-3">
+            {/* <div className="card-footer p-3">
               <p className="mb-0">
                 <span className="text-success text-sm font-weight-bolder"></span>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

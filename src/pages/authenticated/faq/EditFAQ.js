@@ -72,11 +72,12 @@ const EditFAQ = () => {
               InputLabelProps={{
                 sx: {
                   // fontSize: "18px", // Example: Set custom font size
-                  marginTop: "6px"
+                  marginTop: "6px",
                 },
               }}
             />
-            <textarea style={{padding:"10px 10px 5px 15px",marginBottom:"10px"}}
+            <textarea
+              style={{ padding: "10px 10px 5px 15px", marginBottom: "10px" }}
               label="Answer"
               value={answer}
               onChange={handleAnswerChange}
@@ -85,17 +86,22 @@ const EditFAQ = () => {
               variant="outlined"
               rows="16"
               cols="68"
-
               InputLabelProps={{
                 sx: {
-                  marginTop: "8px"
+                  marginTop: "8px",
                 },
               }}
             />
             <Button
               variant="contained"
               color="primary"
-              sx={{ mb: 3 }}
+              sx={{
+                mt: 4,
+                ml: 2,
+                mb: 4,
+                display: "block",
+                backgroundColor: "orange",
+              }}
               onClick={handleSubmit}
             >
               Update

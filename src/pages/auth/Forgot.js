@@ -74,6 +74,8 @@ const Forgot = () => {
       .post("admin/send-otp", { email })
       .then((res) => {
         if (res) {
+          window.localStorage.setItem("token", res.data.data.token);
+
           setApiError(false);
           setLoading(false);
           setPointerEvents("");

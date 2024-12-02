@@ -27,7 +27,6 @@ const ContestManagement = () => {
     page: 0,
     pageSize: 10,
   });
-
   const [filterMode, setFilterMode] = useState("name");
   const [status, setStatus] = useState("");
   const [keyword, setKeyword] = useState("");
@@ -67,7 +66,6 @@ const ContestManagement = () => {
         );
       },
     },
-
     {
       field: "col4",
       headerName: "Price",
@@ -110,7 +108,7 @@ const ContestManagement = () => {
       ),
     },
   ];
-  //handle get confirmation before delete user
+
   const confirmBeforeDelete = (e, params) => {
     swal
       .fire({
@@ -148,7 +146,6 @@ const ContestManagement = () => {
       });
   };
 
-  //fetching user information
   useEffect(() => {
     setLoading(true);
     httpClient
@@ -156,11 +153,8 @@ const ContestManagement = () => {
       .then((res) => {
         setUserCount(res.data.data.length); // Count based on the response data length
         setLoading(false);
-        console.log("contest", res.data.data);
-
         setRows(
           res.data.data.map((contest, index) => {
-            console.log("data => ", contest);
             return {
               id: contest._id,
               col1:
@@ -197,11 +191,11 @@ const ContestManagement = () => {
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="ContestManagement" />
+        <PageTitle title="Contest Management" />
 
         <CContainer>
           <div className="d-flex justify-content-between align-items-center">
-            <h4 className="">ContestManagement : </h4>
+            <h4 className="my-4">Contest Management</h4>
             <Button
               variant="contained"
               className="my-2"
@@ -209,12 +203,13 @@ const ContestManagement = () => {
                 backgroundColor: "orange",
               }}
               onClick={() => {
-                window.location.href = "contest_management/add-contest";
+                navigate("add-contest");
               }}
             >
               Add Contest
             </Button>
           </div>
+
           <div
             style={{
               height: "600px",
@@ -224,26 +219,6 @@ const ContestManagement = () => {
               borderRadius: 5,
             }}
           >
-            <div className="">
-              {/* <ArrowBackIcon className="pointer-cursor"
-            style={{
-              // fontSize: "20px",
-              marginLeft: "10px",
-              cursor: "pointer",
-              color: "#333",
-            }}
-            /> */}
-              {/* <button
-                className="border-0 border p-2"
-                style={{
-                  backgroundColor: "gold",
-                  borderRadius: "5px",
-                }}
-                // onClick={() => {}}
-              >
-                Add Group
-              </button> */}
-            </div>
             <Snackbar
               open={closeSnakeBar}
               autoHideDuration={1000}
@@ -258,48 +233,32 @@ const ContestManagement = () => {
                 vertical: "bottom",
               }}
               action={
-                <React.Fragment>
-                  <IconButton
-                    aria-label="close"
-                    color="inherit"
-                    sx={{ p: 0.5 }}
-                    onClick={() => setCloseSnakeBar(false)}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </React.Fragment>
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  sx={{ p: 0.5 }}
+                  onClick={() => setCloseSnakeBar(false)}
+                >
+                  <CloseIcon />
+                </IconButton>
               }
             />
-            <div
-              style={{
-                width: "100%",
-                height: "auto",
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "10px 0",
-              }}
-            ></div>
+
             <DataGrid
               sx={{
                 "& .MuiDataGrid-row:nth-of-type(2n)": {
-                  backgroundColor: "#d5dbd6",
+                  backgroundColor: "#f4f4f4",
                 },
                 "& .MuiDataGrid-columnHeader": {
                   backgroundColor: "#d5dbd6",
-                  // height: "40px !important",
-                  outline: "none !important",
+                  fontWeight: "bold",
                 },
                 "& .MuiDataGrid-cell": {
                   outline: "none !important",
                 },
-                "& .MuiDataGrid-row": {
-                  outline: "none !important",
-                  // backgroundColor: "gold",
-                },
               }}
               rows={rows}
               columns={columns}
-              // pageSizeOptions={[5, 10, 15]}
               rowCount={userCount}
               disableRowSelectionOnClick
               pagination

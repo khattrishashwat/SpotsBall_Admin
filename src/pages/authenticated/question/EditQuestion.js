@@ -101,7 +101,7 @@ const EditQuestion = () => {
           <Button
             variant="contained"
             color="secondary"
-            sx={{ mt: 2, ml:0}}
+            sx={{ mt: 2, ml: 0 }}
             onClick={() => {
               navigate(-1);
             }}
@@ -122,7 +122,7 @@ const EditQuestion = () => {
               InputLabelProps={{
                 sx: {
                   // fontSize: "18px", // Example: Set custom font size
-                  marginTop:"5px"
+                  marginTop: "5px",
                 },
               }}
             >
@@ -172,7 +172,13 @@ const EditQuestion = () => {
             <Button
               variant="contained"
               color="secondary"
-              sx={{ mt: 2, ml: 2 }}
+              sx={{
+                mt: 4,
+                ml: 2,
+                mb: 4,
+                display: "block",
+                backgroundColor: "orange",
+              }}
               onClick={handleSubmit}
             >
               Update Question

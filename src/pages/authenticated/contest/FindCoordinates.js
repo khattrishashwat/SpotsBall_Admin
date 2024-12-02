@@ -22,15 +22,18 @@ const FindCoordinates = () => {
   const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
   const [showTooltip, setShowTooltip] = useState(false);
   const imgRef = useRef(null);
-
+const [imgFile,setImgFile]=useState("");
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+    setImgFile(file);
+    console.log("file-->", file);
     if (file) {
       const reader = new FileReader();
       reader.onload = () => setImageDataUri(reader.result);
       reader.readAsDataURL(file);
     }
   };
+  console.log("imageDataUri-->", imageDataUri);
 
   const handleImageClick = (e) => {
     const img = imgRef.current;
@@ -72,6 +75,7 @@ const FindCoordinates = () => {
       state: {
         x: xCoordinate,
         y: yCoordinate,
+        image: imgFile,
       },
     });
   };
@@ -161,7 +165,6 @@ const FindCoordinates = () => {
             <TextField
               value={xCoordinate}
               onChange={(e) => setXCoordinate(e.target.value)}
-              label="X Coordinate"
               variant="outlined"
               fullWidth
               sx={{ maxWidth: 300 }}
@@ -171,7 +174,6 @@ const FindCoordinates = () => {
             <TextField
               value={yCoordinate}
               onChange={(e) => setYCoordinate(e.target.value)}
-              label="Y Coordinate"
               variant="outlined"
               fullWidth
               sx={{ maxWidth: 300 }}

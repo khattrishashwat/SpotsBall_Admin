@@ -6,11 +6,9 @@ import httpClient from "../../../util/HttpClient";
 import Loader from "../../../components/loader/Loader";
 import { useNavigate, useParams } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import Swal from "sweetalert2";
 
-const EditSocials = () => {
-  const [type, setType] = useState("");
-  const [url, setUrl] = useState("");
+const EditRestricted = () => {
+  const [state, setState] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -21,64 +19,45 @@ const EditSocials = () => {
     setIsLoading(true);
     setMessage("");
 
-    // Validate URL
-    if (!url) {
-      setMessage("URL is required.");
+    if (!state) {
+      setMessage("State is required.");
       setIsLoading(false);
       return;
     }
 
-    const urlPattern = /^(https?:\/\/[^\s$.?#].[^\s]*)$/;
-    if (!urlPattern.test(url)) {
-      setMessage("Please enter a valid URL.");
-      setIsLoading(false);
-      return;
-    }
-
-    const updatedSocial = { type, url };
+    const updatedState = { state };
 
     httpClient
       .patch(
-        `api/v1/admin/live-links/edit-live-links/${params.id}`,
-        updatedSocial
+        `api/v1/admin/restricted-states/edit-restricted-states/${params.id}`,
+        updatedState
       )
       .then((res) => {
-        console.log("Updated social => ", res);
+        console.log("Updated state => ", res);
         setIsLoading(false);
-        Swal.fire({
-          icon: "success",
-          title: "Success",
-          text: "Links updated successfully!",
-          confirmButtonColor: "#3085d6",
-        });
         navigate(-1);
       })
       .catch((err) => {
-        
-        setMessage("Failed to update the social link.");
+        console.log("Error => ", err);
+        setMessage("Failed to update the state.");
         setIsLoading(false);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Failed to update the Links. Please try again.",
-          confirmButtonColor: "#d33",
-        });
       });
   };
 
   useEffect(() => {
     setIsLoading(true);
     httpClient
-      .get(`api/v1/admin/live-links/get-live-links-by-id/${params.id}`)
+      .get(
+        `api/v1/admin/restricted-states/get-restricted-states-by-id/${params.id}`
+      )
       .then((res) => {
         const result = res.data.data; // Correctly access the `data` property
-        console.log("Edit social => ", result);
-        setType(result.type); // Set the type from the API response
-        setUrl(result.url); // Set the URL from the API response
+        console.log("Edit state => ", result);
+        setState(result.state); // Set the state from the API response
         setIsLoading(false);
       })
       .catch((err) => {
-        console.log("Error fetching social data => ", err);
+        console.log("Error fetching state data => ", err);
         setIsLoading(false);
       });
   }, [params.id]);
@@ -101,21 +80,9 @@ const EditSocials = () => {
           {isLoading && <Loader />}
           <Box component="form" noValidate autoComplete="off" sx={{ mt: 4 }}>
             <TextField
-              label="Type"
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-              fullWidth
-              margin="normal"
-              variant="outlined"
-              required
-              InputLabelProps={{
-                sx: { marginTop: "5px" },
-              }}
-            />
-            <TextField
-              label="URL"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              label="State"
+              value={state}
+              onChange={(e) => setState(e.target.value)}
               fullWidth
               margin="normal"
               variant="outlined"
@@ -142,7 +109,7 @@ const EditSocials = () => {
               onClick={handleSubmit}
               disabled={isLoading}
             >
-              {isLoading ? "Updating..." : "Update Social Link"}
+              {isLoading ? "Updating..." : "Update State"}
             </Button>
           </Box>
         </Container>
@@ -151,4 +118,4 @@ const EditSocials = () => {
   );
 };
 
-export default EditSocials;
+export default EditRestricted;

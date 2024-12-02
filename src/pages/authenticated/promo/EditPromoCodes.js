@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Container,
-  TextField,
-  Typography,
-  Paper,
-} from "@mui/material";
+import { Box, Button, Container, TextField, Typography } from "@mui/material";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import PageTitle from "../../common/PageTitle";
@@ -20,12 +13,22 @@ const EditPromoCodes = () => {
   const [maxTickets, setMaxTickets] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [message, setMessage] = useState("");
 
   let params = useParams();
   let navigate = useNavigate();
 
   const handleSubmit = () => {
+    setMessage("");
     setIsLoading(true);
+
+    // Validation: Ensure maxTickets > minTickets
+    if (parseInt(maxTickets) <= parseInt(minTickets)) {
+      setMessage("Max Tickets must be greater than Min Tickets.");
+      setIsLoading(false);
+      return;
+    }
+
     httpClient
       .patch(`api/v1/admin/discount/edit-discount/${params.id}`, {
         name,
@@ -35,11 +38,12 @@ const EditPromoCodes = () => {
       })
       .then(() => {
         setIsLoading(false);
-        navigate(-1);
+        navigate(-1); // Go back to the previous page
       })
       .catch((err) => {
         setIsLoading(false);
         console.error(err);
+        setMessage("Failed to update the promo code. Please try again.");
       });
   };
 
@@ -57,6 +61,7 @@ const EditPromoCodes = () => {
       .catch((err) => {
         setIsLoading(false);
         console.error(err);
+        setMessage("Failed to load promo code details.");
       });
   }, [params.id]);
 
@@ -71,8 +76,17 @@ const EditPromoCodes = () => {
           {isLoading && <Loader />}
           {!isLoading && (
             <Box component="form" noValidate autoComplete="off" sx={{ mt: 4 }}>
+              {message && (
+                <Typography
+                  variant="body2"
+                  color={message.includes("Failed") ? "red" : "green"}
+                  sx={{ mb: 2 }}
+                >
+                  {message}
+                </Typography>
+              )}
+              <span>Name</span>
               <TextField
-                label="Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 fullWidth
@@ -80,8 +94,8 @@ const EditPromoCodes = () => {
                 variant="outlined"
                 required
               />
+              <span>Minimum Tickets</span>
               <TextField
-                label="Minimum Tickets"
                 value={minTickets}
                 onChange={(e) => setMinTickets(e.target.value)}
                 fullWidth
@@ -90,8 +104,8 @@ const EditPromoCodes = () => {
                 required
                 type="number"
               />
+              <span>Maximum Tickets</span>
               <TextField
-                label="Maximum Tickets"
                 value={maxTickets}
                 onChange={(e) => setMaxTickets(e.target.value)}
                 fullWidth
@@ -100,8 +114,8 @@ const EditPromoCodes = () => {
                 required
                 type="number"
               />
+              <span>Discount Percentage</span>
               <TextField
-                label="Discount Percentage"
                 value={discountPercentage}
                 onChange={(e) => setDiscountPercentage(e.target.value)}
                 fullWidth
@@ -113,7 +127,13 @@ const EditPromoCodes = () => {
               <Button
                 variant="contained"
                 color="primary"
-                sx={{ mb: 3, mt: 2 }}
+                sx={{
+                  mt: 4,
+                  ml: 2,
+                  mb: 4,
+                  display: "block",
+                  backgroundColor: "orange",
+                }}
                 onClick={handleSubmit}
               >
                 Update

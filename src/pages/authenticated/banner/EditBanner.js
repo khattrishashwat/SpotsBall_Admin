@@ -6,6 +6,7 @@ import httpClient from "../../../util/HttpClient";
 import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../../../components/loader/Loader";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Swal from "sweetalert2";
 
 const EditBanner = () => {
   const [title, setTitle] = useState("");
@@ -14,6 +15,7 @@ const EditBanner = () => {
   const [bannerPreview, setBannerPreview] = useState(null); // For image preview
   const [corousal, setCorousal] = useState([]);
   const [courusalInput, setCourusalInput] = useState("");
+  const [courusalError, setCourusalError] = useState(false); // Validation state
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -28,13 +30,25 @@ const EditBanner = () => {
     setBannerPreview(URL.createObjectURL(file)); // Create a preview URL
   };
 
-  const handleCorousalInputChange = (e) => setCourusalInput(e.target.value);
+  const handleCorousalInputChange = (e) => {
+    setCourusalInput(e.target.value);
+    setCourusalError(false); // Reset error on input change
+  };
 
   const handleAddCourusal = () => {
-    if (courusalInput.trim()) {
-      setCorousal([...corousal, courusalInput]);
-      setCourusalInput("");
+    if (!courusalInput.trim()) {
+      setCourusalError(true); // Show error if input is empty
+      return;
     }
+
+    setCorousal([...corousal, courusalInput]);
+    setCourusalInput("");
+    setCourusalError(false); // Reset error
+  };
+
+  const handleRemoveCarousel = (index) => {
+    const updatedCorousal = corousal.filter((_, i) => i !== index);
+    setCorousal(updatedCorousal);
   };
 
   const handleSubmit = () => {
@@ -55,11 +69,28 @@ const EditBanner = () => {
       .patch(`admin/edit-banner/${params.id}`, formData)
       .then(() => {
         setIsLoading(false);
+
+        // Show success message
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Banner updated successfully!",
+          confirmButtonColor: "#3085d6",
+        });
+
+        // Navigate back to the previous page
         navigate(-1);
       })
       .catch((err) => {
         setIsLoading(false);
-        console.log("error => ", err);
+
+        // Show error message
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to update the banner. Please try again.",
+          confirmButtonColor: "#d33",
+        });
       });
   };
 
@@ -101,7 +132,7 @@ const EditBanner = () => {
             component="form"
             noValidate
             autoComplete="off"
-            sx={{ mt: 4, width: "80%" }}
+            sx={{ mt: 6, width: "80%" }}
           >
             {/* Title Field */}
             <label>Title</label>
@@ -152,23 +183,37 @@ const EditBanner = () => {
               fullWidth
               margin="normal"
               placeholder="Enter carousel title"
-              sx={{ border: "none" }}
+              error={courusalError} // Highlight error
+              helperText={courusalError ? "This field is required" : ""}
+              sx={{
+                border: courusalError ? "0px solid red" : "none", // Red border on error
+              }}
             />
             <Button
               variant="contained"
               color="primary"
-              sx={{ mt: 2, backgroundColor: "orange" }}
+              sx={{ backgroundColor: "orange" }}
               onClick={handleAddCourusal}
             >
               Add Carousel
             </Button>
 
-            {/* Display Carousel Titles */}
+            {/* Display Carousel Titles with Remove Option */}
             <Box sx={{ mt: 2 }}>
               {corousal.length > 0 && (
                 <ul>
                   {corousal.map((item, index) => (
-                    <li key={index}>{item}</li>
+                    <li key={index}>
+                      {item}
+                      <Button
+                        variant="text"
+                        color="error"
+                        sx={{ ml: 2 }}
+                        onClick={() => handleRemoveCarousel(index)}
+                      >
+                        Remove
+                      </Button>
+                    </li>
                   ))}
                 </ul>
               )}
@@ -178,7 +223,13 @@ const EditBanner = () => {
             <Button
               variant="contained"
               color="primary"
-              sx={{ mt: 8, ml: 2, display: "block", backgroundColor: "orange" }}
+              sx={{
+                mt: 4,
+                ml: 2,
+                mb: 4,
+                display: "block",
+                backgroundColor: "orange",
+              }}
               onClick={handleSubmit}
               disabled={isLoading}
             >

@@ -52,7 +52,7 @@ const GetPayment = () => {
     { field: "col4", headerName: "Amount", width: 180 },
     { field: "col5", headerName: "Promo Codes", width: 180 },
     { field: "col6", headerName: "Payment ID", width: 180 },
-    { field: "col7", headerName: "No Coordinates Chosen", width: 170 },
+    { field: "col7", headerName: "No.Coordinates Chosen", width: 170 },
     { field: "col8", headerName: "Created At", width: 180 },
     { field: "col9", headerName: "Updated At", width: 180 },
     // {
@@ -183,7 +183,7 @@ const GetPayment = () => {
           </div>
           <div
             style={{
-              height: "600px",
+              // height: "600px",
               minHeight: "600px",
               border: "1px solid gray",
               padding: 15,

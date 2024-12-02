@@ -105,11 +105,10 @@ const AddQuestion = () => {
               InputLabelProps={{
                 sx: {
                   // fontSize: "18px", // Example: Set custom font size
-                  marginTop:"5px"
+                  marginTop: "5px",
                 },
               }}
             >
-            
               <MenuItem value="1">Primary</MenuItem>
               <MenuItem value="2">Extra</MenuItem>
               {/* <MenuItem value="short-answer">Short Answer</MenuItem> */}
@@ -130,7 +129,7 @@ const AddQuestion = () => {
               >
                 <TextField
                   // label={`Option ${index + 1}`}
-                  placeholder={`Option ${index+1}`}
+                  placeholder={`Option ${index + 1}`}
                   value={option}
                   onChange={(e) => handleOptionChange(index, e.target.value)}
                   fullWidth
@@ -156,7 +155,13 @@ const AddQuestion = () => {
             <Button
               variant="contained"
               color="secondary"
-              sx={{ mt: 2, ml: 2 }}
+              sx={{
+                mt: 4,
+                ml: 2,
+                mb: 4,
+                display: "block",
+                backgroundColor: "orange",
+              }}
               onClick={handleSubmit}
             >
               Submit

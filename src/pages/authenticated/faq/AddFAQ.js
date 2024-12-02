@@ -67,7 +67,7 @@ const AddFAQ = () => {
                 InputLabelProps={{
                   sx: {
                     // fontSize: "18px", // Example: Set custom font size
-                    marginTop:"6px"
+                    marginTop: "6px",
                   },
                 }}
               />
@@ -84,7 +84,7 @@ const AddFAQ = () => {
                 InputLabelProps={{
                   sx: {
                     // fontSize: "18px", // Example: Set custom font size
-                    marginTop:"8px"
+                    marginTop: "8px",
                   },
                 }}
               />
@@ -94,7 +94,13 @@ const AddFAQ = () => {
                 color="primary"
                 fullWidth
                 disabled={loading}
-                sx={{ mt: 2 }}
+                sx={{
+                  mt: 4,
+                  ml: 2,
+                  mb: 4,
+                  display: "block",
+                  backgroundColor: "orange",
+                }}
               >
                 {loading ? "Submitting..." : "Submit"}
               </Button>

@@ -11,6 +11,7 @@ import httpClient from "../../../util/HttpClient";
 import swal from "sweetalert2";
 import Loader from "../../../components/loader/Loader";
 import { useNavigate } from "react-router-dom";
+import EditIcon from "@mui/icons-material/Edit";
 
 const WeAre = () => {
   const [alertMessage, setAlertMessage] = useState();
@@ -45,63 +46,39 @@ const WeAre = () => {
     {
       field: "col2",
       headerName: "Title",
-      width: 200,
-      renderCell: (params) => {
-        // Join all subtitle values into a single string for display
-        return params.formattedValue ? params.formattedValue.join(", ") : "N/A";
-      },
+      width: 180,
     },
     {
       field: "col3",
       headerName: "Description",
-      width: 400,
-      renderCell: (params) => {
-        // Join all description values into a single string for display
-        return params.formattedValue ? params.formattedValue.join(" ") : "N/A";
-      },
+      width: 200,
     },
     {
       field: "col4",
       headerName: "Images",
-      width: 400,
-      renderCell: (params) => {
-        // Display the first image or loop through images
-        return params.formattedValue && params.formattedValue[0] !== "N/A" ? (
-          <img width="70px" src={params.formattedValue[0]} alt="banner" />
+      width: 180,
+      renderCell: (params) =>
+        params.formattedValue !== "N/A" ? (
+          <img width="70px" src={params.formattedValue} alt="banner" />
         ) : (
-          "No Image"
-        );
-      },
+          ""
+        ),
     },
     {
       field: "col5",
       headerName: "Created At",
-      width: 200,
-      renderCell: (params) => params.formattedValue || "N/A",
+      width: 180,
     },
     {
       field: "col6",
       headerName: "Action",
-      width: 150,
+      width: 200,
       renderCell: (params) => (
         <>
-          <button
-            className="border-0"
-            style={{
-              color: "blue",
-              background: "transparent",
-              padding: "5px",
-              fontWeight: "700",
-              border: "none",
-              cursor: "pointer",
-            }}
-            onClick={() => {
-              console.log("edit social link ==> ", params.row.id);
-              navigate(`edit_links/${params.row.id}`);
-            }}
-          >
-            Edit
-          </button>
+          <EditIcon
+            style={{ color: "gold", marginRight: "20px", cursor: "pointer" }}
+            onClick={() => navigate(`edit_details/${params.row.id}`)}
+          />
           <DeleteIcon
             cursor={"pointer"}
             style={{ color: "red" }}
@@ -115,37 +92,36 @@ const WeAre = () => {
   useEffect(() => {
     setLoading(true);
     httpClient
-      .get(`admin/get-static-content2/who_we_are`)
+      .get(`api/v1/admin/who-we-are/get-who-we-are`)
       .then((res) => {
         console.log("content => ", res);
-        if (res.data.data && Array.isArray(res.data.data)) {
-          setUserCount(res.data.data.length);
-          setFaqs(res.data.data);
-          console.log("faqs", res.data.data);
 
-          setLoading(false);
-          setRows(
-            res.data.data.map((doc, index) => {
-              return {
-                id: doc._id,
-                col1:
-                  paginationModel.page * paginationModel.pageSize + (index + 1),
-                col2: doc.subTitle[0] || ["N/A"], // Ensure it’s an array for joining
-                col3: doc.description[0] || ["N/A"], // Ensure it’s an array for joining
-                col4: doc.images[0] || ["N/A"], // Ensure it’s an array for the images
-                col5: doc.createdAt ? doc.createdAt.substring(0, 10) : "N/A",
-              };
-            })
-          );
-          setStatus("");
-        } else {
-          console.error("Invalid data format", res.data.data);
-          setLoading(false);
-        }
+        // Set counts and FAQs
+        setUserCount(res.data.data.length);
+        setFaqs(res.data.data);
+        console.log("faqs", res.data.data);
+
+        // Map rows based on the response
+        setRows(
+          res.data.data.map((doc, index) => {
+            return {
+              id: doc._id,
+              col1:
+                paginationModel.page * paginationModel.pageSize + (index + 1),
+              col2: doc.subTitle || "N/A", // Handle string values directly
+              col3: doc.description || "N/A", // Handle string values directly
+              col4: doc.image || "N/A", // Adjusted for single image
+              col5: doc.createdAt ? doc.createdAt.substring(0, 10) : "N/A",
+            };
+          })
+        );
+
+        setLoading(false);
+        setStatus("");
       })
       .catch((error) => {
         setLoading(false);
-        console.log(error);
+        console.error(error);
       });
   }, [paginationModel, status]);
 
@@ -169,7 +145,7 @@ const WeAre = () => {
   const deleteSingleUser = (e, params) => {
     const userId = params.id;
     httpClient
-      .delete(`admin/delete-faq/${userId}`)
+      .delete(`api/v1/admin/who-we-are/delete-who-we-are/${userId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);
@@ -199,120 +175,71 @@ const WeAre = () => {
       <AppSidebar />
       <div className="wrapper bg-light d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="Socials Links" />
+        <PageTitle title="Who We Are" />
         <CContainer>
           <div className="d-flex justify-content-between pe-">
-            <h4 className="p-0">Socials Links : </h4>
+            <h4 className="p-0">Who We Are </h4>
             <Button
               variant="contained"
               className="my-2"
               sx={{ backgroundColor: "orange" }}
               onClick={() => {
-                window.location.href = "social_links/add_links";
+                window.location.href = "who_we_are/add_details";
               }}
             >
-              Add Links
+              Add
             </Button>
           </div>
           <div
             style={{
               height: "600px",
-              minHeight: "600px",
               border: "1px solid gray",
               padding: 15,
               borderRadius: 5,
             }}
           >
-            <Snackbar
-              open={closeSnakeBar}
-              autoHideDuration={1000}
-              message={alertMessage}
-              ContentProps={{
-                sx: apiSuccess
-                  ? { backgroundColor: "green" }
-                  : { backgroundColor: "red" },
-              }}
-              anchorOrigin={{
-                horizontal: "right",
-                vertical: "bottom",
-              }}
-              action={
-                <React.Fragment>
-                  <IconButton
-                    aria-label="close"
-                    color="inherit"
-                    sx={{ p: 0.5 }}
-                    onClick={() => setCloseSnakeBar(false)}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </React.Fragment>
-              }
-            />
-            <div
-              style={{
-                width: "100%",
-                height: "auto",
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "10px 0",
-              }}
-            >
-              <CCol xs={5}>
-                Show
-                <input
-                  className="mx-2"
-                  type="number"
-                  id="number"
-                  name="number"
-                  placeholder="10"
-                  defaultValue={"10"}
-                  outline="none"
-                  title="Enter a Number"
-                  cursor="pointer"
-                  min={0}
-                  style={{
-                    width: "45px",
-                    outline: "none",
-                    borderRadius: 5,
-                    border: "1px solid gray",
-                    fontSize: "1rem",
-                    fontWeight: 600,
-                    textAlign: "center",
-                    height: 25,
-                  }}
-                  onChange={handleRecordPerPage}
-                />
-                Records per page
-              </CCol>
-            </div>
-            <DataGrid
-              sx={{
-                "& .MuiDataGrid-row:nth-of-type(2n)": {
-                  backgroundColor: "#d5dbd6",
-                },
-                "& .MuiDataGrid-columnHeader": {
-                  backgroundColor: "#ddd",
-                },
-              }}
-              rows={rows}
-              columns={columns}
-              pageSize={paginationModel.pageSize}
-              onPageSizeChange={(newPageSize) => {
-                setPaginationModel({
-                  ...paginationModel,
-                  pageSize: newPageSize,
-                });
-              }}
-              paginationMode="server"
-              onPageChange={(newPage) => {
-                setPaginationModel({ ...paginationModel, page: newPage });
-              }}
-              rowCount={userCount}
-              loading={loading}
-              disableSelectionOnClick
-            />
+            {loading ? (
+              <Loader />
+            ) : (
+              <DataGrid
+                sx={{
+                  "& .MuiDataGrid-row:nth-of-type(2n)": {
+                    backgroundColor: "#d5dbd6",
+                  },
+                  "& .MuiDataGrid-columnHeader": { backgroundColor: "#d5dbd6" },
+                }}
+                rows={rows}
+                columns={columns}
+                rowCount={userCount}
+                pagination
+                paginationMode="server"
+                paginationModel={paginationModel}
+                onPaginationModelChange={setPaginationModel}
+                autoHeight
+              />
+            )}
           </div>
+          <Snackbar
+            open={closeSnakeBar}
+            autoHideDuration={3000}
+            message={alertMessage}
+            ContentProps={{
+              sx: apiSuccess
+                ? { backgroundColor: "green" }
+                : { backgroundColor: "red" },
+            }}
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            onClose={() => setCloseSnakeBar(false)}
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                onClick={() => setCloseSnakeBar(false)}
+              >
+                <CloseIcon />
+              </IconButton>
+            }
+          />
         </CContainer>
       </div>
     </>

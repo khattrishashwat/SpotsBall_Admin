@@ -5,9 +5,8 @@ import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import { useNavigate } from "react-router-dom";
 
-const AddSocials = () => {
-  const [type, setType] = useState("");
-  const [url, setUrl] = useState("");
+const AddRestricted = () => {
+  const [state, setState] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   let navigate = useNavigate();
@@ -17,30 +16,17 @@ const AddSocials = () => {
     setLoading(true);
     setMessage("");
 
-    // Check if URL is empty or invalid
-    if (!url) {
-      setMessage("URL is required.");
-      setLoading(false);
-      return;
-    }
-
-    // Simple URL validation (you can improve this if needed)
-    const urlPattern = /^(https?:\/\/[^\s$.?#].[^\s]*)$/;
-    if (!urlPattern.test(url)) {
-      setMessage("Please enter a valid URL.");
+    if (!state) {
+      setMessage("State is required.");
       setLoading(false);
       return;
     }
 
     await httpClient
-      .post("api/v1/admin/live-links/add-live-links", {
-        type,
-        url,
-      })
+      .post("api/v1/admin/restricted-states/add-restricted-states", { state })
       .then((res) => {
-        setMessage("Social link created successfully!");
-        setType("");
-        setUrl("");
+        setMessage("State created successfully!");
+        setState("");
         navigate(-1);
       })
       .catch((err) => {
@@ -68,35 +54,20 @@ const AddSocials = () => {
             }}
           >
             <Typography variant="h5" component="h1" gutterBottom>
-              Create Social Link
+              Create State
             </Typography>
             <form onSubmit={handleSubmit} style={{ width: "100%" }}>
               <TextField
-                label="Type"
+                label="State"
                 variant="outlined"
                 fullWidth
                 margin="normal"
-                value={type}
-                onChange={(e) => setType(e.target.value)}
+                value={state}
+                onChange={(e) => setState(e.target.value)}
                 required
                 InputLabelProps={{
                   sx: {
                     marginTop: "6px",
-                  },
-                }}
-              />
-              <TextField
-                label="URL"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                required
-                type="url"
-                InputLabelProps={{
-                  sx: {
-                    marginTop: "8px",
                   },
                 }}
               />
@@ -133,4 +104,4 @@ const AddSocials = () => {
   );
 };
 
-export default AddSocials;
+export default AddRestricted;

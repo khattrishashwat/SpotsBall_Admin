@@ -38,10 +38,14 @@ const MatchWinner = () => {
       })
       .catch((err) => {
         setIsLoading(false);
+        const errorMessage = err.response
+          ? err.response.data.message
+          : err.message;
+
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: "Something went wrong. Please try again later.",
+          text: errorMessage, 
         });
         console.error("Error fetching winner:", err);
       });
@@ -76,8 +80,8 @@ const MatchWinner = () => {
         if (imageElement) {
           imageElement.style.position = "relative";
           imageElement.style.zIndex = "1";
-          imageElement.style.marginTop = "60px"; // Correct camelCase property
-          imageElement.style.borderRadius = "50%"; // Correct camelCase property
+          imageElement.style.marginTop = "60px"; 
+          imageElement.style.borderRadius = "50%"; 
         }
       },
     });
@@ -103,12 +107,7 @@ const MatchWinner = () => {
       })
       .catch((err) => {
         setIsLoading(false);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Failed to load contest details.",
-        });
-        console.error("Error fetching contest details:", err);
+       
       });
   }, [params.id]);
 
@@ -146,10 +145,12 @@ const MatchWinner = () => {
                 <label>Winner Coordinates</label>
                 <TextField
                   value={winnerCoordinates}
-                  onChange={handleWinnerCoordinatesChange}
                   fullWidth
                   margin="normal"
                   placeholder="Enter winner coordinates"
+                  InputProps={{
+                    readOnly: true,
+                  }}
                 />
               </Box>
 

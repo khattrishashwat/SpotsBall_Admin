@@ -1,26 +1,21 @@
 import React, { useEffect, useState } from "react";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
-import { CCol, CContainer } from "@coreui/react";
 import PageTitle from "../../common/PageTitle";
+import { CContainer } from "@coreui/react";
 import { DataGrid } from "@mui/x-data-grid";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Button, IconButton, Snackbar } from "@mui/material";
+import { Button, IconButton, Snackbar, Typography, Box } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import httpClient from "../../../util/HttpClient";
-import swal from "sweetalert2";
-import Loader from "../../../components/loader/Loader";
-import axios from "axios";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import httpClient from "../../../util/HttpClient";
 
 const WinnerCircle = () => {
-  const [alertMessage, setAlertMessage] = useState();
+  const [alertMessage, setAlertMessage] = useState("");
   const [apiSuccess, setApiSuccess] = useState(false);
-  const [apiError, setApiError] = useState(false);
-  const [closeSnakeBar, setCloseSnakeBar] = useState(false);
-  const [userCount, setUserCount] = useState(0);
+  const [closeSnackbar, setCloseSnackbar] = useState(false);
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paginationModel, setPaginationModel] = useState({
@@ -28,71 +23,43 @@ const WinnerCircle = () => {
     pageSize: 10,
   });
 
-  const [filterMode, setFilterMode] = useState("name");
-  const [status, setStatus] = useState("");
-  const [keyword, setKeyword] = useState("");
   const navigate = useNavigate();
 
-  const handleSelect = (e) => {
-    httpClient
-      .patch(`/admin/users/${e.target.id}`, {
-        is_active: e.target.value === "active" ? true : false,
-      })
-      .then((res) => {
-        console.log("update status ==> ", res);
-        setStatus("ok");
-      });
-  };
-
   const columns = [
-    { field: "col1", headerName: "#", width: 150 },
-    { field: "col2", headerName: "Contest Id", width: 205 },
+    { field: "col1", headerName: "#", width: 80 },
+    { field: "col2", headerName: "Contest ID", width: 200 },
     {
       field: "col3",
       headerName: "Contest Image",
-      width: 200,
-      renderCell: (params) => {
-        return params.formattedValue !== "N/A" ? (
+      width: 150,
+      renderCell: (params) =>
+        params.value !== "N/A" ? (
           <img
-            style={{
-              width: "70px",
-              objectFit: "cover",
-              cursor: "pointer",
-            }}
-            src={params.formattedValue}
+            src={params.value}
             alt="thumbnail"
+            style={{
+              width: 60,
+              height: 40,
+              objectFit: "cover",
+              borderRadius: 5,
+            }}
           />
         ) : (
-          ""
-        );
-      },
+          "-"
+        ),
     },
-    {
-      field: "col4",
-      headerName: "Price",
-      width: 120,
-    },
-    {
-      field: "col5",
-      headerName: "Max Ticket",
-      width: 180,
-    },
-    {
-      field: "col6",
-      headerName: "No of User Participate",
-      width: 180,
-    },
-    {
-      field: "col7",
-      headerName: "Contest End_Date",
-      width: 180,
-    },
+    { field: "col4", headerName: "Price", width: 100 },
+    { field: "col5", headerName: "Max Tickets", width: 150 },
+    { field: "col6", headerName: "Participants", width: 150 },
+    { field: "col7", headerName: "End Date", width: 150 },
     {
       field: "col8",
       headerName: "Status",
-      width: 150,
+      width: 120,
       renderCell: (params) => (
-        <span>{params.formattedValue === true ? "Active" : "Inactive"}</span>
+        <span style={{ color: params.value ? "green" : "red" }}>
+          {params.value ? "Active" : "Inactive"}
+        </span>
       ),
     },
     {
@@ -100,236 +67,155 @@ const WinnerCircle = () => {
       headerName: "Winner Calculated",
       width: 180,
       renderCell: (params) => (
-        <span>
-          {params.formattedValue === true ? "Calculated" : "Not Calculated"}
-        </span>
+        <span>{params.value ? "Calculated" : "Not Calculated"}</span>
       ),
     },
     {
       field: "col10",
       headerName: "Action",
-      width: 200,
+      width: 150,
       renderCell: (params) => (
         <>
-          <EditIcon
-            cursor={"pointer"}
-            style={{ color: "gold", marginRight: "20px" }}
+          <IconButton
+            color="primary"
             onClick={() => navigate(`match-winner/${params.row.id}`)}
-            titleAccess="Edit"
-          />
-          <DeleteIcon
-            cursor={"pointer"}
-            style={{ color: "red" }}
-            onClick={(e) => confirmBeforeDelete(e, params.row)}
-            titleAccess="Delete"
-          />
+          >
+            <EditIcon />
+          </IconButton>
+          {/* <IconButton
+            color="error"
+            onClick={() => confirmBeforeDelete(params.row)}
+          >
+            <DeleteIcon />
+          </IconButton> */}
         </>
       ),
     },
   ];
 
-  //handle get confirmation before delete user
-  const confirmBeforeDelete = (e, params) => {
+  const fetchContests = () => {
+    setLoading(true);
+    httpClient
+      .get("api/v1/admin/contest/get-all-contest-details")
+      .then((res) => {
+        setRows(
+          res.data.data.map((contestData, index) => ({
+            id: contestData.contest._id,
+            col1: paginationModel.page * paginationModel.pageSize + index + 1,
+            col2: contestData.contest._id || "N/A",
+            col3: contestData.contest.contest_banner?.file_url || "N/A",
+            col4: contestData.contest.ticket_price || "N/A",
+            col5: contestData.contest.maxTickets || "N/A",
+            col6: contestData.userParticipated || "N/A",
+            col7:
+              contestData.contest.contest_end_date?.substring(0, 10) || "N/A",
+            col8: contestData.contest.is_active,
+            col9: contestData.contest.isWinnerCalculated,
+          }))
+        );
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  };
+
+  const confirmBeforeDelete = (row) => {
     swal
       .fire({
         title: "Are you sure?",
-        text: "You will not be able to revert this!",
+        text: "This action cannot be undone!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Yes, delete it!",
       })
       .then((result) => {
-        if (result.isConfirmed) {
-          deleteSingleUser(e, params);
-        }
+        if (result.isConfirmed) deleteContest(row.id);
       });
   };
 
-  const deleteSingleUser = (e, params) => {
-    const groupId = params.id;
+  const deleteContest = (id) => {
     httpClient
-      .delete(`/admin/delete-group/${groupId}`)
+      .delete(`/admin/delete-group/${id}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);
-        setApiError(false);
-        setLoading(false);
-        setCloseSnakeBar(true);
-        setStatus("deleted");
+        fetchContests();
       })
-      .catch((error) => {
-        setAlertMessage(error.response.data.message);
-        setApiError(true);
+      .catch((err) => {
+        setAlertMessage(err.response?.data?.message || "Failed to delete");
         setApiSuccess(false);
-        setCloseSnakeBar(true);
-        setLoading(false);
-      });
-  };
-
-  //fetching user information
-  useEffect(() => {
-    setLoading(true);
-    httpClient
-      .get(`api/v1/admin/contest/get-all-contest-details`)
-      .then((res) => {
-        setUserCount(res.data.data.length); // Count based on the response data length
-        setLoading(false);
-        console.log("as", res.data.data);
-
-        setRows(
-          res.data.data.map((contestData, index) => {
-            const contest = contestData.contest;
-            return {
-              id: contest._id,
-              col1:
-                paginationModel.page * paginationModel.pageSize + (index + 1),
-              col2: contest._id || "N/A",
-              col3: contest.contest_banner?.file_url || "N/A", // Contest image URL
-              col4: contest.ticket_price || "N/A", // Jackpot Price
-              col5: contest.maxTickets || "N/A", // Max Ticket
-              col6: contestData.userParticipated || "N/A", // Number of users who participated
-              col7: contest.contest_end_date
-                ? contest.contest_end_date.substring(0, 10)
-                : "N/A", // Contest End Date
-
-              col8: contest.is_active || "N/A", // Number of users who participated
-              col9: contest.isWinnerCalculated || "N/A", // Number of users who participated
-            };
-          })
-        );
-        setStatus("");
       })
-      .catch((error) => {
-        setLoading(false);
-        console.log(error);
-      });
-  }, [paginationModel, alertMessage, status, keyword]);
-
-  const handleRecordPerPage = (e) => {
-    setLoading(true);
-    paginationModel.pageSize = e.target.value;
-    setPaginationModel({ ...paginationModel });
+      .finally(() => setCloseSnackbar(true));
   };
+
+  useEffect(() => {
+    fetchContests();
+  }, [paginationModel]);
 
   return (
     <>
       <AppSidebar />
-      <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
+      <div className="wrapper bg-light min-vh-100">
         <AppHeader />
-        <PageTitle title="WinnerCircle" />
-
+        <PageTitle title="Winner Circle" />
         <CContainer>
-          <div className="d-flex justify-content-between align-items-center">
-            <h4 className="">WinnerCircle : </h4>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={3}
+          >
+            <Typography variant="h5">Winner Circle</Typography>
             {/* <Button
               variant="contained"
-              className="my-2"
-              sx={{
-                backgroundColor: "orange",
-              }}
-              onClick={() => {
-                window.location.href = "contest_management/add-contest";
-              }}
+              color="primary"
+              onClick={() => navigate("contest_management/add-contest")}
             >
               Add Contest
             </Button> */}
-          </div>
-          <div
+          </Box>
+          <Box
             style={{
-              height: "600px",
-              minHeight: "600px",
-              border: "1px solid gray",
-              padding: 15,
-              borderRadius: 5,
+              height: 600,
+              border: "1px solid #ccc",
+              borderRadius: 8,
+              padding: 16,
             }}
           >
-            <div className="">
-              {/* <ArrowBackIcon className="pointer-cursor"
-            style={{
-              // fontSize: "20px",
-              marginLeft: "10px",
-              cursor: "pointer",
-              color: "#333",
-            }}
-            /> */}
-              {/* <button
-                className="border-0 border p-2"
-                style={{
-                  backgroundColor: "gold",
-                  borderRadius: "5px",
-                }}
-                // onClick={() => {}}
-              >
-                Add Group
-              </button> */}
-            </div>
-            <Snackbar
-              open={closeSnakeBar}
-              autoHideDuration={1000}
-              message={alertMessage}
-              ContentProps={{
-                sx: apiSuccess
-                  ? { backgroundColor: "green" }
-                  : { backgroundColor: "red" },
-              }}
-              anchorOrigin={{
-                horizontal: "right",
-                vertical: "bottom",
-              }}
-              action={
-                <React.Fragment>
-                  <IconButton
-                    aria-label="close"
-                    color="inherit"
-                    sx={{ p: 0.5 }}
-                    onClick={() => setCloseSnakeBar(false)}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </React.Fragment>
-              }
-            />
-            <div
-              style={{
-                width: "100%",
-                height: "auto",
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "10px 0",
-              }}
-            ></div>
             <DataGrid
-              sx={{
-                "& .MuiDataGrid-row:nth-of-type(2n)": {
-                  backgroundColor: "#d5dbd6",
-                },
-                "& .MuiDataGrid-columnHeader": {
-                  backgroundColor: "#d5dbd6",
-                  // height: "40px !important",
-                  outline: "none !important",
-                },
-                "& .MuiDataGrid-cell": {
-                  outline: "none !important",
-                },
-                "& .MuiDataGrid-row": {
-                  outline: "none !important",
-                  // backgroundColor: "gold",
-                },
-              }}
               rows={rows}
               columns={columns}
-              // pageSizeOptions={[5, 10, 15]}
-              rowCount={userCount}
-              disableRowSelectionOnClick
+              loading={loading}
               pagination
               paginationMode="server"
               paginationModel={paginationModel}
-              disableColumnMenu
               onPaginationModelChange={setPaginationModel}
-              loading={loading}
-              autoHeight
+              rowCount={rows.length}
+              sx={{
+                "& .MuiDataGrid-row:nth-of-type(2n)": {
+                  backgroundColor: "#f9f9f9",
+                },
+              }}
             />
-          </div>
+          </Box>
+          <Snackbar
+            open={closeSnackbar}
+            autoHideDuration={3000}
+            onClose={() => setCloseSnackbar(false)}
+            message={alertMessage}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            ContentProps={{
+              style: { backgroundColor: apiSuccess ? "green" : "red" },
+            }}
+            action={
+              <IconButton
+                size="small"
+                color="inherit"
+                onClick={() => setCloseSnackbar(false)}
+              >
+                <CloseIcon />
+              </IconButton>
+            }
+          />
         </CContainer>
       </div>
     </>

@@ -398,11 +398,18 @@ const EditContest = () => {
               margin="normal"
             />
             <Button
+              sx={{
+                mt: 4,
+                ml: 2,
+                mb: 4,
+                display: "block",
+                backgroundColor: "orange",
+              }}
               variant="contained"
               color="primary"
               fullWidth
               onClick={handleSubmit}
-              sx={{ mt: 2 }}
+             
             >
               Update Contest
             </Button>

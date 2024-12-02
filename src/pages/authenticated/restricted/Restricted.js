@@ -29,16 +29,22 @@ const Restricted = () => {
 
   const columns = [
     { field: "col1", headerName: "#", width: 180 },
-    { field: "col2", headerName: "State", width: 180 },
-    
-    { field: "col3", headerName: "Created At", width: 180 },
-    { field: "col4", headerName: "Updated At", width: 180 },
+    { field: "col2", headerName: "State", width: 200 },
+
+    { field: "col3", headerName: "Created At", width: 200 },
+    { field: "col4", headerName: "Updated At", width: 200 },
     {
       field: "col5",
       headerName: "Action",
       width: 250,
       renderCell: (params) => (
         <>
+          <EditIcon
+            cursor="pointer"
+            style={{ color: "gold", marginRight: "20px" }}
+            onClick={() => navigate(`edit_area/${params.row.id}`)}
+            titleAccess="Edit"
+          />
           <DeleteIcon
             style={{ color: "red", cursor: "pointer" }}
             onClick={() => confirmBeforeDelete(params.row)}
@@ -67,12 +73,14 @@ const Restricted = () => {
   const deleteSingleUser = (params) => {
     const groupId = params.id;
     httpClient
-      .delete(`admin/delete-banner/${groupId}`)
+      .delete(
+        `api/v1/admin/restricted-states/delete-restricted-states/${groupId}`
+      )
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);
         setCloseSnackbar(true);
-        fetchBanners();
+        fetchArea();
       })
       .catch((error) => {
         setAlertMessage(error.res?.data?.message || "Error occurred");
@@ -82,43 +90,36 @@ const Restricted = () => {
   };
 
   useEffect(() => {
-    fetchBanners();
+    fetchArea();
   }, [paginationModel]);
 
-  const fetchBanners = () => {
+  const fetchArea = () => {
     setLoading(true);
     httpClient
-      .get(`admin/get-restricted`)
+      .get(`api/v1/admin/restricted-states/get-restricted-states`)
       .then((res) => {
-        const RestrictArea = res.data.data;
+        const restrictArea = res.data.data;
 
-        // Ensure RestrictArea is an array before setting it and mapping over it
-        if (Array.isArray(RestrictArea)) {
-          setBanners(RestrictArea);
-          console.log("log", RestrictArea);
-
-          setUserCount(RestrictArea.length); // Update user count
+        if (restrictArea && restrictArea.length > 0) {
+          setUserCount(restrictArea.length);
           setRows(
-            RestrictArea.map((area, index) => ({
+            restrictArea.map((area, index) => ({
               id: area._id,
               col1:
                 paginationModel.page * paginationModel.pageSize + (index + 1),
-              col2: area.title || "N/A",
-             
+              col2: area.state || "N/A",
               col3: area.createdAt.substring(0, 10), // format date
               col4: area.updatedAt.substring(0, 10), // format date
             }))
           );
         } else {
-          console.error("Error: banner data is not an array", RestrictArea);
-          setBanners([]); // Set an empty array to avoid further errors
-          setUserCount(0);
-          setRows([]);
+          setRows([]); // Handle empty data
         }
-        setLoading(false);
       })
       .catch((error) => {
-        console.log("Error fetching banners:", error);
+        console.log("Error fetching restricted states:", error);
+      })
+      .finally(() => {
         setLoading(false);
       });
   };
@@ -135,19 +136,19 @@ const Restricted = () => {
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="Banner" />
+        <PageTitle title="Area" />
 
         <CContainer>
-          {/* <div className="d-flex justify-content-between align-items-center">
-            <h4>Banner Management:</h4>
+          <div className="d-flex justify-content-between align-items-center">
+            <h4>Restricted Area:</h4>
             <Button
               variant="contained"
               sx={{ backgroundColor: "orange" }}
-              onClick={() => navigate("add-banner")}
+              onClick={() => navigate("add_area")}
             >
-              Add Banner
+              Add Area
             </Button>
-          </div> */}
+          </div>
           <div
             style={{
               height: "600px",

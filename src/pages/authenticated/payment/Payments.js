@@ -12,7 +12,7 @@ import swal from "sweetalert2";
 import Loader from "../../../components/loader/Loader";
 import axios from "axios";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import EditIcon from "@mui/icons-material/Edit";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useNavigate } from "react-router-dom";
 
 const Payments = () => {
@@ -39,37 +39,35 @@ const Payments = () => {
         is_active: e.target.value === "active" ? true : false,
       })
       .then((res) => {
-        console.log("update status ==> ", res);
         setStatus("ok");
       });
   };
 
   const columns = [
     { field: "col1", headerName: "#", width: 80 },
-    { field: "col2", headerName: "Contest ID", width: 250 },
+    { field: "col2", headerName: "Jackpot Price", width: 250 },
     { field: "col3", headerName: "Ticket Count", width: 150 },
-    { field: "col4", headerName: "No Participate User", width: 180 },
-    { field: "col5", headerName: "Amount", width: 180 },
-    { field: "col6", headerName: "Created At", width: 180 },
-    { field: "col7", headerName: "Updated At", width: 180 },
+    { field: "col4", headerName: "Ticket Price", width: 180 },
+    { field: "col5", headerName: "Created At", width: 180 },
+    { field: "col6", headerName: "Updated At", width: 180 },
     {
-      field: "col8",
+      field: "col7",
       headerName: "Action",
       width: 200,
       renderCell: (params) => (
         <>
-          <EditIcon
+          <VisibilityIcon
             cursor="pointer"
             style={{ color: "gold", marginRight: "20px" }}
             onClick={() => navigate(`payment-singlecontest/${params.row.id}`)}
-            titleAccess="Edit"
+            titleAccess="See"
           />
-          <DeleteIcon
+          {/* <DeleteIcon
             cursor="pointer"
             style={{ color: "red" }}
             onClick={(e) => confirmBeforeDelete(e, params.row)}
             titleAccess="Delete"
-          />
+          /> */}
         </>
       ),
     },
@@ -78,28 +76,27 @@ const Payments = () => {
   useEffect(() => {
     setLoading(true);
     httpClient
-      .get(`api/v1/admin/contest-payments/get-all-contest-payments`)
+      .get(`/admin/get-all-contests`)
       .then((res) => {
         setUserCount(res.data.data.length);
         setLoading(false);
-        console.log("acsdc", res.data.data);
 
         setRows(
           res.data.data.map((record, index) => ({
             id: record._id,
             col1: paginationModel.page * paginationModel.pageSize + (index + 1),
-            col2: record.contestId || "N/A",
-            col3: record.tickets || "N/A",
-            col4: "N/A",
-            col5: record.amount ? `$${record.amount.toFixed(2)}` : "N/A",
-            col6: record.createdAt
+            col2: record.jackpot_price || "N/A",
+            col3: record.maxTickets || "N/A",
+            col4: record.ticket_price || "N/A",
+            col5: record.createdAt
               ? new Date(record.createdAt).toLocaleDateString()
               : "N/A",
-            col7: record.updatedAt
+            col6: record.updatedAt
               ? new Date(record.updatedAt).toLocaleDateString()
               : "N/A",
           }))
         );
+
         setStatus("");
       })
       .catch((error) => {
@@ -108,7 +105,7 @@ const Payments = () => {
       });
   }, [paginationModel, alertMessage, status, keyword]);
 
-  //handle get confirmation before delete user
+  // Handle get confirmation before delete
   const confirmBeforeDelete = (e, params) => {
     swal
       .fire({
@@ -146,8 +143,7 @@ const Payments = () => {
       });
   };
 
-  //fetching user information
-
+  // Handle records per page
   const handleRecordPerPage = (e) => {
     setLoading(true);
     paginationModel.pageSize = e.target.value;
@@ -163,49 +159,18 @@ const Payments = () => {
 
         <CContainer>
           <div className="d-flex justify-content-between align-items-center">
-            <h4 className="">Payments Detalis : </h4>
-            {/* <Button
-              variant="contained"
-              className="my-2"
-              sx={{
-                backgroundColor: "orange",
-              }}
-              onClick={() => {
-                window.location.href = "In_Press/add-press";
-              }}
-            >
-              Add Press
-            </Button> */}
+            <h4>Payments Details:</h4>
           </div>
+
           <div
             style={{
-              height: "600px",
+              // height: "600px",
               minHeight: "600px",
-              border: "1px solid gray",
+              border: "0px solid gray",
               padding: 15,
               borderRadius: 5,
             }}
           >
-            <div className="">
-              {/* <ArrowBackIcon className="pointer-cursor"
-            style={{
-              // fontSize: "20px",
-              marginLeft: "10px",
-              cursor: "pointer",
-              color: "#333",
-            }}
-            /> */}
-              {/* <button
-                className="border-0 border p-2"
-                style={{
-                  backgroundColor: "gold",
-                  borderRadius: "5px",
-                }}
-                // onClick={() => {}}
-              >
-                Add Group
-              </button> */}
-            </div>
             <Snackbar
               open={closeSnakeBar}
               autoHideDuration={1000}
@@ -232,15 +197,6 @@ const Payments = () => {
                 </React.Fragment>
               }
             />
-            <div
-              style={{
-                width: "100%",
-                height: "auto",
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "10px 0",
-              }}
-            ></div>
             <DataGrid
               sx={{
                 "& .MuiDataGrid-row:nth-of-type(2n)": {
@@ -248,20 +204,13 @@ const Payments = () => {
                 },
                 "& .MuiDataGrid-columnHeader": {
                   backgroundColor: "#d5dbd6",
-                  // height: "40px !important",
-                  outline: "none !important",
                 },
                 "& .MuiDataGrid-cell": {
                   outline: "none !important",
                 },
-                "& .MuiDataGrid-row": {
-                  outline: "none !important",
-                  // backgroundColor: "gold",
-                },
               }}
               rows={rows}
               columns={columns}
-              // pageSizeOptions={[5, 10, 15]}
               rowCount={userCount}
               disableRowSelectionOnClick
               pagination

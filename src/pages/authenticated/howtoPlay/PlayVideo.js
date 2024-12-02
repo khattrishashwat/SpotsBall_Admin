@@ -112,12 +112,12 @@ const PlayVideo = () => {
             onClick={() => navigate(`edit-play/${params.row.id}`)}
             titleAccess="Edit"
           />
-          <DeleteIcon
+          {/* <DeleteIcon
             cursor={"pointer"}
             style={{ color: "red" }}
             onClick={(e) => confirmBeforeDelete(e, params.row)}
             titleAccess="Delete"
-          />
+          /> */}
         </>
       ),
     },

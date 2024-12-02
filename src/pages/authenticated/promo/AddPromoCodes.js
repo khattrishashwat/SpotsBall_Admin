@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { TextField, Button, Container, Box, Typography } from "@mui/material";
-import httpClient from "../../../util/HttpClient"; // Ensure this path is correct based on your project structure
+import httpClient from "../../../util/HttpClient"; // Adjust the import path based on your project structure
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +19,13 @@ const AddPromoCodes = () => {
     setLoading(true);
     setMessage("");
 
+    // Validation: Ensure maxTickets > minTickets
+    if (parseInt(maxTickets) <= parseInt(minTickets)) {
+      setMessage("Max Tickets must be greater than Min Tickets.");
+      setLoading(false);
+      return;
+    }
+
     await httpClient
       .post("api/v1/admin/discount/add-discount", {
         name,
@@ -32,11 +39,11 @@ const AddPromoCodes = () => {
         setMinTickets("");
         setMaxTickets("");
         setDiscountPercentage("");
-        navigate(-1);
+        navigate(-1); // Go back to the previous page
       })
       .catch((err) => {
         console.log("error => ", err);
-        setMessage(err?.response?.data?.message);
+        setMessage(err?.response?.data?.message || "Something went wrong!");
         setLoading(false);
       });
   };
@@ -62,8 +69,8 @@ const AddPromoCodes = () => {
               Create a New Promo Code
             </Typography>
             <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+              <span>Name</span>
               <TextField
-                label="Name"
                 variant="outlined"
                 fullWidth
                 margin="normal"
@@ -71,8 +78,8 @@ const AddPromoCodes = () => {
                 onChange={(e) => setName(e.target.value)}
                 required
               />
+              <span>Minimum Tickets</span>
               <TextField
-                label="Minimum Tickets"
                 variant="outlined"
                 fullWidth
                 margin="normal"
@@ -81,8 +88,8 @@ const AddPromoCodes = () => {
                 required
                 type="number"
               />
+              <span>Maximum Tickets</span>
               <TextField
-                label="Maximum Tickets"
                 variant="outlined"
                 fullWidth
                 margin="normal"
@@ -91,8 +98,8 @@ const AddPromoCodes = () => {
                 required
                 type="number"
               />
+              <span>Discount Percentage</span>
               <TextField
-                label="Discount Percentage"
                 variant="outlined"
                 fullWidth
                 margin="normal"
@@ -107,7 +114,11 @@ const AddPromoCodes = () => {
                 color="primary"
                 fullWidth
                 disabled={loading}
-                sx={{ mt: 2 }}
+                sx={{
+                  mt: 4,
+                  mb: 4,
+                  backgroundColor: "orange",
+                }}
               >
                 {loading ? "Submitting..." : "Submit"}
               </Button>

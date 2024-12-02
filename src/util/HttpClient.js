@@ -27,11 +27,15 @@ httpClient.interceptors.request.use(
 // Response interceptor
 httpClient.interceptors.response.use(
   (response) => {
-    // Do something with the response data
     return response;
   },
   (error) => {
-    // Do something with the response error (e.g., error handling, logging)
+    if (error.response && error.response.status === 401) {
+      window.localStorage.removeItem("token");
+      window.location.reload();
+ }
+
+  
     return Promise.reject(error);
   }
 );

@@ -119,7 +119,13 @@ const AddPlay = () => {
             <Button
               variant="contained"
               color="primary"
-              sx={{ mt: 8, ml: 2, display: "block", backgroundColor: "orange" }}
+              sx={{
+                mt: 4,
+                ml: 2,
+                mb: 4,
+                display: "block",
+                backgroundColor: "orange",
+              }}
               onClick={handleSubmit}
               disabled={isLoading}
             >

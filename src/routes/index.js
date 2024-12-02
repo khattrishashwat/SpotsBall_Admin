@@ -307,6 +307,8 @@ import PromoCodes from "../pages/authenticated/promo/PromoCodes";
 import AddPromoCodes from "../pages/authenticated/promo/AddPromoCodes";
 import EditPromoCodes from "../pages/authenticated/promo/EditPromoCodes";
 import Restricted from "../pages/authenticated/restricted/Restricted";
+import AddRestricted from "../pages/authenticated/restricted/AddRestricted";
+import EditRestricted from "../pages/authenticated/restricted/EditRestricted";
 
 // Lazy load components
 const NotFound = lazy(() => import("../pages/common/NotFound"));
@@ -538,6 +540,14 @@ const routes = createBrowserRouter(
         {
           path: "restricted",
           element: LazyComponent(Restricted),
+        },
+        {
+          path: "restricted/add_area",
+          element: LazyComponent(AddRestricted),
+        },
+        {
+          path: "restricted/edit_area/:id",
+          element: LazyComponent(EditRestricted),
         },
         {
           path: "promocodes",

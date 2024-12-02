@@ -134,8 +134,9 @@ const EditPlay = () => {
                 variant="contained"
                 color="primary"
                 sx={{
-                  mt: 8,
+                  mt: 4,
                   ml: 2,
+                  mb: 4,
                   display: "block",
                   backgroundColor: "orange",
                 }}

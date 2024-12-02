@@ -34,12 +34,9 @@ const UserData = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paginationModel, setPaginationModel] = useState({
-    page: 1,
+    page: 0,
     pageSize: 10,
   });
-  // const [showImage, setShowImage] = useState(false);
-  // const [profilePicture, setProfilePicture] = useState("");
-  const [filterMode, setFilterMode] = useState("name");
   const [status, setStatus] = useState("");
   const [keyword, setKeyword] = useState("");
   const [showImage, setShowImage] = useState(false);
@@ -189,7 +186,7 @@ const UserData = () => {
 
     httpClient
       .get(
-        `admin/get-all-users?page=${paginationModel.page}&limit=${paginationModel.pageSize}&search=${keyword}`
+        `admin/get-all-users?page=${paginationModel.page+1}&limit=${paginationModel.pageSize}&search=${keyword}`
       )
       .then((res) => {
         const data = res.data.data || {};
@@ -221,47 +218,49 @@ const UserData = () => {
   }, [paginationModel]); // Update dependencies based on your actual needs
 
   const handleRecordPerPage = (e) => {
-    setLoading(true);
-    paginationModel.pageSize = e.target.value;
-    setPaginationModel({ ...paginationModel });
+    const newPageSize = e.target.value;
+    setPaginationModel((prevState) => ({
+      ...prevState,
+      pageSize: newPageSize,
+    }));
   };
 
   const handleSearch = (e) => {
     setLoading(true);
     let searchValue = e.target.value.trim();
-    //if search keyword length is less than 1, reset the user info
     if (searchValue.length <= 1) {
       setPaginationModel({ page: 1, pageSize: 10 });
     }
 
-    if (searchValue || searchValue === " ") {
-      searchValue = searchValue.trim();
-      // setSearch(searchValue);
-      httpClient`admin/get-all-users?page=${paginationModel.page}&limit=${paginationModel.pageSize}&search=${keyword}`
-        // .get(`get-all-users`)
+    if (searchValue) {
+      setKeyword(searchValue);
+      httpClient
+        .get(
+          `admin/get-all-users?page=${paginationModel.page}&limit=${paginationModel.pageSize}&search=${searchValue}`
+        )
         .then((res) => {
           setUserCount(res.data.data.pagination?.totalUsers);
-          if (res.status === 200) {
-            setLoading(false);
-            setRows(
-              res.data.users.map((user, index) => {
-                return {
-                  id: user._id,
-                  col1: index + 1,
-                  col2: user.name,
-                  col3: user.email,
-                  col4: user.mobile,
-                  col5: user.createdAt.substring(0, 10),
-                };
-              })
-            );
-          }
+          setLoading(false);
+          setRows(
+            res.data.users.map((user, index) => ({
+              id: user._id,
+              col1: index + 1,
+              col2: user.profile_url || "N/A",
+              col3: user.is_active,
+              col4: `${user.first_name || "User"} ${
+                user.last_name || ""
+              }`.trim(),
+              col5: user.email || "Not Available",
+              col6: user.phone || "Not Available",
+              col7: user.createdAt?.substring(0, 10) || "N/A",
+            }))
+          );
         })
         .catch((err) => {
-          console.log(err);
+          setLoading(false);
+          console.error("Error fetching users:", err);
         });
     }
-    return;
   };
 
   return (
@@ -356,17 +355,18 @@ const UserData = () => {
                   type="text"
                   name="search"
                   id="search"
-                  placeholder="name..."
+                  placeholder="Name..."
                   style={{
                     width: "100%",
                     outline: "none",
                     borderRadius: 5,
                     border: "1px solid gray",
                   }}
-                  onChange={(e) => {
-                    let keyword = e.target.value.trim();
-                    setKeyword(keyword);
-                  }}
+                  // onChange={(e) => {
+                  //   let keyword = e.target.value.trim();
+                  //   setKeyword(keyword);
+                  // }}
+                  onChange={handleSearch}
                 />
                 {/* <select
                   onClick={(e) => setFilterMode(e.target.value)}
