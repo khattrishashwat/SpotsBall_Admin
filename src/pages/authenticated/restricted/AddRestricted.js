@@ -1,22 +1,37 @@
-import React, { useState } from "react";
-import { TextField, Button, Container, Box, Typography } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+  TextField,
+  Button,
+  Container,
+  Box,
+  Typography,
+  MenuItem,
+} from "@mui/material";
 import httpClient from "../../../util/HttpClient"; // Ensure this path is correct based on your project structure
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import { useNavigate } from "react-router-dom";
+import { State } from "country-state-city"; // Import State from the package
 
 const AddRestricted = () => {
   const [state, setState] = useState("");
+  const [statesList, setStatesList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   let navigate = useNavigate();
+
+  // Load Indian states on component mount
+  useEffect(() => {
+    const indianStates = State.getStatesOfCountry("IN"); // Fetch states of India using country code "IN"
+    setStatesList(indianStates);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
 
-    // Trim whitespace and check if the state is valid
+    // Check if a state is selected
     if (!state.trim()) {
       setMessage("State is required and cannot be empty.");
       setLoading(false);
@@ -39,7 +54,6 @@ const AddRestricted = () => {
       });
   };
 
-
   return (
     <>
       <AppSidebar />
@@ -58,11 +72,12 @@ const AddRestricted = () => {
             }}
           >
             <Typography variant="h5" component="h1" gutterBottom>
-              Create State
+              Select State
             </Typography>
             <form onSubmit={handleSubmit} style={{ width: "100%" }}>
               <TextField
-                label="State"
+                select
+                label="Select State"
                 variant="outlined"
                 fullWidth
                 margin="normal"
@@ -74,7 +89,13 @@ const AddRestricted = () => {
                     marginTop: "6px",
                   },
                 }}
-              />
+              >
+                {statesList.map((state) => (
+                  <MenuItem key={state.isoCode} value={state.name}>
+                    {state.name}
+                  </MenuItem>
+                ))}
+              </TextField>
               <Button
                 type="submit"
                 variant="contained"

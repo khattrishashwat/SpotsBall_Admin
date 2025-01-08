@@ -1,14 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Typography,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import httpClient from "../../../util/HttpClient";
 import Loader from "../../../components/loader/Loader";
 import { useNavigate, useParams } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { State } from "country-state-city";
 
 const EditRestricted = () => {
   const [state, setState] = useState("");
+  const [statesList, setStatesList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -19,16 +30,13 @@ const EditRestricted = () => {
     setIsLoading(true);
     setMessage("");
 
-    // Trim the input
-    const trimmedState = state.trim();
-
-    if (!trimmedState) {
-      setMessage("State is required.");
+    if (!state.trim()) {
+      setMessage("Please select a state.");
       setIsLoading(false);
       return;
     }
 
-    const updatedState = { state: trimmedState };
+    const updatedState = { state };
 
     try {
       const response = await httpClient.patch(
@@ -45,16 +53,19 @@ const EditRestricted = () => {
       setIsLoading(false);
     }
   };
-      
 
   useEffect(() => {
+    // Fetch Indian states using country-state-city
+    const indianStates = State.getStatesOfCountry("IN");
+    setStatesList(indianStates);
+
     setIsLoading(true);
     httpClient
       .get(
         `api/v1/admin/restricted-states/get-restricted-states-by-id/${params.id}`
       )
       .then((res) => {
-        const result = res.data.data; // Correctly access the `data` property
+        const result = res.data.data;
         console.log("Edit state => ", result);
         setState(result.state); // Set the state from the API response
         setIsLoading(false);
@@ -82,20 +93,27 @@ const EditRestricted = () => {
           </Button>
           {isLoading && <Loader />}
           <Box component="form" noValidate autoComplete="off" sx={{ mt: 4 }}>
-            <TextField
-              label="State"
-              value={state}
-              onChange={(e) => setState(e.target.value)}
-              fullWidth
-              margin="normal"
-              variant="outlined"
-              required
-              InputLabelProps={{
-                sx: { marginTop: "5px" },
-              }}
-            />
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="state-label">State</InputLabel>
+              <Select
+                labelId="state-label"
+                value={state}
+                onChange={(e) => setState(e.target.value)}
+                required
+              >
+                {statesList.map((item) => (
+                  <MenuItem key={item.isoCode} value={item.name}>
+                    {item.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             {message && (
-              <Typography variant="body2" color="error" sx={{ mt: 2 }}>
+              <Typography
+                variant="body2"
+                color={message.includes("successfully") ? "green" : "red"}
+                sx={{ mt: 2 }}
+              >
                 {message}
               </Typography>
             )}

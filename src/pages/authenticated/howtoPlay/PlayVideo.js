@@ -69,7 +69,7 @@ const PlayVideo = () => {
     },
     {
       field: "col4",
-      headerName: "Video",
+      headerName: "Video(Web)",
       width: 180,
       renderCell: (params) =>
         params.formattedValue !== "N/A" ? (
@@ -92,16 +92,39 @@ const PlayVideo = () => {
     },
     {
       field: "col5",
+      headerName: "Video(App)",
+      width: 180,
+      renderCell: (params) =>
+        params.formattedValue !== "N/A" ? (
+          <button
+            onClick={() => window.open(params.formattedValue, "_blank")}
+            style={{
+              padding: "5px 10px",
+              color: "white",
+              backgroundColor: "blue",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Watch Video
+          </button>
+        ) : (
+          "N/A"
+        ),
+    },
+    {
+      field: "col6",
       headerName: "Created At",
       width: 180,
     },
     {
-      field: "col6",
+      field: "col7",
       headerName: "Updated At",
       width: 180,
     },
     {
-      field: "col7",
+      field: "col8",
       headerName: "Action",
       width: 200,
       renderCell: (params) => (
@@ -180,9 +203,10 @@ const PlayVideo = () => {
               col2: user.title || "N/A",
               col3: user.thumbnail_url || "N/A",
               col4: user.video_url || "N/A",
-              col5: user.createdAt ? user.createdAt.substring(0, 10) : "N/A",
-              col6: user.updatedAt ? user.updatedAt.substring(0, 10) : "N/A",
-              col7: user.username || "N/A",
+              col5: user.video_url_app || "N/A",
+              col6: user.createdAt ? user.createdAt.substring(0, 10) : "N/A",
+              col7: user.updatedAt ? user.updatedAt.substring(0, 10) : "N/A",
+              col8: user.username || "N/A",
             };
           })
         );

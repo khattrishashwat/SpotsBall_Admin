@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
-import { CCol, CContainer } from "@coreui/react";
+import { CContainer } from "@coreui/react";
 import PageTitle from "../../common/PageTitle";
 import { DataGrid } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -24,13 +24,11 @@ const Restricted = () => {
     page: 0,
     pageSize: 10,
   });
-  const [banners, setBanners] = useState("");
   const navigate = useNavigate();
 
   const columns = [
-    { field: "col1", headerName: "#", width: 180 },
+    { field: "col1", headerName: "#", width: 80 },
     { field: "col2", headerName: "State", width: 200 },
-
     { field: "col3", headerName: "Created At", width: 200 },
     { field: "col4", headerName: "Updated At", width: 200 },
     {
@@ -41,12 +39,12 @@ const Restricted = () => {
         <>
           <EditIcon
             cursor="pointer"
-            style={{ color: "gold", marginRight: "20px" }}
+            style={{ color: "#FFD700", marginRight: "15px" }}
             onClick={() => navigate(`edit_area/${params.row.id}`)}
             titleAccess="Edit"
           />
           <DeleteIcon
-            style={{ color: "red", cursor: "pointer" }}
+            style={{ color: "#FF4D4D", cursor: "pointer" }}
             onClick={() => confirmBeforeDelete(params.row)}
           />
         </>
@@ -58,9 +56,11 @@ const Restricted = () => {
     swal
       .fire({
         title: "Are you sure?",
-        text: "You will not be able to revert this!",
+        text: "This action cannot be undone!",
         icon: "warning",
         showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
         confirmButtonText: "Yes, delete it!",
       })
       .then((result) => {
@@ -99,7 +99,6 @@ const Restricted = () => {
       .get(`api/v1/admin/restricted-states/get-restricted-states`)
       .then((res) => {
         const restrictArea = res.data.data;
-
         if (restrictArea && restrictArea.length > 0) {
           setUserCount(restrictArea.length);
           setRows(
@@ -108,12 +107,12 @@ const Restricted = () => {
               col1:
                 paginationModel.page * paginationModel.pageSize + (index + 1),
               col2: area.state || "N/A",
-              col3: area.createdAt.substring(0, 10), // format date
-              col4: area.updatedAt.substring(0, 10), // format date
+              col3: area.createdAt.substring(0, 10),
+              col4: area.updatedAt.substring(0, 10),
             }))
           );
         } else {
-          setRows([]); // Handle empty data
+          setRows([]);
         }
       })
       .catch((error) => {
@@ -124,26 +123,22 @@ const Restricted = () => {
       });
   };
 
-  const handleRecordPerPage = (e) => {
-    setPaginationModel({
-      ...paginationModel,
-      pageSize: Number(e.target.value),
-    });
-  };
-
   return (
     <>
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="Area" />
-
-        <CContainer>
-          <div className="d-flex justify-content-between align-items-center">
-            <h4>Restricted Area:</h4>
+        <PageTitle title="Restricted Areas" />
+        <CContainer className="py-4">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h4 className="m-0">Restricted Areas</h4>
             <Button
               variant="contained"
-              sx={{ backgroundColor: "orange" }}
+              sx={{
+                backgroundColor: "#ff9800",
+                color: "white",
+                "&:hover": { backgroundColor: "#e68a00" },
+              }}
               onClick={() => navigate("add_area")}
             >
               Add Area
@@ -152,9 +147,10 @@ const Restricted = () => {
           <div
             style={{
               height: "600px",
-              border: "1px solid gray",
-              padding: 15,
-              borderRadius: 5,
+              border: "1px solid #ccc",
+              borderRadius: "8px",
+              padding: "15px",
+              backgroundColor: "#fff",
             }}
           >
             {loading ? (
@@ -162,10 +158,13 @@ const Restricted = () => {
             ) : (
               <DataGrid
                 sx={{
-                  "& .MuiDataGrid-row:nth-of-type(2n)": {
-                    backgroundColor: "#d5dbd6",
+                  "& .MuiDataGrid-row:nth-of-type(even)": {
+                    backgroundColor: "#f5f5f5",
                   },
-                  "& .MuiDataGrid-columnHeader": { backgroundColor: "#d5dbd6" },
+                  "& .MuiDataGrid-columnHeaders": {
+                    backgroundColor: "#f0f0f0",
+                    fontWeight: "bold",
+                  },
                 }}
                 rows={rows}
                 columns={columns}
@@ -184,8 +183,8 @@ const Restricted = () => {
             message={alertMessage}
             ContentProps={{
               sx: apiSuccess
-                ? { backgroundColor: "green" }
-                : { backgroundColor: "red" },
+                ? { backgroundColor: "#4caf50" }
+                : { backgroundColor: "#f44336" },
             }}
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             onClose={() => setCloseSnackbar(false)}
