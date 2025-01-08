@@ -19,30 +19,33 @@ const EditRestricted = () => {
     setIsLoading(true);
     setMessage("");
 
-    if (!state) {
+    // Trim the input
+    const trimmedState = state.trim();
+
+    if (!trimmedState) {
       setMessage("State is required.");
       setIsLoading(false);
       return;
     }
 
-    const updatedState = { state };
+    const updatedState = { state: trimmedState };
 
-    httpClient
-      .patch(
+    try {
+      const response = await httpClient.patch(
         `api/v1/admin/restricted-states/edit-restricted-states/${params.id}`,
         updatedState
-      )
-      .then((res) => {
-        console.log("Updated state => ", res);
-        setIsLoading(false);
-        navigate(-1);
-      })
-      .catch((err) => {
-        console.log("Error => ", err);
-        setMessage("Failed to update the state.");
-        setIsLoading(false);
-      });
+      );
+      console.log("Updated state => ", response);
+      setMessage("State updated successfully!");
+      setIsLoading(false);
+      navigate(-1);
+    } catch (err) {
+      console.error("Error => ", err);
+      setMessage(err?.response?.data?.message || "Failed to update the state.");
+      setIsLoading(false);
+    }
   };
+      
 
   useEffect(() => {
     setIsLoading(true);

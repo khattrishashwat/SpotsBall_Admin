@@ -16,14 +16,17 @@ const AddRestricted = () => {
     setLoading(true);
     setMessage("");
 
-    if (!state) {
-      setMessage("State is required.");
+    // Trim whitespace and check if the state is valid
+    if (!state.trim()) {
+      setMessage("State is required and cannot be empty.");
       setLoading(false);
       return;
     }
 
     await httpClient
-      .post("api/v1/admin/restricted-states/add-restricted-states", { state })
+      .post("api/v1/admin/restricted-states/add-restricted-states", {
+        state: state.trim(),
+      })
       .then((res) => {
         setMessage("State created successfully!");
         setState("");
@@ -35,6 +38,7 @@ const AddRestricted = () => {
         setLoading(false);
       });
   };
+
 
   return (
     <>

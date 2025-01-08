@@ -47,30 +47,22 @@ const GetPayment = () => {
 
   const columns = [
     { field: "col1", headerName: "#", width: 80 },
-    { field: "col2", headerName: "User ID", width: 250 },
+    { field: "col2", headerName: "User Name", width: 150 },
     { field: "col3", headerName: "Tickets", width: 150 },
-    { field: "col4", headerName: "Amount", width: 180 },
-    { field: "col5", headerName: "Promo Codes", width: 180 },
-    { field: "col6", headerName: "Payment ID", width: 180 },
-    { field: "col7", headerName: "No.Coordinates Chosen", width: 170 },
-    { field: "col8", headerName: "Created At", width: 180 },
-    { field: "col9", headerName: "Updated At", width: 180 },
-    // {
-    //   field: "col10",
-    //   headerName: "Action",
-    //   width: 200,
-    //   renderCell: (params) => (
-    //     <>
-    //       <DeleteIcon
-    //         cursor="pointer"
-    //         style={{ color: "red" }}
-    //         onClick={(e) => confirmBeforeDelete(e, params.row)}
-    //         titleAccess="Delete"
-    //       />
-    //     </>
-    //   ),
-    // },
+    { field: "col4", headerName: "Tickets Price", width: 150 },
+    { field: "col5", headerName: "Discount Amount", width: 150 },
+    { field: "col6", headerName: "GST Amount", width: 150 },
+    { field: "col7", headerName: "Sub Total Amount", width: 150 },
+    { field: "col8", headerName: "Platform Fee Amount", width: 150 },
+    { field: "col9", headerName: "GST Platform Fee Amount", width: 150 },
+    { field: "col10", headerName: "Total Razor Pay Amount", width: 150 },
+    { field: "col11", headerName: "Amount", width: 180 },
+    { field: "col12", headerName: "Promo Codes", width: 180 },
+    { field: "col13", headerName: "Payment ID", width: 180 },
+    { field: "col14", headerName: "No. Coordinates Chosen", width: 170 },
+    { field: "col15", headerName: "Created At", width: 180 },
   ];
+
   console.log("params", params);
   console.log(`Fetching data from: api/v1/admin/contest-payments/${params.id}`);
 
@@ -79,37 +71,53 @@ const GetPayment = () => {
     httpClient
       .get(`api/v1/admin/contest-payments/${params.id}`)
       .then((res) => {
-        setUserCount(res.data.data.length);
-        console.log("tgssa-->", res.data.data);
+        const data = res.data.data;
 
+        setUserCount(data.length);
         setLoading(false);
+
         setRows(
-          res.data.data.map((record, index) => ({
+          data.map((record, index) => ({
             id: record._id,
-            col1: paginationModel.page * paginationModel.pageSize + (index + 1),
-            col2: record.userId || "N/A",
-            col3: record.tickets || "N/A",
-            col4: record.amount ? `$${record.amount.toFixed(2)}` : "N/A",
-            col5: record.promocodesApplied?.length
-              ? record.promocodesApplied
-                  .map((promo) => promo.promocode)
-                  .join(", ")
+            col1: paginationModel.page * paginationModel.pageSize + (index + 1), // Row number
+            col2: record.userId?.first_name
+              ? `${record.userId.first_name} ${record.userId.last_name}`
+              : "N/A", // User Name
+            col3: record.tickets || "N/A", // Tickets
+            col4: record.ticketAmount || "N/A", // Tickets
+            col5: record.discountAmount
+              ? `${record.discountAmount.toFixed(2)}`
+              : "N/A", // Discount Amount
+            col6: record.gstAmount ? `${record.gstAmount.toFixed(2)}` : "N/A", // GST Amount
+            col7: record.subTotalAmount
+              ? `${record.subTotalAmount.toFixed(2)}`
+              : "N/A", // Sub Total Amount
+            col8: record.platformFeeAmount
+              ? `${record.platformFeeAmount.toFixed(2)}`
+              : "N/A", // Platform Fee Amount
+            col9: record.gstOnPlatformFeeAmount
+              ? `${record.gstOnPlatformFeeAmount.toFixed(2)}`
+              : "N/A", // GST Platform Fee Amount
+            col10: record.totalRazorPayFeeAmount
+              ? `${record.totalRazorPayFeeAmount.toFixed(2)}`
+              : "N/A", // Total Razor Pay Amount
+            col11: record.amount ? `${record.amount.toFixed(2)}` : "N/A", // Amount
+            col12: record.discountApplied?.name
+              ? `${record.discountApplied.name} (${record.discountApplied.discountPercentage}%)`
               : "N/A",
-            col6: record.paymentId || "N/A",
-            col7: record.coordinates?.length || 0, // Number of chosen coordinates
-            col8: record.createdAt
+            col13: record.paymentId || "N/A", // Payment ID
+            col14: record.coordinates?.length || 0, // Number of Coordinates Chosen
+            col15: record.createdAt
               ? new Date(record.createdAt).toLocaleDateString()
-              : "N/A",
-            col9: record.updatedAt
-              ? new Date(record.updatedAt).toLocaleDateString()
-              : "N/A",
+              : "N/A", // Created At
           }))
         );
+
         setStatus("");
       })
       .catch((error) => {
         setLoading(false);
-        console.error(error);
+        console.error("Error fetching contest payments:", error);
       });
   }, [paginationModel, params.id]);
 

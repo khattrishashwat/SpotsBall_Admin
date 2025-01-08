@@ -56,7 +56,7 @@ const EditContent = () => {
       .then((res) => {
         setLoading(false);
         swal.fire({
-          text: "Updated Successfully!",
+          text: "Content  Updated Successfully!",
           icon: "success",
           timer: 2000,
           timerProgressBar: true,
@@ -121,20 +121,36 @@ const EditContent = () => {
             <CKEditor
               editor={ClassicEditor}
               data={content}
+              config={{
+                toolbar: [
+                  "heading",
+                  "|",
+                  "bold",
+                  "italic",
+                  "underline",
+                  "strikethrough",
+                  "|",
+                  "bulletedList",
+                  "numberedList",
+                  "|",
+                  "outdent",
+                  "indent",
+                  "|",
+                  "link",
+                  "blockQuote",
+                  "undo",
+                  "redo",
+                ],
+                removePlugins: ["Autoformat"], // Disable automatic formatting if needed
+                allowedContent: true, // Allow all content to prevent stripping
+              }}
               onReady={(editor) => {
                 console.log("Editor is ready to use!", editor);
-                // setLoading(false);
               }}
               onChange={(event, editor) => {
                 const data = editor.getData();
                 setNewContent(data);
               }}
-              // onBlur={(event, editor) => {
-              //     console.log('Blur.', editor);webwebweb
-              // }}
-              // onFocus={(event, editor) => {
-              //     console.log('Focus.', editor); `
-              // }}
             />
             <div className="d-flex flex-column mb-4 w-5 ">
               <span className="w-5">Types : </span>

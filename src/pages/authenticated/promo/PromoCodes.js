@@ -44,13 +44,13 @@ const PromoCodes = () => {
           <EditIcon
             cursor="pointer"
             style={{ color: "gold", marginRight: "20px" }}
-            onClick={() => navigate(`edit_promo/${params.row.id}`)}
+            onClick={() => navigate(`edit_coupons/${params.row.id}`)}
             titleAccess="Edit"
           />
           <DeleteIcon
             cursor="pointer"
             style={{ color: "red" }}
-            onClick={() => confirmBeforeDelete(params.row)}
+            onClick={() => confirmBeforeDelete(params.row.id)}
             titleAccess="Delete"
           />
         </>
@@ -127,16 +127,16 @@ const PromoCodes = () => {
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="Promo Codes" />
+        <PageTitle title="Coupons" />
         <CContainer>
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h4>Promo Codes:</h4>
+            <h4>Discount Coupons:</h4>
             <Button
               variant="contained"
               style={{ backgroundColor: "orange" }}
-              onClick={() => navigate("new_promo")}
+              onClick={() => navigate("new_coupons")}
             >
-              New Promo-Code
+              Add New Coupons
             </Button>
           </div>
           <div

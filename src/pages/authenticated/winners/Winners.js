@@ -76,12 +76,12 @@ const Winners = () => {
     {
       field: "col5",
       headerName: "Price",
-      width: 150,
+      width: 180,
     },
     {
       field: "col6",
       headerName: "Created At",
-      width: 250,
+      width: 150,
     },
     {
       field: "col7",
@@ -183,7 +183,7 @@ const Winners = () => {
                 id: doc._id,
                 col1:
                   paginationModel.page * paginationModel.pageSize + (index + 1),
-                col2: doc?.userId?.email || "N/A", // Email column
+                col2: doc?.userId?.first_name || "N/A", // Email column
                 col3: doc?.userId?.phone || "N/A", // Phone column
                 col4: doc?.contestId?._id || doc?.contestId?._id || "N/A", // Contest ID (adjust property name as needed)
                 col5: doc?.contestPaymentsId?.amount || "N/A", // Assuming price is in contestPaymentsId (adjust if needed)
@@ -339,7 +339,7 @@ const Winners = () => {
           <DialogContent>
             <TextField
               margin="dense"
-              label="Email :"
+              label="Name :"
               type="text"
               fullWidth
               variant="outlined"

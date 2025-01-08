@@ -313,7 +313,7 @@ const ContactUs = () => {
               variant="outlined"
               multiline
               rows={4}
-              value={selectedFeedback.col4}
+              value={selectedFeedback.col6}
               readOnly
               InputLabelProps={{
                 sx: {
@@ -324,7 +324,7 @@ const ContactUs = () => {
             />
             <TextField
               margin="dense"
-              label="Message"
+              label="Subject"
               type="text"
               fullWidth
               variant="outlined"

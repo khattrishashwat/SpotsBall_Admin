@@ -32,6 +32,7 @@ const EditContest = () => {
   const [platformFeeRate, setPlatformFeeRate] = useState("");
   const [gstOnPlatformFeeRate, setGstOnPlatformFeeRate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [cousor, setCousor] = useState("");
 
   // Initialize winning coordinates
   const initialCoordinates = x && y ? `{"x": ${x}, "y": ${y}}` : "";
@@ -70,6 +71,7 @@ const EditContest = () => {
         setPlatformFeeRate(result.platformFeeRate || "");
         setGstOnPlatformFeeRate(result.gstOnPlatformFeeRate || "");
         setWinningCoordinates(result.winning_coordinates || "");
+        setCousor(result.cursor_color || "");
         setIsLoading(false);
       })
       .catch((err) => {
@@ -104,6 +106,7 @@ const EditContest = () => {
       setIsLoading(false);
       return; // Stop submission if invalid
     }
+    formData.append("cursor_color", cousor);
 
     formData.append("image_width", imageWidth);
     formData.append("image_height", imageHeight);
@@ -134,7 +137,7 @@ const EditContest = () => {
 
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0"); // months are 0-based
-    const year = date.getFullYear()
+    const year = date.getFullYear();
     const hours = String(date.getHours()).padStart(2, "0");
     const minutes = String(date.getMinutes()).padStart(2, "0");
     const seconds = String(date.getSeconds()).padStart(2, "0"); // Add seconds
@@ -143,9 +146,12 @@ const EditContest = () => {
     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
   };
 
-  console.log("playerImage", playerImage);
-  console.log("contesImage", contestBanner);
-
+  const handleDateChange = (e) => {
+    const localDate = new Date(e.target.value);
+    const offsetDate = new Date(localDate.getTime() + 5.5 * 60 * 60 * 1000); // Add 5 hours 30 minutes
+    const isoDate = offsetDate.toISOString().slice(0, 16); // Get date-time in ISO format without timezone
+    setContestStartDate(isoDate);
+  };
   return (
     <>
       <AppSidebar />
@@ -281,7 +287,7 @@ const EditContest = () => {
             <TextField
               type="datetime-local"
               value={contestStartDate}
-              onChange={(e) => setContestStartDate(e.target.value)}
+              onChange={handleDateChange}
               fullWidth
               margin="normal"
             />
@@ -397,6 +403,13 @@ const EditContest = () => {
               fullWidth
               margin="normal"
             />
+            <label>Choose Cousor Color</label>
+            <TextField
+              value={cousor}
+              onChange={(e) => setCousor(e.target.value)}
+              fullWidth
+              margin="normal"
+            />
             <Button
               sx={{
                 mt: 4,
@@ -409,7 +422,6 @@ const EditContest = () => {
               color="primary"
               fullWidth
               onClick={handleSubmit}
-             
             >
               Update Contest
             </Button>

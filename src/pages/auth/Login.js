@@ -90,7 +90,6 @@ const Login = () => {
     }
   };
 
-
   return (
     <>
       <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
@@ -199,7 +198,10 @@ const Login = () => {
                           </CButton>
                         </CCol>
                         <CCol xs={6} className="text-right">
-                          <Link className="px-0" to={"/auth/forgot"}>
+                          <Link
+                            to={"/auth/forgot"}
+                            style={{ paddingLeft: "81px", paddingRight: "0" }}
+                          >
                             Forgot Password?
                           </Link>
                         </CCol>

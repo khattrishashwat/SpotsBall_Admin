@@ -25,6 +25,7 @@ export const AppSidebarNav = ({ items }) => {
     const Component = component;
     return (
       <Component
+      
         {...(rest.to &&
           !rest.items && {
             component: NavLink,
@@ -50,6 +51,7 @@ export const AppSidebarNav = ({ items }) => {
         {item.items?.map((item, index) =>
           item.items ? navGroup(item, index) : navItem(item, index)
         )}
+        
       </Component>
     );
   };

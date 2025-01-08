@@ -22,18 +22,17 @@ const FindCoordinates = () => {
   const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
   const [showTooltip, setShowTooltip] = useState(false);
   const imgRef = useRef(null);
-const [imgFile,setImgFile]=useState("");
+  const [imgFile, setImgFile] = useState("");
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setImgFile(file);
-    console.log("file-->", file);
     if (file) {
       const reader = new FileReader();
       reader.onload = () => setImageDataUri(reader.result);
       reader.readAsDataURL(file);
     }
   };
-  console.log("imageDataUri-->", imageDataUri);
 
   const handleImageClick = (e) => {
     const img = imgRef.current;
@@ -60,15 +59,6 @@ const [imgFile,setImgFile]=useState("");
 
   const handleMouseEnter = () => setShowTooltip(true);
   const handleMouseLeave = () => setShowTooltip(false);
-
-  // const handleSaveCoordinates = () => {
-  //   const coordinate = { x: xCoordinate, y: yCoordinate };
-  //   navigate("add-contest", {
-  //     state: {
-  //       winningCoordinate: coordinate,
-  //     },
-  //   });
-  // };
 
   const handleSaveCoordinates = () => {
     navigate("/contest_management/add-contest", {
@@ -179,12 +169,18 @@ const [imgFile,setImgFile]=useState("");
               sx={{ maxWidth: 300 }}
               aria-label="Y Coordinate"
             />
+            {!xCoordinate || !yCoordinate ? (
+              <Typography color="error" sx={{ mt: 1 }}>
+                Please select X and Y coordinates before saving.
+              </Typography>
+            ) : null}
             <Button
               onClick={handleSaveCoordinates}
               variant="contained"
               color="primary"
               sx={{ mt: 2 }}
               aria-label="Save Coordinates"
+              disabled={!xCoordinate || !yCoordinate}
             >
               Save Coordinates
             </Button>

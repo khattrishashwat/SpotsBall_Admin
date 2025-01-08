@@ -7,28 +7,22 @@ import {
   CDropdownMenu,
   CDropdownToggle,
 } from "@coreui/react";
-
 import avatar8 from "./../../assets/images/avatars/no_avatar.png";
-import { Link, useNavigate } from "react-router-dom";
-import httpClient from "../../util/HttpClient";
+import { useNavigate } from "react-router-dom";
 
 const AppHeaderDropdown = () => {
   const navigate = useNavigate();
 
-  const handleLogOut = async () => {
-    console.log("logout")
-    localStorage.removeItem("token"); //remove token from local storage
+  const handleLogOut = () => {
+    console.log("Logging out...");
+    localStorage.clear(); // Clear all local storage data
     navigate("/auth/login");
-    // httpClient
-    //   .get("/logout")
-    //   .then((res) => {
-    //     if (res.data.success) {
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
   };
+
+  const handleProfile = () => {
+    navigate("/profile");
+  };
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
@@ -38,20 +32,13 @@ const AppHeaderDropdown = () => {
         <CDropdownHeader className="bg-light fw-semibold py-2">
           Account
         </CDropdownHeader>
-        {/* <Link className="dropdown-item" to={"/web/profile"}>
-          {" "}
-          <i className="bi bi-person-square"></i>&nbsp;Profile
-        </Link> */}
-        {/* <Link className="dropdown-item" to={"/web/settings"}>
-          {" "}
-          <i className="bi bi-gear-fill"></i>&nbsp;Settings
-        </Link> */}
-
         <CDropdownDivider />
-        <Link className="dropdown-item" onClick={handleLogOut}>
-          {" "}
+        <button className="dropdown-item" onClick={handleProfile}>
+          <i className="bi bi-person text-primary"></i>&nbsp;Profile
+        </button>
+        <button className="dropdown-item" onClick={handleLogOut}>
           <i className="bi bi-box-arrow-right text-danger"></i>&nbsp;Log out
-        </Link>
+        </button>
       </CDropdownMenu>
     </CDropdown>
   );

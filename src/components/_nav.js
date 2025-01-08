@@ -16,6 +16,7 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import Logo from "./logo.png";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
 const _nav = [
   {
@@ -86,8 +87,18 @@ const _nav = [
   },
   {
     component: CNavItem,
+    // name: "Coupons",
     name: "PromoCodes",
     to: "/promocodes",
+    // to: "/coupons",
+    icon: <LocalOfferIcon />,
+  },
+  {
+    component: CNavItem,
+    // name: "PromoCodes",
+    name: "Coupons",
+    // to: "/promocodes",
+    to: "/coupons",
     icon: <LocalOfferIcon />,
   },
   {
@@ -125,6 +136,12 @@ const _nav = [
     name: "Contact Us",
     to: "/contacts",
     icon: <ContactMailIcon />,
+  },
+  {
+    component: CNavItem,
+    name: "Subscribers",
+    to: "/subscribers",
+    icon: <PersonAddIcon />,
   },
 ];
 

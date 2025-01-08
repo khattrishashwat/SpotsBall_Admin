@@ -5,14 +5,12 @@ import { CCol, CContainer } from "@coreui/react";
 import PageTitle from "../../common/PageTitle";
 import { DataGrid } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import { Button, IconButton, Snackbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import httpClient from "../../../util/HttpClient";
 import swal from "sweetalert2";
 import Loader from "../../../components/loader/Loader";
-import axios from "axios";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 
 const ContestManagement = () => {
@@ -25,91 +23,49 @@ const ContestManagement = () => {
   const [loading, setLoading] = useState(true);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
-    pageSize: 10,
+    pageSize: 12,
   });
-  const [filterMode, setFilterMode] = useState("name");
-  const [status, setStatus] = useState("");
-  const [keyword, setKeyword] = useState("");
+
   const navigate = useNavigate();
 
-  const handleSelect = (e) => {
+  const fetchContests = () => {
+    setLoading(true);
+    const { page, pageSize } = paginationModel;
+
     httpClient
-      .patch(`/admin/users/${e.target.id}`, {
-        is_active: e.target.value === "active" ? true : false,
-      })
+      .get(`/admin/get-all-contests?page=${page + 1}&limit=${pageSize}`)
       .then((res) => {
-        console.log("update status ==> ", res);
-        setStatus("ok");
+        const contests = res.data.data;
+        setUserCount(res.data.total); // Total number of contests from the API
+        setRows(
+          contests.map((contest, index) => ({
+            id: contest._id,
+            col1: page * pageSize + (index + 1),
+            col2: contest.title || "N/A",
+            col3: contest.contest_banner?.file_url || "N/A",
+            col4: contest.jackpot_price || "N/A",
+            col5: contest.maxTickets || "N/A",
+            col6: contest.contest_start_date
+              ? contest.contest_start_date.substring(0, 10)
+              : "N/A",
+            col7: contest.contest_end_date
+              ? contest.contest_end_date.substring(0, 10)
+              : "N/A",
+          }))
+        );
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoading(false);
       });
   };
 
-  const columns = [
-    { field: "col1", headerName: "#", width: 150 },
-    { field: "col2", headerName: "Title", width: 205 },
-    {
-      field: "col3",
-      headerName: "Image",
-      width: 200,
-      renderCell: (params) => {
-        return params.formattedValue !== "N/A" ? (
-          <img
-            style={{
-              width: "70px",
-              objectFit: "cover",
-              cursor: "pointer",
-            }}
-            src={params.formattedValue}
-            alt="thumbnail"
-          />
-        ) : (
-          ""
-        );
-      },
-    },
-    {
-      field: "col4",
-      headerName: "Price",
-      width: 120,
-    },
-    {
-      field: "col5",
-      headerName: "Max Ticket",
-      width: 180,
-    },
-    {
-      field: "col6",
-      headerName: "Contest State_Date",
-      width: 180,
-    },
-    {
-      field: "col7",
-      headerName: "Contest End_Date",
-      width: 180,
-    },
-    {
-      field: "col8",
-      headerName: "Action",
-      width: 200,
-      renderCell: (params) => (
-        <>
-          <EditIcon
-            cursor={"pointer"}
-            style={{ color: "gold", marginRight: "20px" }}
-            onClick={() => navigate(`edit-contest/${params.row.id}`)}
-            titleAccess="Edit"
-          />
-          <DeleteIcon
-            cursor={"pointer"}
-            style={{ color: "red" }}
-            onClick={(e) => confirmBeforeDelete(e, params.row)}
-            titleAccess="Delete"
-          />
-        </>
-      ),
-    },
-  ];
+  useEffect(() => {
+    fetchContests();
+  }, [paginationModel]);
 
-  const confirmBeforeDelete = (e, params) => {
+  const confirmBeforeDelete = (id) => {
     swal
       .fire({
         title: "Are you sure?",
@@ -120,71 +76,81 @@ const ContestManagement = () => {
       })
       .then((result) => {
         if (result.isConfirmed) {
-          deleteSingleUser(e, params);
+          console.log(`Deleting contest with ID: ${id}`); // Log ID for debugging
+          deleteSingleUser(id);
         }
       });
   };
 
-  const deleteSingleUser = (e, params) => {
-    const groupId = params.id;
+  const deleteSingleUser = (id) => {
     httpClient
-      .delete(`admin/delete-contest/${groupId}`)
+      .delete(`admin/delete-contest/${id}`)
       .then((res) => {
+        console.log(`Contest with ID: ${id} successfully deleted.`); // Success log
         setAlertMessage(res.data.message);
         setApiSuccess(true);
-        setApiError(false);
-        setLoading(false);
         setCloseSnakeBar(true);
-        setStatus("deleted");
+        fetchContests(); // Refetch data after deletion
       })
       .catch((error) => {
-        setAlertMessage(error.response.data.message);
+        console.error(
+          `Failed to delete contest with ID: ${id}. Error: `,
+          error.response?.data?.message || error
+        ); // Error log
+        setAlertMessage(error.response?.data?.message || "Failed to delete");
         setApiError(true);
-        setApiSuccess(false);
         setCloseSnakeBar(true);
-        setLoading(false);
       });
   };
 
-  useEffect(() => {
-    setLoading(true);
-    httpClient
-      .get(`admin/get-all-contests`)
-      .then((res) => {
-        setUserCount(res.data.data.length); // Count based on the response data length
-        setLoading(false);
-        setRows(
-          res.data.data.map((contest, index) => {
-            return {
-              id: contest._id,
-              col1:
-                paginationModel.page * paginationModel.pageSize + (index + 1),
-              col2: contest.title || "N/A",
-              col3: contest.contest_banner?.file_url || "N/A", // Contest image URL
-              col4: contest.jackpot_price || "N/A", // Jackpot Price
-              col5: contest.maxTickets || "N/A", // Max Ticket
-              col6: contest.contest_start_date
-                ? contest.contest_start_date.substring(0, 10)
-                : "N/A", // Contest Start Date
-              col7: contest.contest_end_date
-                ? contest.contest_end_date.substring(0, 10)
-                : "N/A", // Contest End Date
-            };
-          })
-        );
-        setStatus("");
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.log(error);
-      });
-  }, [paginationModel, alertMessage, status, keyword]);
-
-  const handleRecordPerPage = (e) => {
-    setLoading(true);
-    paginationModel.pageSize = e.target.value;
-    setPaginationModel({ ...paginationModel });
-  };
+  const columns = [
+    { field: "col1", headerName: "#", width: 150 },
+    { field: "col2", headerName: "Title", width: 205 },
+    {
+      field: "col3",
+      headerName: "Image",
+      width: 200,
+      renderCell: (params) =>
+        params.value !== "N/A" ? (
+          <img
+            style={{
+              width: "70px",
+              objectFit: "cover",
+              cursor: "pointer",
+            }}
+            src={params.value}
+            alt="thumbnail"
+          />
+        ) : (
+          ""
+        ),
+    },
+    { field: "col4", headerName: "Price", width: 120 },
+    { field: "col5", headerName: "Max Ticket", width: 180 },
+    { field: "col6", headerName: "Contest Start Date", width: 180 },
+    { field: "col7", headerName: "Contest End Date", width: 180 },
+    {
+      field: "col8",
+      headerName: "Action",
+      width: 200,
+      renderCell: (params) => (
+        <>
+          <IconButton
+            color="primary"
+            onClick={() => navigate(`edit-contest/${params.row.id}`)}
+          >
+            <EditIcon />
+          </IconButton>
+          <IconButton
+            color="error"
+            onClick={(e) => confirmBeforeDelete(params.row.id)}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </>
+      ),
+    },
+  ];
 
   return (
     <>
@@ -196,24 +162,14 @@ const ContestManagement = () => {
         <CContainer>
           <div className="d-flex justify-content-between align-items-center">
             <h4 className="my-4">Contest Management</h4>
-            <Button
-              variant="contained"
-              className="my-2"
-              sx={{
-                backgroundColor: "orange",
-              }}
-              onClick={() => {
-                navigate("add-contest");
-              }}
-            >
+            <Button variant="contained" onClick={() => navigate("add-contest")}>
               Add Contest
             </Button>
           </div>
 
           <div
             style={{
-              height: "600px",
-              minHeight: "600px",
+              height: "900px",
               border: "1px solid gray",
               padding: 15,
               borderRadius: 5,
@@ -221,50 +177,23 @@ const ContestManagement = () => {
           >
             <Snackbar
               open={closeSnakeBar}
-              autoHideDuration={1000}
+              autoHideDuration={3000}
               message={alertMessage}
+              onClose={() => setCloseSnakeBar(false)}
               ContentProps={{
                 sx: apiSuccess
                   ? { backgroundColor: "green" }
                   : { backgroundColor: "red" },
               }}
-              anchorOrigin={{
-                horizontal: "right",
-                vertical: "bottom",
-              }}
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  sx={{ p: 0.5 }}
-                  onClick={() => setCloseSnakeBar(false)}
-                >
-                  <CloseIcon />
-                </IconButton>
-              }
             />
 
             <DataGrid
-              sx={{
-                "& .MuiDataGrid-row:nth-of-type(2n)": {
-                  backgroundColor: "#f4f4f4",
-                },
-                "& .MuiDataGrid-columnHeader": {
-                  backgroundColor: "#d5dbd6",
-                  fontWeight: "bold",
-                },
-                "& .MuiDataGrid-cell": {
-                  outline: "none !important",
-                },
-              }}
               rows={rows}
               columns={columns}
               rowCount={userCount}
-              disableRowSelectionOnClick
               pagination
               paginationMode="server"
               paginationModel={paginationModel}
-              disableColumnMenu
               onPaginationModelChange={setPaginationModel}
               loading={loading}
               autoHeight

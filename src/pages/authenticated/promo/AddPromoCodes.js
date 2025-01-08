@@ -66,7 +66,7 @@ const AddPromoCodes = () => {
             }}
           >
             <Typography variant="h5" component="h1" gutterBottom>
-              Create a New Promo Code
+              Create a New Discount Coupons
             </Typography>
             <form onSubmit={handleSubmit} style={{ width: "100%" }}>
               <span>Name</span>

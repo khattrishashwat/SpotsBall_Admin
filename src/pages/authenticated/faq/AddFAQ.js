@@ -3,36 +3,43 @@ import { TextField, Button, Container, Box, Typography } from "@mui/material";
 import httpClient from "../../../util/HttpClient"; // Ensure this path is correct based on your project structure
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const AddFAQ = () => {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!question || !answer) {
+      setMessage("Both Question and Answer are required!");
+      return;
+    }
+
     setLoading(true);
     setMessage("");
 
-    await httpClient
-      .post("admin/add-faq", {
+    try {
+      const response = await httpClient.post("admin/add-faq", {
         question,
         answer,
-      })
-      .then((res) => {
-        setMessage("Question created successfully!");
-        setQuestion("");
-        setAnswer("");
-        navigate(-1);
-      })
-      .catch((err) => {
-        console.log("error => ", err);
-        setMessage(err?.response?.data?.message);
-        setLoading(false);
       });
+      setMessage("Question created successfully!");
+      setQuestion("");
+      setAnswer("");
+      navigate(-1);
+    } catch (err) {
+      console.error("Error =>", err);
+      setMessage(
+        err?.response?.data?.message || "An error occurred. Please try again."
+      );
+      setLoading(false);
+    }
   };
 
   return (
@@ -65,27 +72,18 @@ const AddFAQ = () => {
                 onChange={(e) => setQuestion(e.target.value)}
                 required
                 InputLabelProps={{
-                  sx: {
-                    // fontSize: "18px", // Example: Set custom font size
-                    marginTop: "6px",
-                  },
+                  sx: { marginTop: "6px" },
                 }}
               />
-              <TextField
-                label="Answer"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
-                required
-                multiline
-                rows={10} // Adjust the number of rows to fit your needs
-                InputLabelProps={{
-                  sx: {
-                    // fontSize: "18px", // Example: Set custom font size
-                    marginTop: "8px",
-                  },
+              <Typography variant="h6" sx={{ mt: 2 }}>
+                Answer:
+              </Typography>
+              <CKEditor
+                editor={ClassicEditor}
+                data={answer}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  setAnswer(data);
                 }}
               />
               <Button
@@ -94,13 +92,7 @@ const AddFAQ = () => {
                 color="primary"
                 fullWidth
                 disabled={loading}
-                sx={{
-                  mt: 4,
-                  ml: 2,
-                  mb: 4,
-                  display: "block",
-                  backgroundColor: "orange",
-                }}
+                sx={{ mt: 4, mb: 4 }}
               >
                 {loading ? "Submitting..." : "Submit"}
               </Button>

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-
 import {
   CButton,
   CCard,
@@ -190,7 +189,10 @@ const Forgot = () => {
                         </CButton>
                       </CCol>
                       <CCol xs={6} className="text-right">
-                        <Link className="px-0" to={"/auth/login"}>
+                        <Link
+                          to={"/auth/login"}
+                          style={{ paddingLeft: "81px", paddingRight: "0" }}
+                        >
                           Back to login
                         </Link>
                       </CCol>
@@ -204,23 +206,52 @@ const Forgot = () => {
       </CContainer>
 
       {/* OTP Dialog */}
-      <Dialog open={openOtpDialog} onClose={() => setOpenOtpDialog(false)}>
+      <Dialog
+        open={openOtpDialog}
+        onClose={() => {}}
+        disableBackdropClick // Prevent closing when clicking outside
+        disableEscapeKeyDown // Prevent closing when pressing escape
+        maxWidth="xs"
+        fullWidth
+        sx={{
+          "& .MuiDialogTitle-root": {
+            fontWeight: "bold",
+            fontSize: "1.2rem",
+            padding: "16px 24px",
+          },
+          "& .MuiDialogContent-root": {
+            padding: "16px 24px",
+          },
+          "& .MuiButton-root": {
+            textTransform: "none",
+            padding: "8px 20px",
+            fontSize: "0.9rem",
+          },
+        }}
+      >
         <DialogTitle>Verify OTP</DialogTitle>
         <DialogContent>
+          <span>Enter OTP </span>
           <TextField
-            label="Enter OTP"
+            // label="Enter OTP"
             type="text"
             fullWidth
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
             margin="dense"
+            error={otp === "" && apiError} // Highlight if OTP is empty when submitting
+            helperText={otp === "" && apiError ? "OTP is required" : ""}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenOtpDialog(false)} color="secondary">
             Cancel
           </Button>
-          <Button onClick={verifyOTP} color="primary">
+          <Button
+            onClick={verifyOTP}
+            color="primary"
+            disabled={otp === ""} // Disable the Verify button if OTP is empty
+          >
             Verify
           </Button>
         </DialogActions>
