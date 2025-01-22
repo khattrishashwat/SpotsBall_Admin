@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 const AddCouponsCodes = () => {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
-  
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   let navigate = useNavigate();
@@ -18,10 +18,8 @@ const AddCouponsCodes = () => {
     setLoading(true);
     setMessage("");
 
-  
-
     await httpClient
-      .post("api/v1/admin/promocode/add-promocode", {
+      .post("admin/promocode/add-promocode", {
         name,
         amount,
       })
@@ -34,7 +32,7 @@ const AddCouponsCodes = () => {
       })
       .catch((err) => {
         console.log("error => ", err);
-        setMessage(err?.response?.data?.message );
+        setMessage(err?.response?.data?.message);
         setLoading(false);
       });
   };

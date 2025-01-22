@@ -148,21 +148,7 @@ const PlayVideo = () => {
 
 
   //handle get confirmation before delete user
-  const confirmBeforeDelete = (e, params) => {
-    swal
-      .fire({
-        title: "Are you sure?",
-        text: "You will not be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, delete it!",
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          deleteSingleUser(e, params);
-        }
-      });
-  };
+
 
   const deleteSingleUser = (e, params) => {
     const groupId = params.id;
@@ -189,7 +175,7 @@ const PlayVideo = () => {
   useEffect(() => {
     setLoading(true);
     httpClient
-      .get(`admin/get-how-to-play`)
+      .get(`admin/how-to-play/get-how-to-play`)
       .then((res) => {
         setUserCount(res.data.data.length); // Count based on the response data length
         setLoading(false);

@@ -55,7 +55,7 @@ const GetPayment = () => {
     { field: "col7", headerName: "Sub Total Amount", width: 150 },
     { field: "col8", headerName: "Platform Fee Amount", width: 150 },
     { field: "col9", headerName: "GST Platform Fee Amount", width: 150 },
-    { field: "col10", headerName: "Total Razor Pay Amount", width: 150 },
+    { field: "col10", headerName: "Total Platform Amount", width: 150 },
     { field: "col11", headerName: "Amount", width: 180 },
     { field: "col12", headerName: "Promo Codes", width: 180 },
     { field: "col13", headerName: "Payment ID", width: 180 },
@@ -69,7 +69,7 @@ const GetPayment = () => {
   useEffect(() => {
     setLoading(true);
     httpClient
-      .get(`api/v1/admin/contest-payments/${params.id}`)
+      .get(`admin/contest-payments/${params.id}`)
       .then((res) => {
         const data = res.data.data;
 

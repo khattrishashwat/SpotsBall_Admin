@@ -42,7 +42,7 @@ const AddWeAre = () => {
 
   const AddWeAreToDB = (formData) => {
     httpClient
-      .post(`api/v1/admin/who-we-are/add-who-we-are`, formData)
+      .post(`admin/who-we-are/add-who-we-are`, formData)
       .then((res) => {
         setIsLoading(false);
         navigate(-1);

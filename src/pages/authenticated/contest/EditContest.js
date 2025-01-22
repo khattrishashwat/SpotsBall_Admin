@@ -44,7 +44,7 @@ const EditContest = () => {
   useEffect(() => {
     setIsLoading(true);
     httpClient
-      .get(`admin/get-contest/${params.id}`)
+      .get(`admin/contest/get-contest/${params.id}`)
       .then((res) => {
         const result = res.data.data;
         const formattedDate = formatDate(result.contest_start_date);
@@ -119,7 +119,7 @@ const EditContest = () => {
     formData.append("gstOnPlatformFeeRate", gstOnPlatformFeeRate);
 
     httpClient
-      .patch(`admin/edit-contest/${params.id}`, formData)
+      .patch(`admin/contest/edit-contest/${params.id}`, formData)
       .then(() => {
         setIsLoading(false);
         Swal.fire("Success", "Contest updated successfully", "success");

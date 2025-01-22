@@ -30,7 +30,7 @@ const EditPromoCodes = () => {
     }
 
     httpClient
-      .patch(`api/v1/admin/discount/edit-discount/${params.id}`, {
+      .patch(`admin/discount/edit-discount/${params.id}`, {
         name,
         minTickets,
         maxTickets,
@@ -49,7 +49,7 @@ const EditPromoCodes = () => {
 
   useEffect(() => {
     httpClient
-      .get(`api/v1/admin/discount/get-discount-by-id/${params.id}`)
+      .get(`admin/discount/get-discount-by-id/${params.id}`)
       .then((res) => {
         const data = res.data.data;
         setName(data.name);

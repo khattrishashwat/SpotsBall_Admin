@@ -35,7 +35,7 @@ const NewContent = () => {
   const updateContent = (e) => {
     setLoading(true);
     httpClient
-      .post(`admin/add-static-content`, newContentData)
+      .post(`admin/static-content/add-static-content`, newContentData)
       .then((res) => {
         setLoading(false);
         swal.fire({

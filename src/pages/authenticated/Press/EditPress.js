@@ -37,12 +37,11 @@ const EditPress = () => {
 
   const updateGroupInDB = (groupData) => {
     httpClient
-      .patch(`admin/edit-press/${params.id}`, groupData)
-      .then((res) =>  {
-          setIsLoading(false);
-          navigate(-1);
-        }
-      )
+      .patch(`admin/press/edit-press/${params.id}`, groupData)
+      .then((res) => {
+        setIsLoading(false);
+        navigate(-1);
+      })
       .catch((err) => {
         setIsLoading(false);
         console.log("error => ", err);
@@ -51,9 +50,9 @@ const EditPress = () => {
 
   useEffect(() => {
     httpClient
-      .get(`admin/get-press-by-id/${params.id}`)
+      .get(`admin/press/get-press-by-id/${params.id}`)
       .then((res) => {
-        const result=res.data.data;
+        const result = res.data.data;
         setIsLoading(false);
         setTitle(result.title);
         setDescription(result.description);

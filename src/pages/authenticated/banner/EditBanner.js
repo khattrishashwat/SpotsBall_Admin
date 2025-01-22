@@ -66,7 +66,7 @@ const EditBanner = () => {
 
   const updateBannerInDB = (formData) => {
     httpClient
-      .patch(`admin/edit-banner/${params.id}`, formData)
+      .patch(`admin/banner/edit-banner/${params.id}`, formData)
       .then(() => {
         setIsLoading(false);
 
@@ -96,7 +96,7 @@ const EditBanner = () => {
 
   useEffect(() => {
     httpClient
-      .get(`admin/get-banner-by-id/${params.id}`)
+      .get(`admin/banner/get-banner-by-id/${params.id}`)
       .then((res) => {
         const result = res.data.data;
 

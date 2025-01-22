@@ -76,7 +76,7 @@ const [cousor,setCousor]=useState("");
   const AddContestToDB = (groupData) => {
     setIsLoading(true);
     httpClient
-      .post(`admin/add-contest`, groupData)
+      .post(`admin/contest/add-contest`, groupData)
       .then((res) => {
         setIsLoading(false);
         if (res.status) {

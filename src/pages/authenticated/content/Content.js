@@ -131,7 +131,7 @@ const Content = () => {
   //fetching user information
   useEffect(() => {
     httpClient
-      .get(`admin/get-all-static-content`)
+      .get(`admin/static-content/get-all-static-content`)
       .then((res) => {
         console.log("Fetched Data:", res.data.data);
         setUserCount(res.data.data.length);

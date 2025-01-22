@@ -61,7 +61,7 @@ const PromoCodes = () => {
   useEffect(() => {
     setLoading(true);
     httpClient
-      .get(`api/v1/admin/discount/get-discount`)
+      .get(`admin/discount/get-discount`)
       .then((res) => {
         const data = res.data?.data || [];
         setUserCount(data.length);
@@ -105,7 +105,7 @@ const PromoCodes = () => {
   const deletePromoCode = (id) => {
     setLoading(true);
     httpClient
-      .delete(`api/v1/admin/discount/delete-discount/${id}`)
+      .delete(`admin/discount/delete-discount/${id}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);

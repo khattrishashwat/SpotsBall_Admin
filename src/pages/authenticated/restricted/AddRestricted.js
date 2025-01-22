@@ -39,7 +39,7 @@ const AddRestricted = () => {
     }
 
     await httpClient
-      .post("api/v1/admin/restricted-states/add-restricted-states", {
+      .post("admin/restricted-states/add-restricted-states", {
         state: state.trim(),
       })
       .then((res) => {

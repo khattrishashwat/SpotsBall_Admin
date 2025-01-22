@@ -53,7 +53,7 @@ const Reset = () => {
 
   const resetPassword = (values) => {
     httpClient
-      .post("admin/reset-password", values)
+      .post("admin/auth/reset-password", values)
       .then((res) => {
         setLoading(false);
         if (res.data?.success) {

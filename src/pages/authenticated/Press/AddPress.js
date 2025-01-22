@@ -87,7 +87,7 @@ const AddPress = () => {
 
   const addPressToDB = (formData) => {
     httpClient
-      .post(`admin/add-press`, formData)
+      .post(`admin/press/add-press`, formData)
       .then(() => {
         setIsLoading(false);
         Swal.fire({

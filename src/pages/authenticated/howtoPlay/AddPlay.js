@@ -42,11 +42,10 @@ const AddPlay = () => {
 
   const AddPlayToDB = (groupData) => {
     httpClient
-      .post(`admin/add-how-to-play`, groupData)
-      .then((res) =>{
-          setIsLoading(false);
-          navigate(-1);
-        
+      .post(`admin/how-to-play/add-how-to-play`, groupData)
+      .then((res) => {
+        setIsLoading(false);
+        navigate(-1);
       })
       .catch((err) => {
         setIsLoading(false);

@@ -46,7 +46,7 @@ const AddBanner = () => {
 
   const AddBannerToDB = (formData) => {
     httpClient
-      .post(`admin/add-banner`, formData)
+      .post(`admin/banner/add-banner`, formData)
       .then((res) => {
         setIsLoading(false);
         navigate(-1);

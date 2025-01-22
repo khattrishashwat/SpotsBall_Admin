@@ -30,7 +30,7 @@ const EditContent = () => {
 
   useEffect(() => {
     httpClient
-      .get(`admin/get-static-content-by-id/${params.id}`)
+      .get(`admin/static-content/get-static-content-by-id/${params.id}`)
       .then((res) => {
         console.log("update content data => ", res.data.data);
         //  setData(result);
@@ -52,7 +52,10 @@ const EditContent = () => {
 
   const updateContent = (e) => {
     httpClient
-      .patch(`admin/edit-static-content/${params.id}`, newContentData)
+      .patch(
+        `admin/static-content/edit-static-content/${params.id}`,
+        newContentData
+      )
       .then((res) => {
         setLoading(false);
         swal.fire({

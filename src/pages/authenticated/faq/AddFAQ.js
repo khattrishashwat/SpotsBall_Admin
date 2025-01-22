@@ -25,7 +25,7 @@ const AddFAQ = () => {
     setMessage("");
 
     try {
-      const response = await httpClient.post("admin/add-faq", {
+      const response = await httpClient.post("admin/faq/add-faq", {
         question,
         answer,
       });

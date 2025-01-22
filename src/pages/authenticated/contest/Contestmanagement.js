@@ -33,7 +33,7 @@ const ContestManagement = () => {
     const { page, pageSize } = paginationModel;
 
     httpClient
-      .get(`/admin/get-all-contests?page=${page + 1}&limit=${pageSize}`)
+      .get(`/admin/contest/get-all-contests?page=${page + 1}&limit=${pageSize}`)
       .then((res) => {
         const contests = res.data.data;
         setUserCount(res.data.total); // Total number of contests from the API
@@ -84,7 +84,7 @@ const ContestManagement = () => {
 
   const deleteSingleUser = (id) => {
     httpClient
-      .delete(`admin/delete-contest/${id}`)
+      .delete(`admin/contest/delete-contest/${id}`)
       .then((res) => {
         console.log(`Contest with ID: ${id} successfully deleted.`); // Success log
         setAlertMessage(res.data.message);

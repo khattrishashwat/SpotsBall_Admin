@@ -168,7 +168,7 @@ const Winners = () => {
   useEffect(() => {
     setLoading(true);
     httpClient
-      .get(`api/v1/admin/contest/the-winners-circle/?year=2024`)
+      .get(`admin/contest/the-winners-circle/?year=2024`)
       .then((res) => {
         const { data } = res.data; // destructure response data
         setUserCount(data.count);

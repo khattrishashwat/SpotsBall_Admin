@@ -33,7 +33,7 @@ const AddSocials = () => {
     }
 
     await httpClient
-      .post("api/v1/admin/live-links/add-live-links", {
+      .post("admin/live-links/add-live-links", {
         type,
         url,
       })

@@ -96,7 +96,7 @@ const WinnerCircle = () => {
   const fetchContests = () => {
     setLoading(true);
     httpClient
-      .get("api/v1/admin/contest/get-all-contest-details")
+      .get("admin/contest/get-all-contest-details")
       .then((res) => {
         setRows(
           res.data.data.map((contestData, index) => ({

@@ -74,7 +74,7 @@ const Restricted = () => {
     const groupId = params.id;
     httpClient
       .delete(
-        `api/v1/admin/restricted-states/delete-restricted-states/${groupId}`
+        `admin/restricted-states/delete-restricted-states/${groupId}`
       )
       .then((res) => {
         setAlertMessage(res.data.message);
@@ -96,7 +96,7 @@ const Restricted = () => {
   const fetchArea = () => {
     setLoading(true);
     httpClient
-      .get(`api/v1/admin/restricted-states/get-restricted-states`)
+      .get(`admin/restricted-states/get-restricted-states`)
       .then((res) => {
         const restrictArea = res.data.data;
         if (restrictArea && restrictArea.length > 0) {

@@ -2,17 +2,7 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import Protected from "./Protected";
 import GuestRoutes from "./GuestRoutes";
-import PromoCodes from "../pages/authenticated/promo/PromoCodes";
-import AddPromoCodes from "../pages/authenticated/promo/AddPromoCodes";
-import EditPromoCodes from "../pages/authenticated/promo/EditPromoCodes";
-import CouponsCodes from "../pages/authenticated/coupons/CouponsCodes";
-import AddCouponsCodes from "../pages/authenticated/coupons/AddCouponsCodes";
-import EditCouponsCodes from "../pages/authenticated/coupons/EditCouponsCodes";
-import Restricted from "../pages/authenticated/restricted/Restricted";
-import AddRestricted from "../pages/authenticated/restricted/AddRestricted";
-import EditRestricted from "../pages/authenticated/restricted/EditRestricted";
 
-import Subsribers from "../pages/authenticated/subscriber/Subsribers";
 // Lazy load components
 const NotFound = lazy(() => import("../pages/common/NotFound"));
 const Register = lazy(() => import("../pages/auth/Register"));
@@ -84,6 +74,9 @@ const FindCoordinates = lazy(() =>
   import("../pages/authenticated/contest/FindCoordinates")
 );
 const Payments = lazy(() => import("../pages/authenticated/payment/Payments"));
+const AllPayments = lazy(() =>
+  import("../pages/authenticated/payment/AllPayments")
+);
 const GetPayment = lazy(() =>
   import("../pages/authenticated/payment/GetPayment")
 );
@@ -100,6 +93,46 @@ const WeAre = lazy(() => import("../pages/authenticated/whoweare/WeAre"));
 const AddWeAre = lazy(() => import("../pages/authenticated/whoweare/AddWeAre"));
 const EditWeAre = lazy(() =>
   import("../pages/authenticated/whoweare/EditWeAre")
+);
+
+const PromoCodes = lazy(() =>
+  import("../pages/authenticated/promo/PromoCodes")
+);
+const AddPromoCodes = lazy(() =>
+  import("../pages/authenticated/promo/AddPromoCodes")
+);
+const EditPromoCodes = lazy(() =>
+  import("../pages/authenticated/promo/EditPromoCodes")
+);
+const CouponsCodes = lazy(() =>
+  import("../pages/authenticated/coupons/CouponsCodes")
+);
+const AddCouponsCodes = lazy(() =>
+  import("../pages/authenticated/coupons/AddCouponsCodes")
+);
+const EditCouponsCodes = lazy(() =>
+  import("../pages/authenticated/coupons/EditCouponsCodes")
+);
+const Restricted = lazy(() =>
+  import("../pages/authenticated/restricted/Restricted")
+);
+const AddRestricted = lazy(() =>
+  import("../pages/authenticated/restricted/AddRestricted")
+);
+const EditRestricted = lazy(() =>
+  import("../pages/authenticated/restricted/EditRestricted")
+);
+const Application = lazy(() =>
+  import("../pages/authenticated/application/Application")
+);
+const AddApplication = lazy(() =>
+  import("../pages/authenticated/application/AddApplication")
+);
+const EditApplication = lazy(() =>
+  import("../pages/authenticated/application/EditApplication")
+);
+const Subsribers = lazy(() =>
+  import("../pages/authenticated/subscriber/Subsribers")
 );
 
 /**
@@ -173,6 +206,18 @@ const routes = createBrowserRouter(
           element: LazyComponent(UsersData),
         },
         {
+          path: "applicatiom_management",
+          element: LazyComponent(Application),
+        },
+        {
+          path: "applicatiom_management/add-application",
+          element: LazyComponent(AddApplication),
+        },
+        {
+          path: "applicatiom_management/edit-application/:id",
+          element: LazyComponent(EditApplication),
+        },
+        {
           path: "contest_management",
           element: LazyComponent(Contestmanagement),
         },
@@ -235,6 +280,10 @@ const routes = createBrowserRouter(
         {
           path: "content/edit-content/:id",
           element: LazyComponent(EditContent),
+        },
+        {
+          path: "allpayments",
+          element: LazyComponent(AllPayments),
         },
         {
           path: "payment",
@@ -364,7 +413,7 @@ const routes = createBrowserRouter(
     },
   ],
   {
-    basename: "/admin-panel",
+    basename: "/spotsball/admin-panel",
   }
 );
 

@@ -60,7 +60,7 @@ const CouponsCodes = () => {
   useEffect(() => {
     setLoading(true);
     httpClient
-      .get(`api/v1/admin/promocode/get-promocode`)
+      .get(`admin/promocode/get-promocode`)
       .then((res) => {
         const data = res.data?.data || [];
         setUserCount(data.length);
@@ -70,7 +70,7 @@ const CouponsCodes = () => {
             col1: paginationModel.page * paginationModel.pageSize + (index + 1),
             col2: record.name || "N/A",
             col3: record.amount || "N/A",
-      
+
             col4: record.isActive ? "true" : "false",
             col5: record.createdAt?.substring(0, 10) || "N/A",
             col6: record.updatedAt?.substring(0, 10) || "N/A",
@@ -103,7 +103,7 @@ const CouponsCodes = () => {
   const deletePromoCode = (id) => {
     setLoading(true);
     httpClient
-      .delete(`api/v1/admin/discount/delete-discount/${id}`)
+      .delete(`admin/promocode/delete-promocode/${id}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);

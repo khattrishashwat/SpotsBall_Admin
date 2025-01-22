@@ -56,7 +56,7 @@ const Register = () => {
   //storing new user data in database
   const register = async (userInfo) => {
     httpClient
-      .post("admin/sign-up", userInfo)
+      .post("admin/auth/sign-up", userInfo)
       .then((res) => {
         if (res.data && res.data.success) {
           setApiSuccess(true);

@@ -169,7 +169,7 @@ const EditFAQ = () => {
   const handleSubmit = () => {
     setIsLoading(true);
     httpClient
-      .patch(`admin/edit-faq/${params.id}`, { question, answer: newContent })
+      .patch(`admin/faq/edit-faq/${params.id}`, { question, answer: newContent })
       .then((res) => {
         setIsLoading(false);
         navigate(-1);
@@ -182,7 +182,7 @@ const EditFAQ = () => {
 
   useEffect(() => {
     httpClient
-      .get(`admin/get-faq/${params.id}`)
+      .get(`admin/faq/get-faq/${params.id}`)
       .then((res) => {
         setAnswer(res.data.data.answer);
         setQuestion(res.data.data.question);

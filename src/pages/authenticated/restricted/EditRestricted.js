@@ -40,7 +40,7 @@ const EditRestricted = () => {
 
     try {
       const response = await httpClient.patch(
-        `api/v1/admin/restricted-states/edit-restricted-states/${params.id}`,
+        `admin/restricted-states/edit-restricted-states/${params.id}`,
         updatedState
       );
       console.log("Updated state => ", response);
@@ -62,7 +62,7 @@ const EditRestricted = () => {
     setIsLoading(true);
     httpClient
       .get(
-        `api/v1/admin/restricted-states/get-restricted-states-by-id/${params.id}`
+        `admin/restricted-states/get-restricted-states-by-id/${params.id}`
       )
       .then((res) => {
         const result = res.data.data;

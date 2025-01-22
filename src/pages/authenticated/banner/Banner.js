@@ -102,7 +102,7 @@ const Banner = () => {
   const fetchBanners = () => {
     setLoading(true);
     httpClient
-      .get(`admin/get-banner`)
+      .get(`admin/banner/get-banner`)
       .then((res) => {
         const bannerData = res.data.data;
 

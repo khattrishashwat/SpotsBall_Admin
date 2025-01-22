@@ -111,7 +111,7 @@ const InPress = () => {
   useEffect(() => {
     setLoading(true);
     httpClient
-      .get(`admin/get-press`)
+      .get(`admin/press/get-press`)
       .then((res) => {
         setUserCount(res.data.data.length);
         setLoading(false);
@@ -158,7 +158,7 @@ const InPress = () => {
   const deleteSingleUser = (e, params) => {
     const groupId = params.id;
     httpClient
-      .delete(`admin/delete-press/${groupId}`)
+      .delete(`admin/press/delete-press/${groupId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);

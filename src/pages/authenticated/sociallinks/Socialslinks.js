@@ -31,7 +31,7 @@ const Socialslinks = () => {
 
     httpClient
       .get(
-        `api/v1/admin/live-links/get-live-links?page=${
+        `admin/live-links/get-live-links?page=${
           page + 1
         }&limit=${pageSize}`
       )
@@ -77,7 +77,7 @@ const Socialslinks = () => {
   const deleteSingleLink = (params) => {
     const userId = params.id;
     httpClient
-      .delete(`api/v1/admin/live-links/delete-live-links/${userId}`)
+      .delete(`admin/live-links/delete-live-links/${userId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);

@@ -92,7 +92,7 @@ const WeAre = () => {
   useEffect(() => {
     setLoading(true);
     httpClient
-      .get(`api/v1/admin/who-we-are/get-who-we-are`)
+      .get(`admin/who-we-are/get-who-we-are`)
       .then((res) => {
         console.log("content => ", res);
 
@@ -145,7 +145,7 @@ const WeAre = () => {
   const deleteSingleUser = (e, params) => {
     const userId = params.id;
     httpClient
-      .delete(`api/v1/admin/who-we-are/delete-who-we-are/${userId}`)
+      .delete(`admin/who-we-are/delete-who-we-are/${userId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);

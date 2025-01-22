@@ -39,7 +39,7 @@ const EditSocials = () => {
 
     httpClient
       .patch(
-        `api/v1/admin/live-links/edit-live-links/${params.id}`,
+        `admin/live-links/edit-live-links/${params.id}`,
         updatedSocial
       )
       .then((res) => {
@@ -69,7 +69,7 @@ const EditSocials = () => {
   useEffect(() => {
     setIsLoading(true);
     httpClient
-      .get(`api/v1/admin/live-links/get-live-links-by-id/${params.id}`)
+      .get(`admin/live-links/get-live-links-by-id/${params.id}`)
       .then((res) => {
         const result = res.data.data; // Correctly access the `data` property
         console.log("Edit social => ", result);

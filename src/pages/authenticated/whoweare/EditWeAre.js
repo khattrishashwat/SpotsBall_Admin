@@ -43,7 +43,7 @@ const EditWeAre = () => {
 
   const EditWeAreToDB = (formData) => {
     httpClient
-      .patch(`api/v1/admin/who-we-are/edit-who-we-are/${params.id}`, formData)
+      .patch(`admin/who-we-are/edit-who-we-are/${params.id}`, formData)
       .then(() => {
         setIsLoading(false);
         navigate(-1);
@@ -56,7 +56,7 @@ const EditWeAre = () => {
 
   useEffect(() => {
     httpClient
-      .get(`api/v1/admin/who-we-are/get-who-we-are-by-id/${params.id}`)
+      .get(`admin/who-we-are/get-who-we-are-by-id/${params.id}`)
       .then((res) => {
         const result = res.data.data;
 

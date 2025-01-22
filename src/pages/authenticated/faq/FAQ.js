@@ -113,7 +113,7 @@ const FAQ = () => {
   const deleteSingleUser = (e, params) => {
     const userId = params.id;
     httpClient
-      .delete(`admin/delete-faq/${userId}`)
+      .delete(`admin/faq/delete-faq/${userId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);
@@ -135,7 +135,7 @@ const FAQ = () => {
   useEffect(() => {
     setLoading(true);
     httpClient
-      .get(`admin/get-all-faq`)
+      .get(`admin/faq/get-all-faq`)
       .then((res) => {
         console.log("content => ", res);
         setUserCount(res.data.data.length); // Assuming count represents the length of FAQ data

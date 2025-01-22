@@ -4,7 +4,7 @@ import FeedbackIcon from "@mui/icons-material/Feedback";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
 import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import QuizIcon from "@mui/icons-material/Quiz";
-import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import SourceIcon from "@mui/icons-material/Source";
 import Diversity1Icon from "@mui/icons-material/Diversity1";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
@@ -12,11 +12,13 @@ import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import InfoIcon from "@mui/icons-material/Info"; // For "Who We Are"
 import LinkIcon from "@mui/icons-material/Link"; // For "Social Link"
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import PaymentIcon from "@mui/icons-material/Payment";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import Logo from "./logo.png";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import DiscountIcon from "@mui/icons-material/Discount";
+import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
 
 const _nav = [
   {
@@ -83,23 +85,26 @@ const _nav = [
     component: CNavItem,
     name: "Payments",
     to: "/payment",
-    icon: <MonetizationOnIcon />,
+    icon: <PaymentIcon />, // Different icon for "Payments"
   },
   {
     component: CNavItem,
-    // name: "Coupons",
+    name: "AllPayments",
+    to: "/allpayments",
+    icon: <AccountBalanceWalletIcon />, // Different icon for "AllPayments"
+  },
+
+  {
+    component: CNavItem,
     name: "PromoCodes",
     to: "/promocodes",
-    // to: "/coupons",
-    icon: <LocalOfferIcon />,
+    icon: <DiscountIcon />, // Icon for PromoCodes
   },
   {
     component: CNavItem,
-    // name: "PromoCodes",
     name: "Coupons",
-    // to: "/promocodes",
     to: "/coupons",
-    icon: <LocalOfferIcon />,
+    icon: <CardGiftcardIcon />, // Icon for Coupons
   },
   {
     component: CNavItem,
@@ -142,6 +147,12 @@ const _nav = [
     name: "Subscribers",
     to: "/subscribers",
     icon: <PersonAddIcon />,
+  },
+  {
+    component: CNavItem,
+    name: "APK Download",
+    to: "/applicatiom_management",
+    icon: <CloudDownloadIcon />,
   },
 ];
 

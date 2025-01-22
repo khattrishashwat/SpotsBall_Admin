@@ -45,7 +45,7 @@ const EditCouponsCodes = () => {
     setIsLoading(true);
 
     httpClient
-      .patch(`api/v1/admin/promocode/edit-promocode/${params.id}`, {
+      .patch(`admin/promocode/edit-promocode/${params.id}`, {
         name,
         amount,
       })
@@ -71,7 +71,7 @@ const EditCouponsCodes = () => {
 
   useEffect(() => {
     httpClient
-      .get(`api/v1/admin/promocode/get-promocode-by-id/${params.id}`)
+      .get(`admin/promocode/get-promocode-by-id/${params.id}`)
       .then((res) => {
         const data = res.data.data;
         setName(data.name);

@@ -108,7 +108,7 @@ const ContactUs = () => {
 
   const deleteSingleUser = useCallback((userId) => {
     httpClient
-      .delete(`api/v1/admin/contact-us/${userId}`)
+      .delete(`admin/contact-us/${userId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiStatus({ success: true, error: false });
@@ -128,7 +128,7 @@ const ContactUs = () => {
     setLoading(true);
 
     httpClient
-      .get(`api/v1/admin/contact-us`)
+      .get(`admin/contact-us`)
       .then((res) => {
         console.log(res);
         setUserCount(res.data.data.length); // Update user count

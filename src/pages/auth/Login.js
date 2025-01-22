@@ -59,7 +59,7 @@ const Login = () => {
 
   const login = async (userInfo) => {
     try {
-      const res = await httpClient.post("admin/login", userInfo);
+      const res = await httpClient.post("admin/auth/login", userInfo);
       console.log("login => ", res);
 
       // Check if the token is directly in the response (adjust as needed)

@@ -1,6 +1,6 @@
 {
   "name": "react-practice",
-  "homepage": "/admin-panel",
+  "homepage": "/spotsball/admin-panel",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

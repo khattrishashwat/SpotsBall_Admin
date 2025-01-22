@@ -70,7 +70,7 @@ const Forgot = () => {
 
   const sendOTP = (email) => {
     httpClient
-      .post("admin/send-otp", { email })
+      .post("admin/auth/send-otp", { email })
       .then((res) => {
         if (res) {
           window.localStorage.setItem("token", res.data.data.token);
@@ -102,7 +102,7 @@ const Forgot = () => {
 
   const verifyOTP = () => {
     httpClient
-      .post("admin/submit-otp", { otp })
+      .post("admin/auth/submit-otp", { otp })
       .then((res) => {
         if (res) {
           setOpenOtpDialog(false);

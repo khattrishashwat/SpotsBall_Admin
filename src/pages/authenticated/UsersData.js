@@ -58,7 +58,7 @@ const UserData = () => {
     console.log("status", status);
 
     httpClient
-      .get(`admin/active-in-active-user/${id}`, {
+      .get(`admin/users/active-in-active-user/${id}`, {
         is_active: status === true ? false : true,
       })
       .then((res) => {
@@ -162,7 +162,7 @@ const UserData = () => {
   const deleteSingleUser = (e, params) => {
     const userId = params.id;
     httpClient
-      .delete(`admin/delete-user/${userId}`)
+      .delete(`admin/users/delete-user/${userId}`)
       .then((res) => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);
@@ -179,72 +179,33 @@ const UserData = () => {
         setLoading(false);
       });
   };
-
+  const handleSearch = (e) => {
+    const value = e.target.value.trim();
+    setKeyword(value); // Update keyword
+    setPaginationModel({ page: 1, pageSize: paginationModel.pageSize }); // Reset pagination
+  };
   //fetching user information
   useEffect(() => {
-    setLoading(true);
+    const fetchUsers = () => {
+      setLoading(true);
 
-    httpClient
-      .get(
-        `admin/get-all-users?page=${paginationModel.page+1}&limit=${paginationModel.pageSize}&search=${keyword}`
-      )
-      .then((res) => {
-        const data = res.data.data || {};
-        setUserCount(data.pagination?.totalUsers);
-        setLoading(false);
-
-        const docs = data.users || [];
-        console.log("Fetched users:", docs);
-
-        setRows(
-          docs.map((user, index) => ({
-            id: user._id,
-            col1: paginationModel.page * paginationModel.pageSize + (index + 1),
-            col2: user.profile_url || "N/A",
-            col3: user.is_active,
-            col4: `${user.first_name || "User"} ${user.last_name || ""}`.trim(),
-            col5: user.email || "Not Available",
-            col6: user.phone || "Not Available",
-            col7: user.createdAt?.substring(0, 10) || "N/A",
-          }))
-        );
-
-        setStatus("");
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.error("Error fetching users:", error);
-      });
-  }, [paginationModel]); // Update dependencies based on your actual needs
-
-  const handleRecordPerPage = (e) => {
-    const newPageSize = e.target.value;
-    setPaginationModel((prevState) => ({
-      ...prevState,
-      pageSize: newPageSize,
-    }));
-  };
-
-  const handleSearch = (e) => {
-    setLoading(true);
-    let searchValue = e.target.value.trim();
-    if (searchValue.length <= 1) {
-      setPaginationModel({ page: 1, pageSize: 10 });
-    }
-
-    if (searchValue) {
-      setKeyword(searchValue);
       httpClient
         .get(
-          `admin/get-all-users?page=${paginationModel.page}&limit=${paginationModel.pageSize}&search=${searchValue}`
+          `admin/users/get-all-users?page=${paginationModel.page}&limit=${
+            paginationModel.pageSize
+          }&search=${keyword.trim()}`
         )
-        .then((res) => {
-          setUserCount(res.data.data.pagination?.totalUsers);
-          setLoading(false);
+        .then((response) => {
+          const data = response.data.data || {};
+          setUserCount(data.pagination?.totalUsers || 0);
+
+          const users = data.users || [];
           setRows(
-            res.data.users.map((user, index) => ({
+            users.map((user, index) => ({
               id: user._id,
-              col1: index + 1,
+              col1:
+                (paginationModel.page - 1) * paginationModel.pageSize +
+                (index + 1),
               col2: user.profile_url || "N/A",
               col3: user.is_active,
               col4: `${user.first_name || "User"} ${
@@ -256,12 +217,72 @@ const UserData = () => {
             }))
           );
         })
-        .catch((err) => {
+        .catch((error) => {
+          console.error("Error fetching users:", error);
+        })
+        .finally(() => {
           setLoading(false);
-          console.error("Error fetching users:", err);
         });
+    };
+
+    if (keyword.length > 1 || keyword === "") {
+      fetchUsers();
     }
+  }, [keyword, paginationModel]);
+
+  const handleRecordPerPage = (e) => {
+    const newPageSize = e.target.value;
+    setPaginationModel((prevState) => ({
+      ...prevState,
+      pageSize: newPageSize,
+    }));
   };
+
+  // const handleSearch = (e) => {
+  //   setLoading(true);
+  //   let searchValue = e.target.value.trim();
+  //   if (searchValue.length <= 1) {
+  //     setPaginationModel({ page: 1, pageSize: 10 });
+  //   }
+
+  //   if (searchValue) {
+  //     setKeyword(searchValue);
+  //     httpClient
+  //       .get(
+  //         `admin/user/get-all-users?page=${paginationModel.page}&limit=${paginationModel.pageSize}&search=${searchValue}`
+  //       )
+  //       .then((res) => {
+  //         const data = res.data.data || {};
+  //         setUserCount(data.pagination?.totalUsers);
+  //         setLoading(false);
+
+  //         const docs = data.users || [];
+  //         console.log("Fetched users:", docs);
+
+  //         setRows(
+  //           docs.map((user, index) => ({
+  //             id: user._id,
+  //             col1:
+  //               paginationModel.page * paginationModel.pageSize + (index + 1),
+  //             col2: user.profile_url || "N/A",
+  //             col3: user.is_active,
+  //             col4: `${user.first_name || "User"} ${
+  //               user.last_name || ""
+  //             }`.trim(),
+  //             col5: user.email || "Not Available",
+  //             col6: user.phone || "Not Available",
+  //             col7: user.createdAt?.substring(0, 10) || "N/A",
+  //           }))
+  //         );
+
+  //         setStatus("");
+  //       })
+  //       .catch((err) => {
+  //         setLoading(false);
+  //         console.error("Error fetching users:", err);
+  //       });
+  //   }
+  // };
 
   return (
     <>
@@ -368,15 +389,6 @@ const UserData = () => {
                   // }}
                   onChange={handleSearch}
                 />
-                {/* <select
-                  onClick={(e) => setFilterMode(e.target.value)}
-                  style={{ borderRadius: 5, outline: "none" }}
-                >
-                  <option disabled selected>select</option>
-                  <option value={"name"}>name</option>
-                  <option value="email">email</option>
-                  <option value="mobile">mobile</option>
-                </select> */}
               </CCol>
             </div>
             {showImage && (

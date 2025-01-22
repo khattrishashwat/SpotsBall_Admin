@@ -27,7 +27,7 @@ const AddPromoCodes = () => {
     }
 
     await httpClient
-      .post("api/v1/admin/discount/add-discount", {
+      .post("admin/discount/add-discount", {
         name,
         minTickets,
         maxTickets,
