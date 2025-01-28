@@ -6,21 +6,19 @@ import httpClient from "../../../util/HttpClient";
 import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../../../components/loader/Loader";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const EditPress = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [link, setLink] = useState("");
   const [pressBanner, setPressBanner] = useState(null);
-
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
   const params = useParams();
 
   const handleTitleChange = (e) => setTitle(e.target.value);
-  const handleDescriptionChange = (e) => setDescription(e.target.value);
-  const handleLinkChange = (e) => setLink(e.target.value);
   const handlePressBannerChange = (e) => setPressBanner(e.target.files[0]);
 
   const handleSubmit = () => {
@@ -29,7 +27,6 @@ const EditPress = () => {
 
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("link", link);
     if (pressBanner) formData.append("press_banner", pressBanner);
 
     updateGroupInDB(formData);
@@ -56,7 +53,6 @@ const EditPress = () => {
         setIsLoading(false);
         setTitle(result.title);
         setDescription(result.description);
-        setLink(result.link);
         setPressBanner(result.press_banner);
       })
       .catch((err) => {
@@ -102,31 +98,18 @@ const EditPress = () => {
             />
 
             <label>Description</label>
-            <TextField
-              value={description}
-              onChange={handleDescriptionChange}
-              fullWidth
-              margin="normal"
-              placeholder="Enter description here..."
-              multiline
-              rows={4}
-              sx={{
-                border: "none",
+            <CKEditor
+              editor={ClassicEditor}
+              data={description} // Bind the description value to CKEditor
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                setDescription(data); // Update the description state
               }}
-            />
-
-            <label>Link</label>
-            <TextField
-              value={link}
-              onChange={handleLinkChange}
-              fullWidth
-              margin="normal"
-              placeholder="Enter link here..."
-              type="url" // Enforces URL format
-              sx={{
-                border: "none",
-              }}
-              helperText="Please enter a valid URL (e.g., https://example.com)"
+              config={
+                {
+                  // Add custom CKEditor configurations here if needed
+                }
+              }
             />
 
             <label>Press Banner</label>
@@ -141,13 +124,14 @@ const EditPress = () => {
             <Button
               variant="contained"
               color="primary"
- sx={{
+              sx={{
                 mt: 4,
                 ml: 2,
                 mb: 4,
                 display: "block",
                 backgroundColor: "orange",
-              }}              onClick={handleSubmit}
+              }}
+              onClick={handleSubmit}
               disabled={isLoading}
             >
               Update

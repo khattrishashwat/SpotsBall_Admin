@@ -7,11 +7,12 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Loader from "../../../components/loader/Loader";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const AddPress = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [link, setLink] = useState("");
   const [pressBanner, setPressBanner] = useState(null);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -45,12 +46,6 @@ const AddPress = () => {
     validateField("description", value);
   };
 
-  const handleLinkChange = (e) => {
-    const value = e.target.value;
-    setLink(value);
-    validateField("link", value);
-  };
-
   const handlePressBannerChange = (e) => {
     const file = e.target.files[0];
     setPressBanner(file);
@@ -67,7 +62,6 @@ const AddPress = () => {
     const newErrors = {};
     if (!title.trim()) newErrors.title = "Title is required";
     if (!description.trim()) newErrors.description = "Description is required";
-    if (!link.trim()) newErrors.link = "Link is required";
     if (!pressBanner) newErrors.pressBanner = "Press banner is required";
 
     if (Object.keys(newErrors).length > 0) {
@@ -79,7 +73,6 @@ const AddPress = () => {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("link", link);
     formData.append("press_banner", pressBanner);
 
     addPressToDB(formData);
@@ -143,32 +136,22 @@ const AddPress = () => {
             />
 
             <label>Description</label>
-            <TextField
-              value={description}
-              onChange={handleDescriptionChange}
-              fullWidth
-              margin="normal"
-              placeholder="Enter description here..."
-              multiline
-              rows={4}
-              error={!!errors.description}
-              helperText={errors.description}
-            />
-
-            <label>Link</label>
-            <TextField
-              value={link}
-              onChange={handleLinkChange}
-              fullWidth
-              margin="normal"
-              placeholder="Enter link here..."
-              type="url"
-              error={!!errors.link}
-              helperText={
-                errors.link ||
-                "Please enter a valid URL (e.g., https://example.com)"
+            <CKEditor
+              editor={ClassicEditor}
+              data={description} // Bind the description value to CKEditor
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                setDescription(data); // Update the description state
+              }}
+              config={
+                {
+                  // Add custom CKEditor configurations here if needed
+                }
               }
             />
+            {errors.description && (
+              <span className="error">{errors.description}</span>
+            )}
 
             <label>Press Banner</label>
             <TextField

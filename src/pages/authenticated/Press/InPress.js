@@ -189,11 +189,11 @@ const InPress = () => {
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="InPress" />
+        <PageTitle title="Blog" />
 
         <CContainer>
           <div className="d-flex justify-content-between align-items-center">
-            <h4 className="">In-Press : </h4>
+            <h4 className="">Blog : </h4>
             <Button
               variant="contained"
               className="my-2"

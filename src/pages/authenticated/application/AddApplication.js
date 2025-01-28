@@ -1,52 +1,51 @@
 import React, { useState } from "react";
 import { TextField, Button, Container, Box, Typography } from "@mui/material";
-import httpClient from "../../../util/HttpClient"; // Ensure this path is correct based on your project structure
+import httpClient from "../../../util/HttpClient"; // Ensure this path is correct
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import { useNavigate } from "react-router-dom";
 
 const AddApplication = () => {
-  const [android_build, setAndroid_build] = useState("");
+  const [apkFile, setApkFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   let navigate = useNavigate();
+
+  const handleFileChange = (e) => {
+    setApkFile(e.target.files[0]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
 
-    // Check if android_build is empty or invalid
-    if (!android_build) {
-      setMessage("android_build is required.");
+    if (!apkFile) {
+      setMessage("Please select an APK file.");
       setLoading(false);
       return;
     }
 
-    // Simple android_build validation (you can improve this if needed)
-    const android_buildPattern = /^(https?:\/\/[^\s$.?#].[^\s]*)$/;
-    if (!android_buildPattern.test(android_build)) {
-      setMessage("Please enter a valid android_build.");
+    const formData = new FormData();
+    formData.append("apk_file", apkFile); // Ensure the backend expects "apk_file"
+
+    try {
+      const response = await httpClient.post(
+        "admin/apk-links/add-apk-links",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
+      setMessage("Application uploaded successfully!");
+      setApkFile(null);
+      navigate(-1);
+    } catch (error) {
+      console.log("Upload error:", error);
+      setMessage(error?.response?.data?.message || "File upload failed.");
       setLoading(false);
-      return;
     }
-
-    await httpClient
-      .post("admin/apk-links/add-apk-links", {
-     
-        android_build,
-      })
-      .then((res) => {
-        setMessage("Application link Added successfully!");
-
-        setAndroid_build("");
-        navigate(-1);
-      })
-      .catch((err) => {
-        console.log("error => ", err);
-        setMessage(err?.response?.data?.message);
-        setLoading(false);
-      });
   };
 
   return (
@@ -67,23 +66,15 @@ const AddApplication = () => {
             }}
           >
             <Typography variant="h5" component="h1" gutterBottom>
-              Create Application Link
+              Upload Application APK
             </Typography>
             <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-              <TextField
-                label="android_build"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={android_build}
-                onChange={(e) => setAndroid_build(e.target.value)}
+              <input
+                type="file"
+                accept=".apk"
+                onChange={handleFileChange}
                 required
-                type="android_build"
-                InputLabelProps={{
-                  sx: {
-                    marginTop: "8px",
-                  },
-                }}
+                style={{ marginBottom: "16px" }}
               />
               <Button
                 type="submit"
@@ -92,14 +83,11 @@ const AddApplication = () => {
                 fullWidth
                 disabled={loading}
                 sx={{
-                  mt: 4,
-                  ml: 2,
-                  mb: 4,
-                  display: "block",
+                  mt: 2,
                   backgroundColor: "orange",
                 }}
               >
-                {loading ? "Submitting..." : "Submit"}
+                {loading ? "Uploading..." : "Upload"}
               </Button>
             </form>
             {message && (
