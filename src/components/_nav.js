@@ -77,26 +77,26 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: "In Press",
-    to: "/In_Press",
+    name: "Blogs",
+    to: "/blogs",
     icon: <FeedbackIcon />,
   },
   {
     component: CNavItem,
-    name: "Payments",
+    name: "Contest Payments",
     to: "/payment",
     icon: <PaymentIcon />, // Different icon for "Payments"
   },
   {
     component: CNavItem,
-    name: "AllPayments",
+    name: "All Payments",
     to: "/allpayments",
     icon: <AccountBalanceWalletIcon />, // Different icon for "AllPayments"
   },
 
   {
     component: CNavItem,
-    name: "PromoCodes",
+    name: "Promo Codes",
     to: "/promocodes",
     icon: <DiscountIcon />, // Icon for PromoCodes
   },
@@ -108,7 +108,7 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: "Contest Win Circle",
+    name: "Announce Winner",
     to: "/winners_circle",
     icon: <EmojiEventsIcon />,
   },

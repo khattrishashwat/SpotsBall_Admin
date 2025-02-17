@@ -34,7 +34,7 @@ const UserData = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paginationModel, setPaginationModel] = useState({
-    page: 0,
+    page: 0, // Set pagination to start from 1
     pageSize: 10,
   });
   const [status, setStatus] = useState("");
@@ -126,20 +126,20 @@ const UserData = () => {
     { field: "col5", headerName: "email", width: 200 },
     { field: "col6", headerName: "Phone Number", width: 160 },
     { field: "col7", headerName: "Created Date", width: 170 },
-    {
-      field: "col8",
-      headerName: "Action",
-      width: 125,
-      renderCell: (params) => {
-        return (
-          <DeleteIcon
-            cursor={"pointer"}
-            style={{ color: "red" }}
-            onClick={(e) => confirmBeforeDelete(e, params.row)}
-          />
-        );
-      },
-    },
+    // {
+    //   field: "col8",
+    //   headerName: "Action",
+    //   width: 125,
+    //   renderCell: (params) => {
+    //     return (
+    //       <DeleteIcon
+    //         cursor={"pointer"}
+    //         style={{ color: "red" }}
+    //         onClick={(e) => confirmBeforeDelete(e, params.row)}
+    //       />
+    //     );
+    //   },
+    // },
   ];
 
   //handle get confirmation before delete user
@@ -170,6 +170,9 @@ const UserData = () => {
         setLoading(false);
         setCloseSnakeBar(true);
         setStatus("deleted");
+
+        // Remove the deleted user from the rows array
+        setRows((prevRows) => prevRows.filter((row) => row.id !== userId));
       })
       .catch((error) => {
         setAlertMessage(error.response.data.message);
@@ -179,11 +182,13 @@ const UserData = () => {
         setLoading(false);
       });
   };
+
   const handleSearch = (e) => {
     const value = e.target.value.trim();
     setKeyword(value); // Update keyword
-    setPaginationModel({ page: 1, pageSize: paginationModel.pageSize }); // Reset pagination
+    setPaginationModel({ page: 1, pageSize: paginationModel.pageSize }); // Reset pagination to start from page 1
   };
+
   //fetching user information
   useEffect(() => {
     const fetchUsers = () => {
@@ -204,8 +209,7 @@ const UserData = () => {
             users.map((user, index) => ({
               id: user._id,
               col1:
-                (paginationModel.page - 1) * paginationModel.pageSize +
-                (index + 1),
+                paginationModel.page * paginationModel.pageSize + (index + 1), // Updated this line
               col2: user.profile_url || "N/A",
               col3: user.is_active,
               col4: `${user.first_name || "User"} ${
@@ -238,58 +242,12 @@ const UserData = () => {
     }));
   };
 
-  // const handleSearch = (e) => {
-  //   setLoading(true);
-  //   let searchValue = e.target.value.trim();
-  //   if (searchValue.length <= 1) {
-  //     setPaginationModel({ page: 1, pageSize: 10 });
-  //   }
-
-  //   if (searchValue) {
-  //     setKeyword(searchValue);
-  //     httpClient
-  //       .get(
-  //         `admin/user/get-all-users?page=${paginationModel.page}&limit=${paginationModel.pageSize}&search=${searchValue}`
-  //       )
-  //       .then((res) => {
-  //         const data = res.data.data || {};
-  //         setUserCount(data.pagination?.totalUsers);
-  //         setLoading(false);
-
-  //         const docs = data.users || [];
-  //         console.log("Fetched users:", docs);
-
-  //         setRows(
-  //           docs.map((user, index) => ({
-  //             id: user._id,
-  //             col1:
-  //               paginationModel.page * paginationModel.pageSize + (index + 1),
-  //             col2: user.profile_url || "N/A",
-  //             col3: user.is_active,
-  //             col4: `${user.first_name || "User"} ${
-  //               user.last_name || ""
-  //             }`.trim(),
-  //             col5: user.email || "Not Available",
-  //             col6: user.phone || "Not Available",
-  //             col7: user.createdAt?.substring(0, 10) || "N/A",
-  //           }))
-  //         );
-
-  //         setStatus("");
-  //       })
-  //       .catch((err) => {
-  //         setLoading(false);
-  //         console.error("Error fetching users:", err);
-  //       });
-  //   }
-  // };
-
   return (
     <>
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="User  Management" />
+        <PageTitle title="User Management" />
         <CContainer>
           <h4 className="">Users</h4>
           <div
@@ -372,74 +330,44 @@ const UserData = () => {
               >
                 Search:
                 <input
-                  className="ms-2 ps-1"
                   type="text"
                   name="search"
-                  id="search"
-                  placeholder="Name..."
-                  style={{
-                    width: "100%",
-                    outline: "none",
-                    borderRadius: 5,
-                    border: "1px solid gray",
-                  }}
-                  // onChange={(e) => {
-                  //   let keyword = e.target.value.trim();
-                  //   setKeyword(keyword);
-                  // }}
+                  className="form-control form-control-sm"
+                  style={{ fontSize: "13px", marginLeft: "10px" }}
                   onChange={handleSearch}
+                  placeholder="Search by name, email, phone, etc."
                 />
               </CCol>
             </div>
-            {showImage && (
-              <Container>
-                {profilePicture && (
-                  <img
-                    src={profilePicture}
-                    alt="User"
-                    style={{
-                      // width: "%",
-                      // height: "30%",
-                      maxWidth: "100%",
-                      maxHeight: "80%",
-                      borderRadius: "2%",
-                      objectFit: "contain",
-                      // margin: "0 auto",
-                    }}
-                  />
-                )}
-              </Container>
+            {loading ? (
+              <Loader />
+            ) : (
+              <div
+                style={{
+                  width: "100%",
+                  height: "400px",
+                  borderRadius: "5px",
+                  border: "1px solid gray",
+                  padding: "5px",
+                }}
+              >
+                <DataGrid
+                  rows={rows}
+                  columns={columns}
+                  pageSize={paginationModel.pageSize}
+                  page={paginationModel.page - 1}
+                  pagination
+                  paginationMode="server"
+                  rowCount={userCount}
+                  paginationModel={paginationModel}
+                  onPaginationModelChange={setPaginationModel}
+                  components={{
+                    NoRowsOverlay: CustomNoRowsOverlay,
+                  }}
+                  disableSelectionOnClick
+                />
+              </div>
             )}
-            <DataGrid
-              sx={{
-                "& .MuiDataGrid-row:nth-of-type(2n)": {
-                  backgroundColor: "#d5dbd6",
-                },
-                "& .MuiDataGrid-columnHeader": {
-                  backgroundColor: "#d5dbd6",
-                  // height: "40px !important",
-                  outline: "none !important",
-                },
-                "& .MuiDataGrid-cell": {
-                  outline: "none !important",
-                },
-              }}
-              rows={rows}
-              columns={columns}
-              // pageSizeOptions={[5, 10, 15]}
-              rowCount={userCount}
-              disableRowSelectionOnClick
-              pagination
-              paginationMode="server"
-              paginationModel={paginationModel}
-              disableColumnMenu
-              onPaginationModelChange={setPaginationModel}
-              loading={loading}
-              autoHeight
-              components={{
-                NoRowsOverlay: CustomNoRowsOverlay,
-              }}
-            />
           </div>
         </CContainer>
       </div>
@@ -447,13 +375,4 @@ const UserData = () => {
   );
 };
 
-export default React.memo(UserData);
-
-const Container = styled.div`
-  position: absolute;
-  top: 40%;
-  left: 40%;
-  z-index: 99;
-  width: 35%;
-  height: 35%;
-`;
+export default UserData;

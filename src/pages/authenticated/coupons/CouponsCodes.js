@@ -5,7 +5,7 @@ import { CCol, CContainer } from "@coreui/react";
 import PageTitle from "../../common/PageTitle";
 import { DataGrid } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Button, IconButton, Snackbar } from "@mui/material";
+import { Button, IconButton, Snackbar, Switch } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
@@ -30,12 +30,25 @@ const CouponsCodes = () => {
     { field: "col1", headerName: "#", width: 80 },
     { field: "col2", headerName: "Name", width: 150 },
     { field: "col3", headerName: "Amount", width: 150 },
-    { field: "col4", headerName: "Active", width: 180 },
+    { field: "col4", headerName: "Active", width: 130 },
 
     { field: "col5", headerName: "Created At", width: 180 },
     { field: "col6", headerName: "Updated At", width: 180 },
     {
       field: "col7",
+      headerName: "Status",
+      width: 120,
+      renderCell: (params) => {
+        return (
+          <Switch
+            checked={params.row.col3} // checked={params.row.col3 === true ? true : false}
+            onChange={(e) => handleStatusChange(e, params.row)}
+          />
+        );
+      },
+    },
+    {
+      field: "col8",
       headerName: "Action",
       width: 200,
       renderCell: (params) => (
@@ -46,16 +59,40 @@ const CouponsCodes = () => {
             onClick={() => navigate(`edit_promo/${params.row.id}`)}
             titleAccess="Edit"
           />
-          <DeleteIcon
+          {/* <DeleteIcon
             cursor="pointer"
             style={{ color: "red" }}
             onClick={() => confirmBeforeDelete(params.row)}
             titleAccess="Delete"
-          />
+          /> */}
         </>
       ),
     },
   ];
+  const handleStatusChange = (e, params) => {
+    setRows((prevRows) =>
+      prevRows.map((row) => {
+        if (row.id === params.id) {
+          updateStatus(params.id, row.col3);
+        }
+        return row.id === params.id ? { ...row, col3: !row.col3 } : row;
+      })
+    );
+  };
+
+  const updateStatus = (id, status) => {
+    console.log("id", id);
+    console.log("status", status);
+
+    httpClient
+      .get(`admin/users/active-in-active-user/${id}`, {
+        is_active: status === true ? false : true,
+      })
+      .then((res) => {
+        console.log("update status ==> ", res);
+        // setStatus("ok");
+      });
+  };
 
   useEffect(() => {
     setLoading(true);

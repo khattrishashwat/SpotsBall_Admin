@@ -4,7 +4,14 @@ import AppHeader from "../../../components/AppHeader";
 import PageTitle from "../../common/PageTitle";
 import { CContainer } from "@coreui/react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Button, IconButton, Snackbar, Typography, Box } from "@mui/material";
+import {
+  Button,
+  IconButton,
+  Snackbar,
+  Typography,
+  Box,
+  Switch,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -48,7 +55,7 @@ const WinnerCircle = () => {
           "-"
         ),
     },
-    { field: "col4", headerName: "Price", width: 100 },
+    { field: "col4", headerName: "₹ Price", width: 100 },
     { field: "col5", headerName: "Max Tickets", width: 150 },
     { field: "col6", headerName: "Participants", width: 150 },
     { field: "col7", headerName: "End Date", width: 150 },
@@ -72,6 +79,19 @@ const WinnerCircle = () => {
     },
     {
       field: "col10",
+      headerName: "Show",
+      width: 120,
+      renderCell: (params) => {
+        return (
+          <Switch
+            checked={params.row} // checked={params.row.col3 === true ? true : false}
+            onChange={(e) => handleStatusChange(e, params.row)}
+          />
+        );
+      },
+    },
+    {
+      field: "col11",
       headerName: "Action",
       width: 150,
       renderCell: (params) => (
@@ -151,6 +171,30 @@ const WinnerCircle = () => {
     fetchContests();
   }, [paginationModel]);
 
+  const handleStatusChange = (e, params) => {
+    setRows((prevRows) =>
+      prevRows.map((row) => {
+        if (row.id === params.id) {
+          updateStatus(params.id, row.col3);
+        }
+        return row.id === params.id ? { ...row, col3: !row.col3 } : row;
+      })
+    );
+  };
+
+  const updateStatus = (id, status) => {
+    console.log("id", id);
+    console.log("status", status);
+
+    httpClient
+      .get(`admin/users/active-in-active-user/${id}`, {
+        is_active: status === true ? false : true,
+      })
+      .then((res) => {
+        console.log("update status ==> ", res);
+        // setStatus("ok");
+      });
+  };
   return (
     <>
       <AppSidebar />
@@ -164,7 +208,7 @@ const WinnerCircle = () => {
             alignItems="center"
             mb={3}
           >
-            <Typography variant="h5">Winner Circle</Typography>
+            <Typography variant="h5">Announce Winner Circle</Typography>
             {/* <Button
               variant="contained"
               color="primary"

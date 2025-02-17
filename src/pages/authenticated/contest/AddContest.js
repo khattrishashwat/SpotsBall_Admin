@@ -11,7 +11,6 @@ import Swal from "sweetalert2";
 const AddContest = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { x, y, image } = location.state || {}; // Fetch x, y, and image from location state
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [contestBanner, setContestBanner] = useState(null);
@@ -19,32 +18,18 @@ const AddContest = () => {
   const [jackpotPrice, setJackpotPrice] = useState("");
   const [ticketPrice, setTicketPrice] = useState("");
   const [contestStartDate, setContestStartDate] = useState("");
-  const [contestEndDate, setContestEndDate] = useState("");
+  const [original_player_image, setOriginal_player_image] = useState("");
   const [imageWidth, setImageWidth] = useState("");
   const [imageHeight, setImageHeight] = useState("");
   const [maxTickets, setMaxTickets] = useState("");
   const [quantities, setQuantities] = useState([0, 0, 0, 0]); // Adjusted to have 4 quantities
-  const [gstRate, setGstRate] = useState("");
-  const [platformFeeRate, setPlatformFeeRate] = useState("");
-  const [gstOnPlatformFeeRate, setGstOnPlatformFeeRate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-const [cousor,setCousor]=useState("");
-  // Corrected definition of originalPlayerImage
-  const originalPlayerImage = image; // Using the image from the location state
-  const initialCoordinates = x && y ? `{"x": ${x}, "y": ${y}}` : "";
-  const [winningCoordinates, setWinningCoordinates] =
-    useState(initialCoordinates);
+  const [cousor, setCousor] = useState("");
 
+  const gstRate = 28;
+  const platformFeeRate = 2.5;
+  const gstOnPlatformFeeRate = 18;
   const handleSubmit = () => {
-    if (!winningCoordinates) {
-      Swal.fire({
-        icon: "warning",
-        title: "Choose Coordinates First",
-        text: "Please choose coordinates before filling any fields.",
-      });
-      return;
-    }
-
     setIsLoading(true);
     let formData = new FormData();
     formData.append("title", title);
@@ -55,8 +40,7 @@ const [cousor,setCousor]=useState("");
     formData.append("ticket_price", ticketPrice);
     formData.append("contest_start_date", contestStartDate);
     // formData.append("contest_end_date", contestEndDate);
-    formData.append("original_player_image", originalPlayerImage);
-    formData.append("winning_coordinates", winningCoordinates);
+    formData.append("original_player_image", original_player_image);
     formData.append("image_width", imageWidth);
     formData.append("image_height", imageHeight);
     formData.append("maxTickets", maxTickets);
@@ -126,16 +110,7 @@ const [cousor,setCousor]=useState("");
           <ArrowBackIcon />
           back
         </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ mt: 2, ml: 2 }}
-          onClick={() =>
-            (window.location.href = "add-contest/find-coordinates")
-          }
-        >
-          Find Coordinates
-        </Button>
+
         <Container maxWidth="sm" className="d-flex justify-content-center">
           {isLoading && <Loader />}
           <Box
@@ -144,12 +119,6 @@ const [cousor,setCousor]=useState("");
             autoComplete="off"
             sx={{ mt: 4, width: "80%" }}
           >
-            {winningCoordinates ? null : (
-              <p style={{ color: "red" }}>
-                Please first choose coordinates before filling any fields.
-              </p>
-            )}
-
             {/* Disable form inputs if coordinates are not chosen */}
             <label>Title</label>
             <TextField
@@ -159,7 +128,6 @@ const [cousor,setCousor]=useState("");
               margin="normal"
               placeholder="Enter contest title"
               sx={{ border: "none" }}
-              disabled={!winningCoordinates}
             />
 
             <label>Description</label>
@@ -170,9 +138,16 @@ const [cousor,setCousor]=useState("");
               margin="normal"
               placeholder="Enter contest description"
               sx={{ border: "none" }}
-              disabled={!winningCoordinates}
             />
 
+            <label>Original Image</label>
+            <TextField
+              onChange={(e) => setOriginal_player_image(e.target.files[0])}
+              fullWidth
+              margin="normal"
+              variant="outlined"
+              type="file"
+            />
             <label>Contest Banner</label>
             <TextField
               onChange={(e) => setContestBanner(e.target.files[0])}
@@ -180,16 +155,6 @@ const [cousor,setCousor]=useState("");
               margin="normal"
               variant="outlined"
               type="file"
-              disabled={!winningCoordinates}
-            />
-
-            <label>Winning Coordinates</label>
-            <TextField
-              value={winningCoordinates}
-              onChange={(e) => setWinningCoordinates(e.target.value)}
-              fullWidth
-              margin="normal"
-              placeholder='{"x": , "y": }'
             />
 
             <label>Jackpot Price</label>
@@ -200,7 +165,6 @@ const [cousor,setCousor]=useState("");
               margin="normal"
               placeholder="Enter jackpot price"
               sx={{ border: "none" }}
-              disabled={!winningCoordinates}
             />
 
             <label>Ticket Price</label>
@@ -211,7 +175,6 @@ const [cousor,setCousor]=useState("");
               margin="normal"
               placeholder="Enter ticket price"
               sx={{ border: "none" }}
-              disabled={!winningCoordinates}
             />
 
             <label>Contest Start Date</label>
@@ -227,7 +190,6 @@ const [cousor,setCousor]=useState("");
                   min: new Date().toISOString().slice(0, 16), // Restrict to current or future date
                 },
               }}
-              disabled={!winningCoordinates}
             />
 
             <label>Player Image</label>
@@ -237,7 +199,6 @@ const [cousor,setCousor]=useState("");
               margin="normal"
               variant="outlined"
               type="file"
-              disabled={!winningCoordinates}
             />
 
             <label>Image Width</label>
@@ -248,7 +209,6 @@ const [cousor,setCousor]=useState("");
               margin="normal"
               placeholder="Enter image width"
               sx={{ border: "none" }}
-              disabled={!winningCoordinates}
             />
 
             <label>Image Height</label>
@@ -259,7 +219,6 @@ const [cousor,setCousor]=useState("");
               margin="normal"
               placeholder="Enter image height"
               sx={{ border: "none" }}
-              disabled={!winningCoordinates}
             />
 
             <label>Max Tickets</label>
@@ -270,7 +229,6 @@ const [cousor,setCousor]=useState("");
               margin="normal"
               placeholder="Enter max ticket count"
               sx={{ border: "none" }}
-              disabled={!winningCoordinates}
             />
 
             {/* Quantities */}
@@ -288,42 +246,28 @@ const [cousor,setCousor]=useState("");
                 margin="normal"
                 placeholder={`Enter quantity for ticket type ${index + 1}`}
                 sx={{ border: "none" }}
-                disabled={!winningCoordinates}
               />
             ))}
 
             <label>GST Rate</label>
-            <TextField
-              value={gstRate}
-              onChange={(e) => setGstRate(e.target.value)}
-              fullWidth
-              margin="normal"
-              placeholder="Enter GST rate"
-              sx={{ border: "none" }}
-              disabled={!winningCoordinates}
-            />
+            <TextField fullWidth margin="normal" value={gstRate} disabled />
 
             <label>Platform Fee Rate</label>
             <TextField
-              value={platformFeeRate}
-              onChange={(e) => setPlatformFeeRate(e.target.value)}
               fullWidth
               margin="normal"
-              placeholder="Enter platform fee rate"
-              sx={{ border: "none" }}
-              disabled={!winningCoordinates}
+              value={platformFeeRate}
+              disabled
             />
 
             <label>GST on Platform Fee Rate</label>
             <TextField
-              value={gstOnPlatformFeeRate}
-              onChange={(e) => setGstOnPlatformFeeRate(e.target.value)}
               fullWidth
               margin="normal"
-              placeholder="Enter GST on platform fee rate"
-              sx={{ border: "none" }}
-              disabled={!winningCoordinates}
+              value={gstOnPlatformFeeRate}
+              disabled
             />
+
             <label>Choose Cousor Color</label>
             <TextField
               // type="color"
@@ -333,7 +277,6 @@ const [cousor,setCousor]=useState("");
               margin="normal"
               placeholder="Enter Cousor Color"
               sx={{ border: "none" }}
-              disabled={!winningCoordinates}
             />
 
             <Button
@@ -342,7 +285,6 @@ const [cousor,setCousor]=useState("");
               variant="contained"
               color="primary"
               sx={{ mt: 4 }}
-              disabled={!winningCoordinates}
             >
               Add Contest
             </Button>

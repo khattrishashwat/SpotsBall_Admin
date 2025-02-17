@@ -53,6 +53,9 @@ const WinnerCircle = lazy(() =>
 const MatchWinner = lazy(() =>
   import("../pages/authenticated/winnercircle/MatchWinner")
 );
+const UserPaticipate = lazy(() =>
+  import("../pages/authenticated/winnercircle/UserPaticipate")
+);
 const ContactUs = lazy(() =>
   import("../pages/authenticated/contactus/ContactUs")
 );
@@ -70,9 +73,9 @@ const AddContest = lazy(() =>
 const EditContest = lazy(() =>
   import("../pages/authenticated/contest/EditContest")
 );
-const FindCoordinates = lazy(() =>
-  import("../pages/authenticated/contest/FindCoordinates")
-);
+// const FindCoordinates = lazy(() =>
+//   import("../pages/authenticated/contest/FindCoordinates")
+// );
 const Payments = lazy(() => import("../pages/authenticated/payment/Payments"));
 const AllPayments = lazy(() =>
   import("../pages/authenticated/payment/AllPayments")
@@ -130,6 +133,9 @@ const AddApplication = lazy(() =>
 );
 const EditApplication = lazy(() =>
   import("../pages/authenticated/application/EditApplication")
+);
+const FindCoordinates = lazy(() =>
+  import("../pages/authenticated/winnercircle/FindCoordinates")
 );
 const Subsribers = lazy(() =>
   import("../pages/authenticated/subscriber/Subsribers")
@@ -229,10 +235,10 @@ const routes = createBrowserRouter(
           path: "contest_management/edit-contest/:id",
           element: LazyComponent(EditContest),
         },
-        {
-          path: "contest_management/add-contest/find-coordinates",
-          element: LazyComponent(FindCoordinates),
-        },
+        // {
+        //   path: "contest_management/add-contest/find-coordinates",
+        //   element: LazyComponent(FindCoordinates),
+        // },
         {
           path: "banner",
           element: LazyComponent(Banner),
@@ -258,15 +264,15 @@ const routes = createBrowserRouter(
           element: LazyComponent(EditPlay),
         },
         {
-          path: "In_Press",
+          path: "blogs",
           element: LazyComponent(InPress),
         },
         {
-          path: "In_Press/add-press",
+          path: "blogs/add-blogs",
           element: LazyComponent(AddPress),
         },
         {
-          path: "In_Press/edit-press/:id",
+          path: "blogs/edit-blogs/:id",
           element: LazyComponent(EditPress),
         },
         {
@@ -365,6 +371,14 @@ const routes = createBrowserRouter(
         {
           path: "winners_circle/match-winner/:id",
           element: LazyComponent(MatchWinner),
+        },
+        {
+          path: "winners_circle/match-winner/:id/userpaticipate",
+          element: LazyComponent(UserPaticipate),
+        },
+        {
+          path: "winners_circle/match-winner/:id/find-coordinates",
+          element: LazyComponent(FindCoordinates),
         },
         {
           path: "social_links",

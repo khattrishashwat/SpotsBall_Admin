@@ -6,10 +6,13 @@ import httpClient from "../../../util/HttpClient";
 import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../../../components/loader/Loader";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import Swal from "sweetalert2"; // Added for showing custom alerts
 
 const EditWeAre = () => {
-  const [description, setDescription] = useState("");
-  const [subTitle, setSubTitle] = useState("");
+  const [description, setDescription] = useState(""); // Initialize with an empty string
+  const [subTitle, setSubTitle] = useState(""); // Initialize with an empty string
   const [images, setImages] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +30,11 @@ const EditWeAre = () => {
 
   const handleSubmit = () => {
     if (!subTitle || !description || !images) {
-      alert("All fields are required.");
+      Swal.fire({
+        icon: "error",
+        title: "Oops!",
+        text: "All fields are required.",
+      });
       return;
     }
 
@@ -46,15 +53,26 @@ const EditWeAre = () => {
       .patch(`admin/who-we-are/edit-who-we-are/${params.id}`, formData)
       .then(() => {
         setIsLoading(false);
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "The 'Who We Are' section has been updated.",
+        });
         navigate(-1);
       })
       .catch((err) => {
         setIsLoading(false);
-        console.log("error => ", err);
+        console.error("error => ", err);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "There was an error updating the section.",
+        });
       });
   };
 
   useEffect(() => {
+    setIsLoading(true); // Start loading before fetching data
     httpClient
       .get(`admin/who-we-are/get-who-we-are-by-id/${params.id}`)
       .then((res) => {
@@ -62,13 +80,18 @@ const EditWeAre = () => {
 
         setIsLoading(false);
 
-        setSubTitle(result.subTitle);
-        setDescription(result.description);
-        setImages(result.image);
+        setSubTitle(result.subTitle || ""); // Ensure default value
+        setDescription(result.description || ""); // Ensure default value
+        setImages(result.image || null); // Handle image
       })
       .catch((err) => {
-        console.log("axios error => ", err);
+        console.error("axios error => ", err);
         setIsLoading(false);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "There was an issue fetching the data.",
+        });
       });
   }, [params.id]);
 
@@ -84,7 +107,7 @@ const EditWeAre = () => {
           onClick={() => navigate(-1)}
         >
           <ArrowBackIcon />
-          back
+          Back
         </Button>
         <Container maxWidth="sm" className="d-flex justify-content-center">
           {isLoading && <Loader />}
@@ -107,13 +130,17 @@ const EditWeAre = () => {
               placeholder="Enter subtitle"
             />
 
-            <label>Description</label>
-            <TextField
-              value={description}
-              onChange={handleDescriptionChange}
-              fullWidth
-              margin="normal"
-              placeholder="Enter description"
+            <Typography variant="h6" sx={{ mt: 2 }}>
+              Description:
+            </Typography>
+            <CKEditor
+              editor={ClassicEditor}
+              data={description || ""} // Ensure it's always a valid string
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                console.log(data); // Check what data is being returned
+                setDescription(data); // Update state correctly
+              }}
             />
 
             <label>Image</label>
@@ -148,7 +175,7 @@ const EditWeAre = () => {
               onClick={handleSubmit}
               disabled={isLoading}
             >
-              Add
+              {isLoading ? "Updating..." : "Update"}
             </Button>
           </Box>
         </Container>

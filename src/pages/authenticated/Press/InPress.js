@@ -94,7 +94,7 @@ const InPress = () => {
           <EditIcon
             cursor="pointer"
             style={{ color: "gold", marginRight: "20px" }}
-            onClick={() => navigate(`edit-press/${params.row.id}`)}
+            onClick={() => navigate(`edit-blogs/${params.row.id}`)}
             titleAccess="Edit"
           />
           <DeleteIcon
@@ -200,9 +200,8 @@ const InPress = () => {
               sx={{
                 backgroundColor: "orange",
               }}
-              onClick={() => {
-                window.location.href = "In_Press/add-press";
-              }}
+              onClick={() => navigate("add-blogs")}
+              
             >
               Add Press
             </Button>

@@ -293,7 +293,9 @@ const Payments = () => {
           col2: record?.contest.contest_banner?.file_url || "N/A",
           col3: record?.contest.maxTickets || "N/A",
           col4: record?.contest.ticket_price || "N/A",
-          col5: record.totalAmountCollected || "N/A",
+          col5: record.totalAmountCollected
+            ? record.totalAmountCollected.toFixed(2)
+            : "N/A",
           col6: record.totalTicketsBought || "N/A",
         }))
       );
@@ -379,7 +381,7 @@ const Payments = () => {
         <AppHeader />
         <PageTitle title="Payments" />
         <CContainer>
-          <h4>Contest Payments Details:</h4>
+          <h4>Payments Details:</h4>
           <Snackbar
             open={closeSnackBar}
             autoHideDuration={2000}

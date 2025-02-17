@@ -57,7 +57,7 @@ const Reset = () => {
       .then((res) => {
         setLoading(false);
         if (res.data?.success) {
-          alert("Password reset successful");
+          alert("Password reset successfull");
           localStorage.removeItem("email");
           navigate("/auth/login");
         }

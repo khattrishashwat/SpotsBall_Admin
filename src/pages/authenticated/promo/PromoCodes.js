@@ -47,12 +47,12 @@ const PromoCodes = () => {
             onClick={() => navigate(`edit_coupons/${params.row.id}`)}
             titleAccess="Edit"
           />
-          <DeleteIcon
+          {/* <DeleteIcon
             cursor="pointer"
             style={{ color: "red" }}
             onClick={() => confirmBeforeDelete(params.row.id)}
             titleAccess="Delete"
-          />
+          /> */}
         </>
       ),
     },

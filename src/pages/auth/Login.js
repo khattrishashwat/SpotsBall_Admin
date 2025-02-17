@@ -153,6 +153,11 @@ const Login = () => {
                           onChange={loginForm.handleChange}
                           value={loginForm.values.email}
                           onClick={() => setCloseSnakeBar(false)}
+                          onKeyDown={(e) => {
+                            if (!loginForm.values.email && e.key === " ") {
+                              e.preventDefault();
+                            }
+                          }}
                         />
                         {loginForm.errors.email && loginForm.touched.email && (
                           <div className="invalid-feedback">

@@ -16,19 +16,35 @@ const EditApplication = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
+  useEffect(() => {
+    setIsLoading(true);
+    httpClient
+      .get(`admin/apk-links/get-apk-links-by-id/${id}`)
+      .then((res) => {
+        setFile(null); // Reset file state
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        setMessage(
+          err?.response?.data?.message || "Failed to fetch APK details."
+        );
+      });
+  }, [id]);
+
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
+    setMessage(""); // Clear error message on file selection
   };
 
   const handleSubmit = async () => {
-    setIsLoading(true);
-    setMessage("");
-
     if (!file) {
       setMessage("Please select an APK file to upload.");
-      setIsLoading(false);
       return;
     }
+
+    setIsLoading(true);
+    setMessage("");
 
     const formData = new FormData();
     formData.append("android_build", file);
@@ -51,7 +67,6 @@ const EditApplication = () => {
 
       navigate(-1);
     } catch (err) {
-      console.error("Error updating APK file:", err);
       setMessage(err.response?.data?.message || "Failed to update the file.");
 
       Swal.fire({
@@ -74,10 +89,10 @@ const EditApplication = () => {
           <Button
             variant="contained"
             color="secondary"
-            sx={{ mt: 2, ml: 0 }}
+            sx={{ mt: 2 }}
             onClick={() => navigate(-1)}
+            startIcon={<ArrowBackIcon />}
           >
-            <ArrowBackIcon />
             Back
           </Button>
 
@@ -89,7 +104,14 @@ const EditApplication = () => {
               accept=".apk"
               onChange={handleFileChange}
               required
-              style={{ marginBottom: "16px" }}
+              style={{
+                display: "block",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                width: "100%",
+                marginBottom: "16px",
+              }}
             />
             {message && (
               <Typography variant="body2" color="error" sx={{ mt: 2 }}>
@@ -98,8 +120,7 @@ const EditApplication = () => {
             )}
             <Button
               variant="contained"
-              color="primary"
-              sx={{ mt: 4, mb: 4, backgroundColor: "orange" }}
+              sx={{ mt: 4, mb: 4, backgroundColor: "orange", color: "white" }}
               onClick={handleSubmit}
               disabled={isLoading}
             >

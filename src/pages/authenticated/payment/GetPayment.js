@@ -5,7 +5,15 @@ import { CCol, CContainer } from "@coreui/react";
 import PageTitle from "../../common/PageTitle";
 import { DataGrid } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Button, IconButton, Snackbar } from "@mui/material";
+import {
+  Button,
+  IconButton,
+  Snackbar,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import httpClient from "../../../util/HttpClient";
 import swal from "sweetalert2";
@@ -14,6 +22,7 @@ import axios from "axios";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate, useParams } from "react-router-dom";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 const GetPayment = () => {
   const [alertMessage, setAlertMessage] = useState();
@@ -31,6 +40,8 @@ const GetPayment = () => {
   const [filterMode, setFilterMode] = useState("name");
   const [status, setStatus] = useState("");
   const [keyword, setKeyword] = useState("");
+  const [coordinatesDialogOpen, setCoordinatesDialogOpen] = useState(false);
+  const [coordinatesData, setCoordinatesData] = useState([]);
   const navigate = useNavigate();
   const params = useParams();
 
@@ -59,12 +70,26 @@ const GetPayment = () => {
     { field: "col11", headerName: "Amount", width: 180 },
     { field: "col12", headerName: "Promo Codes", width: 180 },
     { field: "col13", headerName: "Payment ID", width: 180 },
-    { field: "col14", headerName: "No. Coordinates Chosen", width: 170 },
-    { field: "col15", headerName: "Created At", width: 180 },
+    {
+      field: "col14",
+      headerName: "No. Coordinates Chosen",
+      width: 170,
+      renderCell: (params) => (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {params.value.length} {/* Display the number */}
+          <IconButton
+            onClick={() => handleViewCoordinates(params.row.col14)}
+            size="small"
+            sx={{ marginLeft: 1 }}
+          >
+            <VisibilityIcon color="primary" />
+          </IconButton>
+        </div>
+      ),
+    },
+    { field: "col15", headerName: "Transaction Status", width: 130 },
+    { field: "col16", headerName: "Created At", width: 180 },
   ];
-
-  console.log("params", params);
-  console.log(`Fetching data from: api/v1/admin/contest-payments/${params.id}`);
 
   useEffect(() => {
     setLoading(true);
@@ -72,7 +97,6 @@ const GetPayment = () => {
       .get(`admin/contest-payments/${params.id}`)
       .then((res) => {
         const data = res.data.data;
-
         setUserCount(data.length);
         setLoading(false);
 
@@ -106,14 +130,13 @@ const GetPayment = () => {
               ? `${record.discountApplied.name} (${record.discountApplied.discountPercentage}%)`
               : "N/A",
             col13: record.paymentId || "N/A", // Payment ID
-            col14: record.coordinates?.length || 0, // Number of Coordinates Chosen
-            col15: record.createdAt
+            col14: record.coordinates || 0, // Number of Coordinates Chosen
+            col15: record.transaction_status || "N/A",
+            col16: record.createdAt
               ? new Date(record.createdAt).toLocaleDateString()
               : "N/A", // Created At
           }))
         );
-
-        setStatus("");
       })
       .catch((error) => {
         setLoading(false);
@@ -121,50 +144,15 @@ const GetPayment = () => {
       });
   }, [paginationModel, params.id]);
 
-  //handle get confirmation before delete user
-  const confirmBeforeDelete = (e, params) => {
-    swal
-      .fire({
-        title: "Are you sure?",
-        text: "You will not be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, delete it!",
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          deleteSingleUser(e, params);
-        }
-      });
+  const handleViewCoordinates = (row) => {
+    console.log("roef", row);
+
+    setCoordinatesData(row || []);
+    setCoordinatesDialogOpen(true);
   };
 
-  const deleteSingleUser = (e, params) => {
-    const groupId = params.id;
-    httpClient
-      .delete(`delete-press/${groupId}`)
-      .then((res) => {
-        setAlertMessage(res.data.message);
-        setApiSuccess(true);
-        setApiError(false);
-        setLoading(false);
-        setCloseSnakeBar(true);
-        setStatus("deleted");
-      })
-      .catch((error) => {
-        setAlertMessage(error.response.data.message);
-        setApiError(true);
-        setApiSuccess(false);
-        setCloseSnakeBar(true);
-        setLoading(false);
-      });
-  };
-
-  //fetching user information
-
-  const handleRecordPerPage = (e) => {
-    setLoading(true);
-    paginationModel.pageSize = e.target.value;
-    setPaginationModel({ ...paginationModel });
+  const handleCloseCoordinatesDialog = () => {
+    setCoordinatesDialogOpen(false);
   };
 
   return (
@@ -173,10 +161,9 @@ const GetPayment = () => {
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
         <PageTitle title="GetPayment" />
-
         <CContainer>
           <div className="d-flex justify-content-between align-items-center">
-            <h4 className="">Contest Payments Detalis : </h4>
+            <h4 className="">User Payments Details : </h4>
             <Button
               variant="contained"
               color="secondary"
@@ -191,33 +178,12 @@ const GetPayment = () => {
           </div>
           <div
             style={{
-              // height: "600px",
               minHeight: "600px",
               border: "1px solid gray",
               padding: 15,
               borderRadius: 5,
             }}
           >
-            <div className="">
-              {/* <ArrowBackIcon className="pointer-cursor"
-            style={{
-              // fontSize: "20px",
-              marginLeft: "10px",
-              cursor: "pointer",
-              color: "#333",
-            }}
-            /> */}
-              {/* <button
-                className="border-0 border p-2"
-                style={{
-                  backgroundColor: "gold",
-                  borderRadius: "5px",
-                }}
-                // onClick={() => {}}
-              >
-                Add Group
-              </button> */}
-            </div>
             <Snackbar
               open={closeSnakeBar}
               autoHideDuration={1000}
@@ -244,15 +210,6 @@ const GetPayment = () => {
                 </React.Fragment>
               }
             />
-            <div
-              style={{
-                width: "100%",
-                height: "auto",
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "10px 0",
-              }}
-            ></div>
             <DataGrid
               sx={{
                 "& .MuiDataGrid-row:nth-of-type(2n)": {
@@ -260,20 +217,16 @@ const GetPayment = () => {
                 },
                 "& .MuiDataGrid-columnHeader": {
                   backgroundColor: "#d5dbd6",
-                  // height: "40px !important",
-                  outline: "none !important",
                 },
                 "& .MuiDataGrid-cell": {
                   outline: "none !important",
                 },
                 "& .MuiDataGrid-row": {
                   outline: "none !important",
-                  // backgroundColor: "gold",
                 },
               }}
               rows={rows}
               columns={columns}
-              // pageSizeOptions={[5, 10, 15]}
               rowCount={userCount}
               disableRowSelectionOnClick
               pagination
@@ -287,6 +240,55 @@ const GetPayment = () => {
           </div>
         </CContainer>
       </div>
+
+      {/* Coordinates Dialog */}
+      <Dialog
+        open={coordinatesDialogOpen}
+        onClose={handleCloseCoordinatesDialog}
+      >
+        <DialogTitle>Coordinates</DialogTitle>
+        <DialogContent>
+          {coordinatesData.length > 0 ? (
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr>
+                  <th style={{ border: "1px solid #ddd", padding: "8px" }}>
+                    #
+                  </th>
+                  <th style={{ border: "1px solid #ddd", padding: "8px" }}>
+                    X Coordinate
+                  </th>
+                  <th style={{ border: "1px solid #ddd", padding: "8px" }}>
+                    Y Coordinate
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {coordinatesData.map((coord, index) => (
+                  <tr key={index}>
+                    <td style={{ border: "1px solid #ddd", padding: "8px" }}>
+                      {index + 1}
+                    </td>
+                    <td style={{ border: "1px solid #ddd", padding: "8px" }}>
+                      {coord.x}
+                    </td>
+                    <td style={{ border: "1px solid #ddd", padding: "8px" }}>
+                      {coord.y}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No coordinates available.</p>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseCoordinatesDialog} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

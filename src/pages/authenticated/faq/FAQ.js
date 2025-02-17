@@ -186,9 +186,8 @@ const FAQ = () => {
               sx={{
                 backgroundColor: "orange",
               }}
-              onClick={() => {
-                window.location.href = "faqs/add-faq";
-              }}
+              onClick={() => navigate("add-faq")}
+              
             >
               Add FAQ
             </Button>

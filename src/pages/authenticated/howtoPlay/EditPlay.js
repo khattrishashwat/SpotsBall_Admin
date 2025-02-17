@@ -150,7 +150,7 @@ const EditPlay = () => {
 
               {platform === "Web" && (
                 <>
-                  <label className="mt-4">Thumbnail URL</label>
+                  <label className="mt-4">Thumbnail URL(WEB)</label>
                   <TextField
                     onChange={handleThumbnail_url}
                     fullWidth
@@ -158,7 +158,7 @@ const EditPlay = () => {
                     variant="outlined"
                     type="file"
                   />
-                  <label className="mt-4">Video URL</label>
+                  <label className="mt-4">Video URL(WEB)</label>
                   <TextField
                     onChange={handleVideo_url}
                     fullWidth

@@ -31,8 +31,8 @@ const AddCouponsCodes = () => {
         navigate(-1); // Go back to the previous page
       })
       .catch((err) => {
-        console.log("error => ", err);
-        setMessage(err?.response?.data?.message);
+        console.log("error => ", err?.response?.data?.errors[0]?.msg);
+        setMessage(err?.response?.data?.errors[0]?.msg);
         setLoading(false);
       });
   };
@@ -55,7 +55,7 @@ const AddCouponsCodes = () => {
             }}
           >
             <Typography variant="h5" component="h1" gutterBottom>
-              Add New Coupons
+              Add New's Promo COdes
             </Typography>
             <form onSubmit={handleSubmit} style={{ width: "100%" }}>
               <span>Name</span>

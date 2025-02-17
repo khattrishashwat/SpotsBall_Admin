@@ -284,7 +284,7 @@ function Card(props) {
           </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
-          <div className="card" onClick={() => navigate("/In_Press")}>
+          <div className="card" onClick={() => navigate("/blogs")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
@@ -302,7 +302,7 @@ function Card(props) {
                   }}
                   className=" mb-0 text-capitalize "
                 >
-                  In Press
+                  Blogs
                 </p>
                 <h4 className="mb-0 mt-2">{props?.data?.Feedbacks}</h4>
               </div>
@@ -354,7 +354,7 @@ function Card(props) {
           </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
-          <div className="card" onClick={() => navigate("/promo_codes")}>
+          <div className="card" onClick={() => navigate("/promocodes")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               // onClick={() => navigate("/category")}
@@ -411,7 +411,7 @@ function Card(props) {
                   }}
                   className=" mb-0 text-capitalize "
                 >
-                  Contest Win Circle
+                  Announce Winner
                 </p>
                 <h4 className="mb-0 mt-2">{props?.data?.ContactUs}</h4>
               </div>

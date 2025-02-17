@@ -125,7 +125,7 @@ const ContestManagement = () => {
           ""
         ),
     },
-    { field: "col4", headerName: "Price", width: 120 },
+    { field: "col4", headerName: "₹ Price", width: 120 },
     { field: "col5", headerName: "Max Ticket", width: 180 },
     { field: "col6", headerName: "Contest Start Date", width: 180 },
     { field: "col7", headerName: "Contest End Date", width: 180 },
@@ -141,12 +141,12 @@ const ContestManagement = () => {
           >
             <EditIcon />
           </IconButton>
-          <IconButton
+          {/* <IconButton
             color="error"
             onClick={(e) => confirmBeforeDelete(params.row.id)}
           >
             <DeleteIcon />
-          </IconButton>
+          </IconButton> */}
         </>
       ),
     },

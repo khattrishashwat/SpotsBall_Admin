@@ -79,7 +79,7 @@ const Forgot = () => {
           setLoading(false);
           setPointerEvents("");
           setOpacity(1);
-          setAlertMessage("Email sent to Your Email");
+          setAlertMessage("OTP sent to Your Email");
           setApiSuccess(true);
           setOpenSnakeBar(true);
           setOpenOtpDialog(true); // Open the OTP dialog

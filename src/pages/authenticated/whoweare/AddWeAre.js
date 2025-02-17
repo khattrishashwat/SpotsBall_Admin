@@ -6,6 +6,8 @@ import httpClient from "../../../util/HttpClient";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../../components/loader/Loader";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const AddWeAre = () => {
   const [description, setDescription] = useState("");
@@ -16,6 +18,7 @@ const AddWeAre = () => {
 
   const navigate = useNavigate();
 
+  // Event Handlers
   const handleDescriptionChange = (e) => setDescription(e.target.value);
   const handleSubtitleChange = (e) => setSubTitle(e.target.value);
   const handleImageChange = (e) => {
@@ -32,7 +35,7 @@ const AddWeAre = () => {
 
     setIsLoading(true);
 
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append("subTitle", subTitle);
     formData.append("description", description);
     formData.append("image", images);
@@ -45,7 +48,7 @@ const AddWeAre = () => {
       .post(`admin/who-we-are/add-who-we-are`, formData)
       .then((res) => {
         setIsLoading(false);
-        navigate(-1);
+        navigate(-1); // Navigate back after successful addition
       })
       .catch((err) => {
         setIsLoading(false);
@@ -69,11 +72,12 @@ const AddWeAre = () => {
             display: "block",
             backgroundColor: "orange",
           }}
-          onClick={() => navigate(-1)}
+          onClick={() => navigate(-1)} // Navigate back
         >
           <ArrowBackIcon />
           Back
         </Button>
+
         <Container maxWidth="sm" className="d-flex justify-content-center">
           {isLoading && <Loader />}
           <Box
@@ -86,6 +90,7 @@ const AddWeAre = () => {
               Add "Who We Are" Section
             </Typography>
 
+            {/* Subtitle Field */}
             <label>Subtitle</label>
             <TextField
               value={subTitle}
@@ -95,15 +100,21 @@ const AddWeAre = () => {
               placeholder="Enter subtitle"
             />
 
-            <label>Description</label>
-            <TextField
-              value={description}
-              onChange={handleDescriptionChange}
-              fullWidth
-              margin="normal"
-              placeholder="Enter description"
+            {/* Description Field with CKEditor */}
+            <Typography variant="h6" sx={{ mt: 2 }}>
+              Description:
+            </Typography>
+            <CKEditor
+              editor={ClassicEditor}
+              data={description || ""} // Ensure it's always a valid string
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                console.log(data); // Check what data is being returned
+                setDescription(data); // Update state correctly
+              }}
             />
 
+            {/* Image Upload Field */}
             <label>Image</label>
             <TextField
               onChange={handleImageChange}
@@ -113,6 +124,7 @@ const AddWeAre = () => {
               inputProps={{ accept: "image/*" }}
             />
 
+            {/* Image Preview */}
             {imagePreview && (
               <Box mt={2}>
                 <img
@@ -123,12 +135,13 @@ const AddWeAre = () => {
               </Box>
             )}
 
+            {/* Submit Button */}
             <Button
               variant="contained"
               color="primary"
               sx={{ mt: 4, display: "block", backgroundColor: "orange" }}
               onClick={handleSubmit}
-              disabled={isLoading}
+              disabled={isLoading} // Disable while loading
             >
               Add
             </Button>

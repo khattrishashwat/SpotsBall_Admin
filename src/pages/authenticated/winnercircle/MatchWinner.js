@@ -210,7 +210,18 @@ const MatchWinner = () => {
                     }}
                   />
                 )}
-                <Typography variant="body1">Winner Coordinates</Typography>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 2, ml: 2 }}
+                  onClick={() =>
+                    navigate("find-coordinates", {
+                      state: { bannerImage: banner },
+                    })
+                  }
+                >
+                  Find Coordinates
+                </Button>
                 <TextField
                   value={winnerCoordinates}
                   fullWidth
@@ -218,15 +229,14 @@ const MatchWinner = () => {
                   placeholder="Enter winner coordinates"
                   InputProps={{ readOnly: true }}
                 />
+                <Typography variant="body1">Winner Coordinates</Typography>
               </Box>
               <Box sx={{ width: "50%", pl: 2 }}>
                 <Typography variant="h6">Users Participated</Typography>
-                {Array.isArray(userParticipated) && userParticipated.length ? (
-                  <ul>
-                    {userParticipated.map((user, index) => (
-                      <li key={index}>{user}</li>
-                    ))}
-                  </ul>
+                {userParticipated > 0 ? (
+                  <Typography variant="body1">
+                    {userParticipated} users participated
+                  </Typography>
                 ) : (
                   <Typography variant="body1">
                     No users participated yet.
@@ -235,7 +245,7 @@ const MatchWinner = () => {
               </Box>
             </Box>
           )}
-          <Box sx={{ width: "100%", mt: 4, textAlign: "center" }}>
+          <Box sx={{ width: "50%", mt: 3 }}>
             <Button
               variant="contained"
               color="primary"
@@ -244,6 +254,17 @@ const MatchWinner = () => {
               disabled={isLoading}
             >
               Calculate Winner
+            </Button>
+          </Box>
+          <Box sx={{ width: "50%", mt: 3 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ backgroundColor: "red" }}
+              onClick={() => navigate("userpaticipate")}
+              disabled={isLoading}
+            >
+              Users Participated
             </Button>
           </Box>
         </Container>

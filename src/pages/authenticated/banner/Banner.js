@@ -53,10 +53,10 @@ const Banner = () => {
             style={{ color: "gold", marginRight: "20px", cursor: "pointer" }}
             onClick={() => navigate(`/banner/edit-banner/${params.row.id}`)}
           />
-          <DeleteIcon
+          {/* <DeleteIcon
             style={{ color: "red", cursor: "pointer" }}
             onClick={() => confirmBeforeDelete(params.row)}
-          />
+          /> */}
         </>
       ),
     },
