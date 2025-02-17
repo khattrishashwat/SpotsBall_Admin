@@ -78,7 +78,7 @@ const ContactUs = () => {
             cursor="pointer"
             style={{ color: "blue" }}
             onClick={() => {
-              console.log("Sending mail to:", params.row);
+              console.log("Sending mail to:", params.row.col4);
               handleSendMail(params.row);
             }}
           />
@@ -92,8 +92,12 @@ const ContactUs = () => {
     },
   ];
 
+  // const handleSendMail = (row) => {
+  //   navigate("contact", { state: { email: row.col4 } });
+  // };
+
   const handleSendMail = (row) => {
-    navigate("contact", { state: { email: row.email } });
+    navigate("contact", { state: { email: row.col4 } });
   };
 
   const handleView = (row) => {
