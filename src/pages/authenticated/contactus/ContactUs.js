@@ -15,10 +15,12 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import CloseIcon from "@mui/icons-material/Close";
 import httpClient from "../../../util/HttpClient";
 import swal from "sweetalert2";
 import { Visibility } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 const ContactUs = () => {
   const [alertMessage, setAlertMessage] = useState("");
@@ -35,6 +37,7 @@ const ContactUs = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
+  const navigate = useNavigate();
 
   const handleSelect = useCallback((e) => {
     httpClient
@@ -48,10 +51,10 @@ const ContactUs = () => {
 
   const columns = [
     { field: "col1", headerName: "#", width: 100 },
-    { field: "col2", headerName: "User", width: 250 },
-    { field: "col3", headerName: "Phone Number", width: 250 },
-    { field: "col4", headerName: "Email", width: 350 },
-    { field: "col5", headerName: "Subject", width: 250 },
+    { field: "col2", headerName: "User", width: 150 },
+    { field: "col3", headerName: "Phone Number", width: 150 },
+    { field: "col4", headerName: "Email", width: 250 },
+    { field: "col5", headerName: "Subject", width: 120 },
     { field: "col6", headerName: "Message", width: 250 },
     {
       field: "col7",
@@ -61,7 +64,7 @@ const ContactUs = () => {
     {
       field: "col8",
       headerName: "Action",
-      width: 115,
+      width: 150,
       renderCell: (params) => (
         <>
           <Visibility
@@ -69,6 +72,15 @@ const ContactUs = () => {
             cursor="pointer"
             style={{ color: "green" }}
             onClick={() => handleView(params.row)}
+          />
+          <MailOutlineIcon
+            className="me-2"
+            cursor="pointer"
+            style={{ color: "blue" }}
+            onClick={() => {
+              console.log("Sending mail to:", params.row);
+              handleSendMail(params.row);
+            }}
           />
           <DeleteIcon
             cursor="pointer"
@@ -79,6 +91,10 @@ const ContactUs = () => {
       ),
     },
   ];
+
+  const handleSendMail = (row) => {
+    navigate("contact", { state: { email: row.email } });
+  };
 
   const handleView = (row) => {
     setSelectedFeedback(row);

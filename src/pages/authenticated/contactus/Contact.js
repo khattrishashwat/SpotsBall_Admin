@@ -2,11 +2,18 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Contact.css";
 import httpClient from "../../../util/HttpClient";
+import Swal from "sweetalert2"; // For success/error alerts
 
 const apiUrl = "/admin/contacts"; // Replace with your API URL
+const mailApiUrl = "/admin/send-mail"; // Replace with your email API URL
 
 const Contact = () => {
   const [contacts, setContacts] = useState([]);
+  const [emailData, setEmailData] = useState({
+    email: "",
+    subject: "",
+    message: "",
+  });
 
   useEffect(() => {
     fetchContacts();
@@ -15,34 +22,84 @@ const Contact = () => {
   const fetchContacts = async () => {
     try {
       const response = await httpClient.get(apiUrl);
-      console.log(response);
-      setContacts(response.data?.result?.docs);
+      setContacts(response.data?.result?.docs || []);
     } catch (error) {
       console.error("Error fetching contacts:", error);
     }
   };
 
-  const handleDelete = async (id) => {
+  const getEmailTemplate = () => {
+    return `
+      <div style="font-family: Arial, sans-serif; padding: 10px;">
+        <h2>Hello,</h2>
+        <p>${emailData.message}</p>
+        <p>Best Regards,<br> Your Company</p>
+      </div>
+    `;
+  };
+
+  const sendEmail = async () => {
+    if (!emailData.email || !emailData.subject || !emailData.message) {
+      Swal.fire("Warning!", "All fields are required.", "warning");
+      return;
+    }
+
     try {
-      await axios.delete(`${apiUrl}/${id}`);
-      fetchContacts();
+      const response = await axios.post(mailApiUrl, {
+        to: emailData.email,
+        subject: emailData.subject,
+        template: getEmailTemplate(),
+      });
+
+      Swal.fire("Success!", response.data.message, "success");
+      setEmailData({ email: "", subject: "", message: "" }); // Reset form
     } catch (error) {
-      console.error("Error deleting contact:", error);
+      Swal.fire("Error!", "Email sending failed.", "error");
     }
   };
 
   return (
     <div className="contact-manager">
-      <h1>Contact Manager</h1>
-      {contacts.map((contact, index) => (
-        <div key={index+1} className="contact-item">
-          <div className="contact-view">
-            <h2>{contact.contactFor}</h2>
-            <p>{contact.message}</p>
-            <button onClick={() => handleDelete(contact.id)}>Delete</button>
-          </div>
-        </div>
-      ))}
+      <h1>Support Manager</h1>
+
+      <div className="email-form">
+        <h2>Send Email</h2>
+        <label>Email:</label>
+        <select
+          value={emailData.email}
+          onChange={(e) =>
+            setEmailData({ ...emailData, email: e.target.value })
+          }
+        >
+          <option value="">Select Contact</option>
+          {contacts.map((contact, index) => (
+            <option key={index} value={contact.email}>
+              {contact.email}
+            </option>
+          ))}
+        </select>
+
+        <label>Subject:</label>
+        <input
+          type="text"
+          placeholder="Enter subject"
+          value={emailData.subject}
+          onChange={(e) =>
+            setEmailData({ ...emailData, subject: e.target.value })
+          }
+        />
+
+        <label>Message:</label>
+        <textarea
+          placeholder="Enter message"
+          value={emailData.message}
+          onChange={(e) =>
+            setEmailData({ ...emailData, message: e.target.value })
+          }
+        />
+
+        <button onClick={sendEmail}>Send Email</button>
+      </div>
     </div>
   );
 };

@@ -94,18 +94,6 @@ const EditContest = () => {
     // formData.append("contest_end_date", contestEndDate);
     formData.append("original_player_image", originalPlayerImage);
 
-    try {
-      const parsedCoordinates =
-        typeof winningCoordinates === "string"
-          ? JSON.parse(winningCoordinates) // Parse only if it's a string
-          : winningCoordinates; // Use directly if it's already an object
-      formData.append("winning_coordinates", JSON.stringify(parsedCoordinates)); // Always stringify for FormData
-    } catch (error) {
-      console.error("Invalid JSON format in winningCoordinates:", error);
-      Swal.fire("Error", "Winning coordinates are invalid", "error");
-      setIsLoading(false);
-      return; // Stop submission if invalid
-    }
     formData.append("cursor_color", cousor);
 
     formData.append("image_width", imageWidth);
@@ -132,26 +120,30 @@ const EditContest = () => {
       });
   };
 
+  // const formatDate = (dateString) => {
+  //   const date = new Date(dateString);
+
+  //   const day = String(date.getDate()).padStart(2, "0");
+  //   const month = String(date.getMonth() + 1).padStart(2, "0"); // months are 0-based
+  //   const year = date.getFullYear();
+  //   const hours = String(date.getHours()).padStart(2, "0");
+  //   const minutes = String(date.getMinutes()).padStart(2, "0");
+  //   const seconds = String(date.getSeconds()).padStart(2, "0"); // Add seconds
+
+  //   // return `${day}-${month}-${year}T${hours}:${minutes}:${seconds}`;
+  //   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+  // };
+
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // months are 0-based
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0"); // Add seconds
-
-    // return `${day}-${month}-${year}T${hours}:${minutes}:${seconds}`;
-    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+    return new Date(dateString).toISOString().slice(0, -5); // Removes milliseconds and 'Z'
   };
 
-  const handleDateChange = (e) => {
-    const localDate = new Date(e.target.value);
-    const offsetDate = new Date(localDate.getTime() + 5.5 * 60 * 60 * 1000); // Add 5 hours 30 minutes
-    const isoDate = offsetDate.toISOString().slice(0, 16); // Get date-time in ISO format without timezone
-    setContestStartDate(isoDate);
-  };
+  // const handleDateChange = (e) => {
+  //   const localDate = new Date(e.target.value);
+  //   const offsetDate = new Date(localDate.getTime() + 5.5 * 60 * 60 * 1000); // Add 5 hours 30 minutes
+  //   const isoDate = offsetDate.toISOString().slice(0, 16); // Get date-time in ISO format without timezone
+  //   setContestStartDate(isoDate);
+  // };
   return (
     <>
       <AppSidebar />
@@ -287,9 +279,14 @@ const EditContest = () => {
             <TextField
               type="datetime-local"
               value={contestStartDate}
-              onChange={handleDateChange}
+              onChange={(e) => setContestStartDate(e.target.value)}
               fullWidth
               margin="normal"
+              InputProps={{
+                inputProps: {
+                  min: new Date().toISOString().slice(0, 16), // Restrict to current or future date
+                },
+              }}
             />
 
             {/* <label>Contest End Date</label>
@@ -301,7 +298,7 @@ const EditContest = () => {
               margin="normal"
               // value={description}
             /> */}
-
+            {/* 
             <label>Winning Coordinates</label>
             <TextField
               value={`{"x": ${winningCoordinates.x}, "y": ${winningCoordinates.y}}`}
@@ -310,7 +307,7 @@ const EditContest = () => {
               fullWidth
               margin="normal"
               placeholder='{"x": , "y": }'
-            />
+            /> */}
 
             <label>Image Width</label>
             <TextField
@@ -381,27 +378,22 @@ const EditContest = () => {
             </div>
 
             <label>GST Rate</label>
-            <TextField
-              value={gstRate}
-              onChange={(e) => setGstRate(e.target.value)}
-              fullWidth
-              margin="normal"
-            />
+            <TextField fullWidth margin="normal" value={gstRate} disabled />
 
             <label>Platform Fee Rate</label>
             <TextField
-              value={platformFeeRate}
-              onChange={(e) => setPlatformFeeRate(e.target.value)}
               fullWidth
               margin="normal"
+              value={platformFeeRate}
+              disabled
             />
 
             <label>GST on Platform Fee Rate</label>
             <TextField
-              value={gstOnPlatformFeeRate}
-              onChange={(e) => setGstOnPlatformFeeRate(e.target.value)}
               fullWidth
               margin="normal"
+              value={gstOnPlatformFeeRate}
+              disabled
             />
             <label>Choose Cousor Color</label>
             <TextField

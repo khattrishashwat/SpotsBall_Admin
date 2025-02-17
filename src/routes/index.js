@@ -409,7 +409,7 @@ const routes = createBrowserRouter(
           element: LazyComponent(ContactUs),
         },
         {
-          path: "contact",
+          path: "contacts/contact",
           element: LazyComponent(Contact),
         },
 
