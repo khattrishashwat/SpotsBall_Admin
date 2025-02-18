@@ -34,14 +34,17 @@ const AllPayments = () => {
     setLoading(true);
     try {
       const response = await httpClient.get(
-        "admin/contest-payments/get-all-contest-payments"
+        `admin/contest-payments/get-all-contest-payments?page=${paginationModel.page}&limit=${paginationModel.pageSize}`
       );
       const contestData = response.data.data;
-      setUserCount(contestData.length);
+      console.log("contestData payment", contestData);
+
+      setUserCount(contestData.total);
       setRows(
-        contestData.map((record, index) => ({
+        contestData.data.map((record, index) => ({
           id: record._id,
-          col1: index + 1,
+          col1:
+            (paginationModel.page) * paginationModel.pageSize + (index + 1), // Updated this line
           col2: record.userId || "N/A",
           col3: record.contestId || "N/A",
           col4: record.discountApplied?.name
@@ -141,6 +144,14 @@ const AllPayments = () => {
     return rows.slice(startIndex, endIndex);
   };
 
+  const handleRecordPerPage = (e) => {
+    const newPageSize = e.target.value;
+    setPaginationModel((prevState) => ({
+      ...prevState,
+      pageSize: newPageSize,
+    }));
+  };
+
   return (
     <>
       <AppSidebar />
@@ -171,12 +182,13 @@ const AllPayments = () => {
             <Loader />
           ) : (
             <DataGrid
-              rows={getPaginatedData()}
+              rows={rows}
               columns={columns}
               rowCount={userCount}
+              pageSize={paginationModel.pageSize}
+              page={paginationModel.page} // Fixing page indexing
               pagination
               paginationMode="server"
-              paginationModel={paginationModel}
               onPaginationModelChange={handlePaginationChange}
               autoHeight
             />

@@ -4,10 +4,8 @@ import AppHeader from "../../../components/AppHeader";
 import { CCol, CContainer } from "@coreui/react";
 import PageTitle from "../../common/PageTitle";
 import { DataGrid } from "@mui/x-data-grid";
-import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Button, IconButton, Snackbar } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import httpClient from "../../../util/HttpClient";
 import swal from "sweetalert2";
 import Loader from "../../../components/loader/Loader";
@@ -16,31 +14,30 @@ import { useNavigate } from "react-router-dom";
 const ContestManagement = () => {
   const [alertMessage, setAlertMessage] = useState();
   const [apiSuccess, setApiSuccess] = useState(false);
-  const [apiError, setApiError] = useState(false);
   const [closeSnakeBar, setCloseSnakeBar] = useState(false);
   const [userCount, setUserCount] = useState(0);
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paginationModel, setPaginationModel] = useState({
-    page: 0,
-    pageSize: 12,
+    page: 1,
+    pageSize: 10,
   });
 
   const navigate = useNavigate();
 
   const fetchContests = () => {
     setLoading(true);
-    const { page, pageSize } = paginationModel;
-
     httpClient
-      .get(`/admin/contest/get-all-contests?page=${page + 1}&limit=${pageSize}`)
+      .get(
+        `/admin/contest/get-all-contests?page=${paginationModel.page}&limit=${paginationModel.pageSize}`
+      )
       .then((res) => {
         const contests = res.data.data;
-        setUserCount(res.data.total); // Total number of contests from the API
+        setUserCount(contests?.pagination?.total); // Total number of contests from the API
         setRows(
-          contests.map((contest, index) => ({
+          contests.data.map((contest, index) => ({
             id: contest._id,
-            col1: page * pageSize + (index + 1),
+            col1: paginationModel.page * paginationModel.pageSize + (index + 1), // Updated this line
             col2: contest.title || "N/A",
             col3: contest.contest_banner?.file_url || "N/A",
             col4: contest.jackpot_price || "N/A",
@@ -76,7 +73,6 @@ const ContestManagement = () => {
       })
       .then((result) => {
         if (result.isConfirmed) {
-          console.log(`Deleting contest with ID: ${id}`); // Log ID for debugging
           deleteSingleUser(id);
         }
       });
@@ -86,19 +82,14 @@ const ContestManagement = () => {
     httpClient
       .delete(`admin/contest/delete-contest/${id}`)
       .then((res) => {
-        console.log(`Contest with ID: ${id} successfully deleted.`); // Success log
         setAlertMessage(res.data.message);
         setApiSuccess(true);
         setCloseSnakeBar(true);
         fetchContests(); // Refetch data after deletion
       })
       .catch((error) => {
-        console.error(
-          `Failed to delete contest with ID: ${id}. Error: `,
-          error.response?.data?.message || error
-        ); // Error log
         setAlertMessage(error.response?.data?.message || "Failed to delete");
-        setApiError(true);
+        setApiSuccess(false);
         setCloseSnakeBar(true);
       });
   };
@@ -113,11 +104,7 @@ const ContestManagement = () => {
       renderCell: (params) =>
         params.value !== "N/A" ? (
           <img
-            style={{
-              width: "70px",
-              objectFit: "cover",
-              cursor: "pointer",
-            }}
+            style={{ width: "70px", objectFit: "cover", cursor: "pointer" }}
             src={params.value}
             alt="thumbnail"
           />
@@ -141,16 +128,18 @@ const ContestManagement = () => {
           >
             <EditIcon />
           </IconButton>
-          {/* <IconButton
-            color="error"
-            onClick={(e) => confirmBeforeDelete(params.row.id)}
-          >
-            <DeleteIcon />
-          </IconButton> */}
         </>
       ),
     },
   ];
+
+  const handleRecordPerPage = (e) => {
+    const newPageSize = e.target.value;
+    setPaginationModel((prevState) => ({
+      ...prevState,
+      pageSize: newPageSize,
+    }));
+  };
 
   return (
     <>
@@ -197,6 +186,12 @@ const ContestManagement = () => {
               onPaginationModelChange={setPaginationModel}
               loading={loading}
               autoHeight
+              pageSize={paginationModel.pageSize}
+              page={paginationModel.page - 1}
+              components={{
+                NoRowsOverlay: () => <div>No records to display</div>, // Custom NoRowsOverlay
+              }}
+              disableSelectionOnClick
             />
           </div>
         </CContainer>

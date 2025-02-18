@@ -41,7 +41,7 @@ const CouponsCodes = () => {
       renderCell: (params) => {
         return (
           <Switch
-            checked={params.row.col3} // checked={params.row.col3 === true ? true : false}
+            checked={params.row.col7} // checked={params.row.col3 === true ? true : false}
             onChange={(e) => handleStatusChange(e, params.row)}
           />
         );
@@ -69,28 +69,30 @@ const CouponsCodes = () => {
       ),
     },
   ];
-  const handleStatusChange = (e, params) => {
+  const handleStatusChange = (e, row) => {
+    const updatedStatus = !row.col4; // Toggle the boolean value
+
     setRows((prevRows) =>
-      prevRows.map((row) => {
-        if (row.id === params.id) {
-          updateStatus(params.id, row.col3);
-        }
-        return row.id === params.id ? { ...row, col3: !row.col3 } : row;
-      })
+      prevRows.map((r) => (r.id === row.id ? { ...r, col4: updatedStatus } : r))
     );
+
+    updateStatus(row.id, updatedStatus);
   };
 
   const updateStatus = (id, status) => {
-    console.log("id", id);
-    console.log("status", status);
+    const payload = {
+      name: rows.find((row) => row.id === id)?.col2 || "", // Get name from rows
+      amount: rows.find((row) => row.id === id)?.col3 || 0, // Get amount
+      isActive: status, // Set correct boolean value
+    };
 
     httpClient
-      .get(`admin/users/active-in-active-user/${id}`, {
-        is_active: status === true ? false : true,
-      })
+      .patch(`admin/promocode/edit-promocode/${id}`, payload)
       .then((res) => {
-        console.log("update status ==> ", res);
-        // setStatus("ok");
+        console.log("Update status ==> ", res);
+      })
+      .catch((err) => {
+        console.error("Error updating status", err);
       });
   };
 
@@ -111,6 +113,7 @@ const CouponsCodes = () => {
             col4: record.isActive ? "true" : "false",
             col5: record.createdAt?.substring(0, 10) || "N/A",
             col6: record.updatedAt?.substring(0, 10) || "N/A",
+            col7: record.isActive,
           }))
         );
         setLoading(false);

@@ -5,15 +5,12 @@ import { CCol, CContainer } from "@coreui/react";
 import PageTitle from "../../common/PageTitle";
 import { DataGrid } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Button, IconButton, Snackbar } from "@mui/material";
+import { Button, IconButton, Snackbar, CircularProgress } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import httpClient from "../../../util/HttpClient";
 import swal from "sweetalert2";
-import Loader from "../../../components/loader/Loader";
-import axios from "axios";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
+import EditIcon from "@mui/icons-material/Edit";
 
 const InPress = () => {
   const [alertMessage, setAlertMessage] = useState();
@@ -24,7 +21,7 @@ const InPress = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paginationModel, setPaginationModel] = useState({
-    page: 0,
+    page: 1,
     pageSize: 10,
   });
 
@@ -111,14 +108,19 @@ const InPress = () => {
   useEffect(() => {
     setLoading(true);
     httpClient
-      .get(`admin/press/get-press`)
+      .get(
+        `admin/press/get-press?page=${paginationModel.page}&limit=${paginationModel.pageSize}`
+      )
       .then((res) => {
-        setUserCount(res.data.data.length);
+        const data = res.data.data;
+        setUserCount(data?.pagination?.total); // Total number of records
         setLoading(false);
         setRows(
-          res.data.data.map((user, index) => ({
+          data.data.map((user, index) => ({
             id: user._id,
-            col1: paginationModel.page * paginationModel.pageSize + (index + 1),
+            col1:
+              (paginationModel.page - 1) * paginationModel.pageSize +
+              (index + 1),
             col2: user.title || "N/A",
             col3: user.press_banner || "N/A",
             col4: user.link || "N/A",
@@ -138,7 +140,15 @@ const InPress = () => {
       });
   }, [paginationModel, alertMessage, status, keyword]);
 
-  //handle get confirmation before delete user
+  const handlePageChange = (newPage) => {
+    setPaginationModel((prev) => ({ ...prev, page: newPage }));
+  };
+
+  const handlePageSizeChange = (newPageSize) => {
+    setPaginationModel({ page: 1, pageSize: newPageSize }); // Reset to page 0 when changing size
+  };
+
+  // Handle confirmation before deleting
   const confirmBeforeDelete = (e, params) => {
     swal
       .fire({
@@ -176,14 +186,6 @@ const InPress = () => {
       });
   };
 
-  //fetching user information
-
-  const handleRecordPerPage = (e) => {
-    setLoading(true);
-    paginationModel.pageSize = e.target.value;
-    setPaginationModel({ ...paginationModel });
-  };
-
   return (
     <>
       <AppSidebar />
@@ -201,7 +203,6 @@ const InPress = () => {
                 backgroundColor: "orange",
               }}
               onClick={() => navigate("add-blogs")}
-              
             >
               Add Press
             </Button>
@@ -215,26 +216,6 @@ const InPress = () => {
               borderRadius: 5,
             }}
           >
-            <div className="">
-              {/* <ArrowBackIcon className="pointer-cursor"
-            style={{
-              // fontSize: "20px",
-              marginLeft: "10px",
-              cursor: "pointer",
-              color: "#333",
-            }}
-            /> */}
-              {/* <button
-                className="border-0 border p-2"
-                style={{
-                  backgroundColor: "gold",
-                  borderRadius: "5px",
-                }}
-                // onClick={() => {}}
-              >
-                Add Group
-              </button> */}
-            </div>
             <Snackbar
               open={closeSnakeBar}
               autoHideDuration={1000}
@@ -261,45 +242,53 @@ const InPress = () => {
                 </React.Fragment>
               }
             />
-            <div
-              style={{
-                width: "100%",
-                height: "auto",
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "10px 0",
-              }}
-            ></div>
             <DataGrid
               sx={{
                 "& .MuiDataGrid-row:nth-of-type(2n)": {
-                  backgroundColor: "#d5dbd6",
+                  backgroundColor: "#f5f5f5", // Light background for even rows
                 },
                 "& .MuiDataGrid-columnHeader": {
-                  backgroundColor: "#d5dbd6",
-                  // height: "40px !important",
-                  outline: "none !important",
+                  backgroundColor: "#f0f0f0", // Header background
+                  color: "#333",
+                  fontWeight: "bold",
                 },
                 "& .MuiDataGrid-cell": {
-                  outline: "none !important",
+                  color: "#333",
                 },
-                "& .MuiDataGrid-row": {
-                  outline: "none !important",
-                  // backgroundColor: "gold",
+                "& .MuiDataGrid-row:hover": {
+                  backgroundColor: "#f0f0f0", // Hover effect
                 },
               }}
               rows={rows}
               columns={columns}
-              // pageSizeOptions={[5, 10, 15]}
               rowCount={userCount}
-              disableRowSelectionOnClick
-              pagination
               paginationMode="server"
-              paginationModel={paginationModel}
-              disableColumnMenu
-              onPaginationModelChange={setPaginationModel}
+              pageSizeOptions={[10, 20, 30]}
+              pageSize={paginationModel.pageSize}
+              page={paginationModel.page}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
               loading={loading}
               autoHeight
+              components={{
+                LoadingOverlay: () => (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: "rgba(255, 255, 255, 0.7)",
+                    }}
+                  >
+                    <CircularProgress />
+                  </div>
+                ),
+              }}
             />
           </div>
         </CContainer>

@@ -94,9 +94,12 @@ const GetPayment = () => {
   useEffect(() => {
     setLoading(true);
     httpClient
-      .get(`admin/contest-payments/${params.id}`)
+      .get(
+        `admin/contest-payments/${params.id}?page=${paginationModel.page}&limit=${paginationModel.pageSize}`
+      )
       .then((res) => {
         const data = res.data.data;
+
         setUserCount(data.length);
         setLoading(false);
 

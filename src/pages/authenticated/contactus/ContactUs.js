@@ -31,7 +31,7 @@ const ContactUs = () => {
   const [loading, setLoading] = useState(true);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
-    pageSize: 10,
+    pageSize: 5,
   });
   const [update, setUpdate] = useState();
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -148,13 +148,16 @@ const ContactUs = () => {
     setLoading(true);
 
     httpClient
-      .get(`admin/contact-us`)
+      .get(
+        `admin/contact-us?page=${paginationModel.page + 1}&limit=${
+          paginationModel.pageSize
+        }`
+      )
       .then((res) => {
-        console.log(res);
-        setUserCount(res.data.data.length); // Update user count
-        setLoading(false);
+        const data = res.data.data.data || [];
+        setUserCount(res.data.data.total); // Correctly set total count
         setRows(
-          res.data.data.map((doc, index) => ({
+          data.map((doc, index) => ({
             id: doc._id,
             col1: paginationModel.page * paginationModel.pageSize + (index + 1),
             col2: `${doc.first_name || "N/A"} ${doc.last_name || ""}`.trim(),
@@ -165,12 +168,13 @@ const ContactUs = () => {
             col7: doc.createdAt.substring(0, 10),
           }))
         );
+        setLoading(false);
       })
       .catch((error) => {
         setLoading(false);
         console.error(error);
       });
-  }, [update, paginationModel]);
+  }, [paginationModel]); // Ensure it runs when page changes
 
   const handleRecordPerPage = useCallback((e) => {
     setLoading(true);
@@ -279,11 +283,14 @@ const ContactUs = () => {
               rows={rows}
               columns={columns}
               rowCount={userCount}
-              disableRowSelectionOnClick
               paginationMode="server"
+              pageSize={paginationModel.pageSize}
+              page={paginationModel.page} // Keep it as `page`
+              pagination
               paginationModel={paginationModel}
-              disableColumnMenu
-              onPaginationModelChange={setPaginationModel}
+              onPaginationModelChange={(newModel) => {
+                setPaginationModel(newModel); // Properly update state
+              }}
               loading={loading}
               autoHeight
             />

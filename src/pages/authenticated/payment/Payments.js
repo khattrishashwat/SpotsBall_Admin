@@ -282,12 +282,14 @@ const Payments = () => {
     setLoading(true);
     try {
       const response = await httpClient.get(
-        "admin/contest/get-all-contest-details"
+        "admin/contest/get-all-contest-details?page=${paginationModel.page}&limit=${paginationModel.pageSize}"
       );
       const contestData = response.data.data;
-      setUserCount(contestData.length);
+      console.log("contestData", contestData);
+
+      setUserCount(contestData.total);
       setRows(
-        contestData.map((record, index) => ({
+        contestData.data.map((record, index) => ({
           id: record?.contest._id,
           col1: paginationModel.page * paginationModel.pageSize + (index + 1),
           col2: record?.contest.contest_banner?.file_url || "N/A",

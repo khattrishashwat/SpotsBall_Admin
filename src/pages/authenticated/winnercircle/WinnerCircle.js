@@ -29,6 +29,7 @@ const WinnerCircle = () => {
     page: 0,
     pageSize: 10,
   });
+  const [userCount, setUserCount] = useState(0);
 
   const navigate = useNavigate();
 
@@ -81,14 +82,14 @@ const WinnerCircle = () => {
       field: "col10",
       headerName: "Show",
       width: 120,
-      renderCell: (params) => {
-        return (
-          <Switch
-            checked={params.row} // checked={params.row.col3 === true ? true : false}
-            onChange={(e) => handleStatusChange(e, params.row)}
-          />
-        );
-      },
+      // renderCell: (params) => {
+      //   return (
+      //     <Switch
+      //       checked={params.row} // checked={params.row.col3 === true ? true : false}
+      //       onChange={(e) => handleStatusChange(e, params.row)}
+      //     />
+      //   );
+      // },
     },
     {
       field: "col11",
@@ -116,10 +117,15 @@ const WinnerCircle = () => {
   const fetchContests = () => {
     setLoading(true);
     httpClient
-      .get("admin/contest/get-all-contest-details")
+      .get(
+        `admin/contest/get-all-contest-details?page=${paginationModel.page}&limit=${paginationModel.pageSize}`
+      )
       .then((res) => {
+        const data = res.data.data;
+        console.log("new", data);
+        setUserCount(data.total);
         setRows(
-          res.data.data.map((contestData, index) => ({
+          data.data.map((contestData, index) => ({
             id: contestData.contest._id,
             col1: paginationModel.page * paginationModel.pageSize + index + 1,
             col2: contestData.contest._id || "N/A",
@@ -233,7 +239,7 @@ const WinnerCircle = () => {
               paginationMode="server"
               paginationModel={paginationModel}
               onPaginationModelChange={setPaginationModel}
-              rowCount={rows.length}
+              rowCount={userCount} // Fix: Use total count from API response
               sx={{
                 "& .MuiDataGrid-row:nth-of-type(2n)": {
                   backgroundColor: "#f9f9f9",

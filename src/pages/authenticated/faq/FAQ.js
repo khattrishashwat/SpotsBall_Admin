@@ -10,11 +10,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import httpClient from "../../../util/HttpClient";
 import swal from "sweetalert2";
 import Loader from "../../../components/loader/Loader";
-import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const FAQ = () => {
-  const [alertMessage, setAlertMessage] = useState();
+  const [alertMessage, setAlertMessage] = useState("");
   const [apiSuccess, setApiSuccess] = useState(false);
   const [apiError, setApiError] = useState(false);
   const [closeSnakeBar, setCloseSnakeBar] = useState(false);
@@ -22,79 +21,43 @@ const FAQ = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paginationModel, setPaginationModel] = useState({
-    page: 0,
-    pageSize: 10,
+    page: 1, // MUI pagination starts from 0
+    pageSize: 5,
   });
 
-  const [faqs, setFaqs] = useState("");
-  const [filterMode, setFilterMode] = useState("name");
-  const [status, setStatus] = useState("");
-  const [keyword, setKeyword] = useState("");
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
-  const handleSelect = (e) => {
-    httpClient
-      .patch(`/admin/users/${e.target.id}`, {
-        is_active: e.target.value === "active" ? true : false,
-      })
-      .then((res) => {
-        console.log("update status ==> ", res);
-        setStatus("ok");
-      });
+  // Function to fetch FAQs with pagination
+  const fetchFAQs = async () => {
+    setLoading(true);
+    try {
+      const res = await httpClient.get(
+        `admin/faq/get-all-faq?page=${paginationModel.page}&limit=${paginationModel.pageSize}`
+      );
+      setUserCount(res.data.data.total);
+      setRows(
+        res.data.data.data.map((doc, index) => ({
+          id: doc._id,
+          col1:
+            (paginationModel.page-1) * paginationModel.pageSize + (index + 1),
+          col2: doc.question || "N/A",
+          col3: doc.answer || "N/A",
+          col4: doc.createdAt ? doc.createdAt.substring(0, 10) : "N/A",
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching FAQs:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const columns = [
-    { field: "col1", headerName: "#", width: 200 },
-    {
-      field: "col2",
-      headerName: "Question",
-      width: 400,
-    },
-    {
-      field: "col3",
-      headerName: "Answer",
-      width: 500,
-    },
-    {
-      field: "col4",
-      headerName: "Created At",
-      width: 200,
-    },
-    {
-      field: "col5",
-      headerName: "Action",
-      width: 115,
-      renderCell: (params) => (
-        <>
-          <button
-            className="border-0"
-            style={{
-              color: "green",
-              background: "transparent",
-              padding: "5px",
-              fontWeight: "700",
-              border: "none",
-              cursor: "pointer",
-            }}
-            onClick={() => {
-              console.log("edit question ==> ", params.row.id);
-              navigate(`/faqs/update-faq/${params.row.id}`);
-            }}
-          >
-            Edit
-          </button>
-          <DeleteIcon
-            cursor={"pointer"}
-            style={{ color: "red" }}
-            onClick={(e) => confirmBeforeDelete(e, params.row)}
-          />
-        </>
-      ),
-    },
-  ];
+  // Fetch FAQs on component mount and when paginationModel changes
+  useEffect(() => {
+    fetchFAQs();
+  }, [paginationModel]);
 
-  //handle get confirmation before delete user
-  const confirmBeforeDelete = (e, params) => {
+  const handleDelete = (faq) => {
     swal
       .fire({
         title: "Are you sure?",
@@ -105,70 +68,71 @@ const FAQ = () => {
       })
       .then((result) => {
         if (result.isConfirmed) {
-          deleteSingleUser(e, params);
+          deleteFaq(faq);
         }
       });
   };
 
-  const deleteSingleUser = (e, params) => {
-    const userId = params.id;
-    httpClient
-      .delete(`admin/faq/delete-faq/${userId}`)
-      .then((res) => {
-        setAlertMessage(res.data.message);
-        setApiSuccess(true);
-        setApiError(false);
-        setLoading(false);
-        setCloseSnakeBar(true);
-        setStatus("deleted");
-      })
-      .catch((error) => {
-        setAlertMessage(error.response.data.message);
-        setApiError(true);
-        setApiSuccess(false);
-        setCloseSnakeBar(true);
-        setLoading(false);
-      });
+  const deleteFaq = async (faq) => {
+    setLoading(true);
+    try {
+      const res = await httpClient.delete(`admin/faq/delete-faq/${faq.id}`);
+      setAlertMessage(res.data.message);
+      setApiSuccess(true);
+      setApiError(false);
+      setCloseSnakeBar(true);
+      fetchFAQs(); // Refresh data after delete
+    } catch (error) {
+      setAlertMessage(error.response?.data?.message || "Error deleting FAQ");
+      setApiError(true);
+      setApiSuccess(false);
+      setCloseSnakeBar(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  //fetching user information
-  useEffect(() => {
-    setLoading(true);
-    httpClient
-      .get(`admin/faq/get-all-faq`)
-      .then((res) => {
-        console.log("content => ", res);
-        setUserCount(res.data.data.length); // Assuming count represents the length of FAQ data
-        setFaqs(res.data.data);
-        console.log("faqs", res.data.data);
-
-        setLoading(false);
-        setRows(
-          res.data.data.map((doc, index) => {
-            return {
-              id: doc._id,
-              col1:
-                paginationModel.page * paginationModel.pageSize + (index + 1),
-              col2: doc.question || "N/A",
-              col3: doc.answer || "N/A",
-              col4: doc.createdAt ? doc.createdAt.substring(0, 10) : "N/A",
-              col5: doc.thumbnail || "N/A",
-            };
-          })
-        );
-        setStatus("");
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.log(error);
-      });
-  }, [paginationModel, status]);
-
-  const handleRecordPerPage = (e) => {
-    setLoading(true);
-    paginationModel.pageSize = e.target.value;
-    setPaginationModel({ ...paginationModel });
+  const handlePageChange = (newPage) => {
+    setPaginationModel((prev) => ({ ...prev, page: newPage }));
   };
+
+  const handlePageSizeChange = (newPageSize) => {
+    setPaginationModel({ page: 1, pageSize: newPageSize }); // Reset to page 0 when changing size
+  };
+
+  const columns = [
+    { field: "col1", headerName: "#", width: 100 },
+    { field: "col2", headerName: "Question", width: 400 },
+    { field: "col3", headerName: "Answer", width: 500 },
+    { field: "col4", headerName: "Created At", width: 200 },
+    {
+      field: "action",
+      headerName: "Action",
+      width: 150,
+      renderCell: (params) => (
+        <>
+          <button
+            style={{
+              color: "green",
+              background: "transparent",
+              padding: "5px",
+              fontWeight: "700",
+              border: "none",
+              cursor: "pointer",
+            }}
+            onClick={() => navigate(`/faqs/update-faq/${params.row.id}`)}
+          >
+            Edit
+          </button>
+          <DeleteIcon
+            cursor="pointer"
+            style={{ color: "red", marginLeft: 10 }}
+            onClick={() => handleDelete(params.row)}
+          />
+        </>
+      ),
+    },
+  ];
 
   return (
     <>
@@ -176,124 +140,88 @@ const FAQ = () => {
       <div className="wrapper bg-light d-flex-column align-items-center">
         <AppHeader />
         <PageTitle title="FAQ" />
-
         <CContainer>
-          <div className="d-flex justify-content-between pe-">
-            <h4 className="p-0">FAQ : </h4>
+          <div className="d-flex justify-content-between">
+            <h4>FAQ :</h4>
             <Button
               variant="contained"
-              className="my-2"
-              sx={{
-                backgroundColor: "orange",
-              }}
+              sx={{ backgroundColor: "orange" }}
               onClick={() => navigate("add-faq")}
-              
             >
               Add FAQ
             </Button>
           </div>
+
+          <Snackbar
+            open={closeSnakeBar}
+            autoHideDuration={3000}
+            message={alertMessage}
+            ContentProps={{
+              sx: apiSuccess
+                ? { backgroundColor: "green" }
+                : { backgroundColor: "red" },
+            }}
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            action={
+              <IconButton
+                color="inherit"
+                onClick={() => setCloseSnakeBar(false)}
+              >
+                <CloseIcon />
+              </IconButton>
+            }
+          />
+
           <div
             style={{
               height: "600px",
-              minHeight: "600px",
               border: "1px solid gray",
               padding: 15,
               borderRadius: 5,
             }}
           >
-            <Snackbar
-              open={closeSnakeBar}
-              autoHideDuration={1000}
-              message={alertMessage}
-              ContentProps={{
-                sx: apiSuccess
-                  ? { backgroundColor: "green" }
-                  : { backgroundColor: "red" },
-              }}
-              anchorOrigin={{
-                horizontal: "right",
-                vertical: "bottom",
-              }}
-              action={
-                <React.Fragment>
-                  <IconButton
-                    aria-label="close"
-                    color="inherit"
-                    sx={{ p: 0.5 }}
-                    onClick={() => setCloseSnakeBar(false)}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </React.Fragment>
-              }
-            />
-            <div
-              style={{
-                width: "100%",
-                height: "auto",
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "10px 0",
-              }}
-            >
-              <CCol xs={5}>
-                Show
-                <input
-                  className="mx-2"
-                  type="number"
-                  id="number"
-                  name="number"
-                  placeholder="10"
-                  defaultValue={"10"}
-                  outline="none"
-                  title="Enter a Number"
-                  cursor="pointer"
-                  min={0}
-                  style={{
-                    width: "45px",
-                    outline: "none",
-                    borderRadius: 5,
-                    border: "1px solid gray",
-                    fontSize: "1rem",
-                    fontWeight: 600,
-                    textAlign: "center",
-                    height: 25,
-                  }}
-                  onChange={handleRecordPerPage}
-                />
-                Records per page
-              </CCol>
-            </div>
+            <CCol xs={5}>
+              Show
+              <input
+                type="number"
+                min={1}
+                max={100}
+                value={paginationModel.pageSize}
+                style={{
+                  width: "50px",
+                  marginLeft: "10px",
+                  textAlign: "center",
+                  borderRadius: 5,
+                  border: "1px solid gray",
+                  fontSize: "1rem",
+                  fontWeight: 600,
+                  height: 25,
+                }}
+                onChange={(e) =>
+                  handlePageSizeChange(parseInt(e.target.value, 10))
+                }
+              />
+              Records per page
+            </CCol>
+
             <DataGrid
-              sx={{
-                "& .MuiDataGrid-row:nth-of-type(2n)": {
-                  backgroundColor: "#d5dbd6",
-                },
-                "& .MuiDataGrid-columnHeader": {
-                  backgroundColor: "#d5dbd6",
-                  // height: "40px !important",
-                  outline: "none !important",
-                },
-                "& .MuiDataGrid-cell": {
-                  outline: "none !important",
-                },
-                "& .MuiDataGrid-row": {
-                  outline: "none !important",
-                  //   backgroundColor: "gold",
-                },
-              }}
               rows={rows}
               columns={columns}
-              // pageSizeOptions={[5, 10, 15]}
               rowCount={userCount}
-              disableRowSelectionOnClick
-              //   pagination
               paginationMode="server"
-              paginationModel={paginationModel}
-              disableColumnMenu
-              onPaginationModelChange={setPaginationModel}
+              pageSizeOptions={[5, 10, 20]}
+              pageSize={paginationModel.pageSize}
+              page={paginationModel.page}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
               loading={loading}
               autoHeight
+              sx={{
+                "& .MuiDataGrid-row:nth-of-type(2n)": {
+                  backgroundColor: "#f3f4f6",
+                },
+                "& .MuiDataGrid-columnHeader": { backgroundColor: "#e5e7eb" },
+              }}
             />
           </div>
         </CContainer>
