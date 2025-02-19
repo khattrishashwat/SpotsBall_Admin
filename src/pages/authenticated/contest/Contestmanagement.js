@@ -19,7 +19,7 @@ const ContestManagement = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paginationModel, setPaginationModel] = useState({
-    page: 1,
+    page: 0,
     pageSize: 10,
   });
 
@@ -29,15 +29,17 @@ const ContestManagement = () => {
     setLoading(true);
     httpClient
       .get(
-        `/admin/contest/get-all-contests?page=${paginationModel.page}&limit=${paginationModel.pageSize}`
+        `/admin/contest/get-all-contests?page=${
+          paginationModel.page + 1
+        }&limit=${paginationModel.pageSize}`
       )
       .then((res) => {
         const contests = res.data.data;
-        setUserCount(contests?.pagination?.total); // Total number of contests from the API
+        setUserCount(contests?.pagination?.total); // Total number of contests
         setRows(
           contests.data.map((contest, index) => ({
             id: contest._id,
-            col1: paginationModel.page * paginationModel.pageSize + (index + 1), // Updated this line
+            col1: paginationModel.page * paginationModel.pageSize + (index + 1), // ✅ Corrected calculation
             col2: contest.title || "N/A",
             col3: contest.contest_banner?.file_url || "N/A",
             col4: contest.jackpot_price || "N/A",
@@ -60,7 +62,7 @@ const ContestManagement = () => {
 
   useEffect(() => {
     fetchContests();
-  }, [paginationModel]);
+  }, [paginationModel.page, paginationModel.pageSize]);
 
   const confirmBeforeDelete = (id) => {
     swal
@@ -135,8 +137,8 @@ const ContestManagement = () => {
 
   const handleRecordPerPage = (e) => {
     const newPageSize = e.target.value;
-    setPaginationModel((prevState) => ({
-      ...prevState,
+    setPaginationModel((page) => ({
+      page: 1,
       pageSize: newPageSize,
     }));
   };
@@ -182,14 +184,18 @@ const ContestManagement = () => {
               rowCount={userCount}
               pagination
               paginationMode="server"
+              pageSizeOptions={[10, 20, 50]} // Set valid page sizes
               paginationModel={paginationModel}
-              onPaginationModelChange={setPaginationModel}
+              onPaginationModelChange={(model) => {
+                setPaginationModel({
+                  page: model.page, // ✅ Keep it zero-based for MUI DataGrid
+                  pageSize: model.pageSize,
+                });
+              }}
               loading={loading}
               autoHeight
-              pageSize={paginationModel.pageSize}
-              page={paginationModel.page - 1}
               components={{
-                NoRowsOverlay: () => <div>No records to display</div>, // Custom NoRowsOverlay
+                NoRowsOverlay: () => <div>No records to display</div>,
               }}
               disableSelectionOnClick
             />
