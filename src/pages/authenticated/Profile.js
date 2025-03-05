@@ -63,7 +63,7 @@ const Profile = () => {
 
   const updateNewData = (values) => {
     httpClient
-      .put("/user/profile/update", { values })
+      .put("admin/auth/update-profile", { values })
       .then((res) => {
         if (res.data && res.data.success) {
           setLoading(false);
@@ -86,7 +86,7 @@ const Profile = () => {
 
   useEffect(() => {
     httpClient
-      .get("/user/profile")
+      .get("admin/auth/get-profile")
       .then((res) => {
         if (res.data && res.data.user) setUser(res.data.user);
       })
@@ -103,8 +103,8 @@ const Profile = () => {
   const uploadAvatar = (e) => {
     e.preventDefault();
 
-    const formData =  new FormData();
-    formData.append('')
+    const formData = new FormData();
+    formData.append("");
     httpClient
       .post("/user/profile/avatar", file)
       .then((res) => {

@@ -80,7 +80,7 @@
 //                 },
 //               }}
 //             />
-           
+
 //             Answer:
 //             <CKEditor
 //               editor={ClassicEditor}
@@ -135,7 +135,6 @@
 
 // export default EditFAQ;
 
-
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -169,7 +168,10 @@ const EditFAQ = () => {
   const handleSubmit = () => {
     setIsLoading(true);
     httpClient
-      .patch(`admin/faq/edit-faq/${params.id}`, { question, answer: newContent })
+      .patch(`admin/faq/edit-faq/${params.id}`, {
+        question,
+        answer: newContent,
+      })
       .then((res) => {
         setIsLoading(false);
         navigate(-1);
@@ -239,12 +241,13 @@ const EditFAQ = () => {
               variant="contained"
               color="primary"
               sx={{
-                mt: 4,
+                mt: 2,
                 ml: 2,
-                mb: 4,
+                mb: 2,
+                mt: 2,
                 display: "block",
                 backgroundColor: "orange",
-                width: "100%",
+                width: "90%",
               }}
               onClick={handleSubmit}
             >

@@ -31,15 +31,174 @@ const EditContest = () => {
   const [gstRate, setGstRate] = useState("");
   const [platformFeeRate, setPlatformFeeRate] = useState("");
   const [gstOnPlatformFeeRate, setGstOnPlatformFeeRate] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [cousor, setCousor] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Initialize winning coordinates
+  // Winning coordinates
   const initialCoordinates = x && y ? `{"x": ${x}, "y": ${y}}` : "";
   const [winningCoordinates, setWinningCoordinates] =
     useState(initialCoordinates);
-  console.log("initialCoordinates", winningCoordinates);
-  console.log("winningCoordinates", winningCoordinates);
+
+  // Helper to count words
+  const countWords = (str) => {
+    return str.trim().split(/\s+/).filter(Boolean).length;
+  };
+
+  // Helper: only allow digits (for numeric validations)
+  const isNumeric = (value) => /^\d*$/.test(value);
+
+  // Validation function for fields
+  const validateField = (name, value) => {
+    let error = "";
+    switch (name) {
+      case "title":
+        if (!value.trim()) error = "Title is required";
+        else if (countWords(value) > 150)
+          error = "Title must not exceed 150 words";
+        break;
+      case "description":
+        if (!value.trim()) error = "Description is required";
+        else if (countWords(value) > 200)
+          error = "Description must not exceed 200 words";
+        break;
+      case "jackpotPrice":
+        if (!value.trim()) error = "Jackpot Price is required";
+        else if (!isNumeric(value)) error = "Jackpot Price must be numeric";
+        else if (value.length < 1 || value.length > 5)
+          error = "Jackpot Price must be between 1 and 5 digits";
+        break;
+      case "ticketPrice":
+        if (!value.trim()) error = "Ticket Price is required";
+        else if (!isNumeric(value)) error = "Ticket Price must be numeric";
+        else if (value.length < 1 || value.length > 5)
+          error = "Ticket Price must be between 1 and 5 digits";
+        break;
+      case "contestStartDate":
+        if (!value.trim()) error = "Contest Start Date is required";
+        break;
+      case "imageWidth":
+        if (!value.trim()) error = "Image Width is required";
+        else if (isNaN(value)) error = "Image Width must be a number";
+        break;
+      case "imageHeight":
+        if (!value.trim()) error = "Image Height is required";
+        else if (isNaN(value)) error = "Image Height must be a number";
+        break;
+      case "maxTickets":
+        if (!value.trim()) error = "Max Tickets is required";
+        else if (!isNumeric(value)) error = "Max Tickets must be numeric";
+        else if (value.length < 1 || value.length > 3)
+          error = "Max Tickets must be between 1 and 3 digits";
+        break;
+      case "cousor":
+        if (!value.trim()) error = "Cursor color is required";
+        break;
+      default:
+        break;
+    }
+    return error;
+  };
+
+  // Handlers for word-limited fields
+  const handleTitleChange = (e) => {
+    const value = e.target.value;
+    if (countWords(value) <= 150) {
+      setTitle(value);
+    } else {
+      Swal.fire("Validation Error", "Title must not exceed 150 words", "error");
+    }
+  };
+
+  const handleDescriptionChange = (e) => {
+    const value = e.target.value;
+    if (countWords(value) <= 200) {
+      setDescription(value);
+    } else {
+      Swal.fire(
+        "Validation Error",
+        "Description must not exceed 200 words",
+        "error"
+      );
+    }
+  };
+
+  // General handler for other fields (jackpotPrice, ticketPrice, maxTickets, cousor, contestStartDate)
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    // For numeric fields, only update if the value is numeric
+    if (
+      (name === "jackpotPrice" ||
+        name === "ticketPrice" ||
+        name === "maxTickets") &&
+      !isNumeric(value)
+    ) {
+      return;
+    }
+
+    switch (name) {
+      case "jackpotPrice":
+        if (value.length <= 5) setJackpotPrice(value);
+        break;
+      case "ticketPrice":
+        if (value.length <= 5) setTicketPrice(value);
+        break;
+      case "contestStartDate":
+        setContestStartDate(value);
+        break;
+      case "maxTickets":
+        if (value.length <= 3) setMaxTickets(value);
+        break;
+      case "cousor":
+        setCousor(value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Handler for quantities that only allows positive integers (no negatives or decimals)
+  const handleQuantityChange = (index, value) => {
+    // Accept only positive integers (or empty)
+    if (/^(0|[1-9]\d*)?$/.test(value)) {
+      const newQuantities = [...quantities];
+      newQuantities[index] = value;
+      setQuantities(newQuantities);
+    }
+  };
+
+  // Image validation
+  const validateImage = (file) => {
+    const allowedTypes = ["image/png", "image/jpeg"];
+    if (!file || !allowedTypes.includes(file.type)) {
+      Swal.fire(
+        "Invalid File",
+        "Only PNG and JPEG images are allowed.",
+        "error"
+      );
+      return false;
+    }
+    return true;
+  };
+
+  const handleFileChange = (e, setImageState) => {
+    const file = e.target.files[0];
+    if (validateImage(file)) {
+      setImageState(file);
+    }
+  };
+
+  const handlePlayerImageChange = (e) => {
+    const file = e.target.files[0];
+    if (validateImage(file)) {
+      setPlayerImage(file);
+      const img = new Image();
+      img.onload = () => {
+        setImageWidth(img.width.toString());
+        setImageHeight(img.height.toString());
+      };
+      img.src = URL.createObjectURL(file);
+    }
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -47,22 +206,17 @@ const EditContest = () => {
       .get(`admin/contest/get-contest/${params.id}`)
       .then((res) => {
         const result = res.data.data;
-        const formattedDate = formatDate(result.contest_start_date);
-        const forDate = formatDate(result.contest_end_date);
-        console.log("dcfds", result.contest_end_date);
-        console.log("forDatefff", formattedDate);
-        console.log("forDate", result.contest_banner?.file_url);
-        console.log("fo", result.player_image?.file_url);
-
+        const formattedStart = formatDate(result.contest_start_date);
+        const formattedEnd = formatDate(result.contest_end_date);
         setTitle(result.title || "");
         setDescription(result.description || "");
         setContestBanner(result.contest_banner?.file_url || "");
         setPlayerImage(result.player_image?.file_url || "");
-        setOriginalPlayerImage(result.original_player_image?.file_url || "");
+        // setOriginalPlayerImage(result.original_player_image?.file_url || "");
         setJackpotPrice(result.jackpot_price || "");
         setTicketPrice(result.ticket_price || "");
-        setContestStartDate(formattedDate || "");
-        setContestEndDate(forDate || "");
+        setContestStartDate(formattedStart || "");
+        setContestEndDate(formattedEnd || "");
         setImageWidth(result.image_width || "");
         setImageHeight(result.image_height || "");
         setMaxTickets(result.maxTickets || "");
@@ -80,9 +234,39 @@ const EditContest = () => {
       });
   }, [params.id]);
 
-  const handleSubmit = () => {
-    setIsLoading(true);
+  // Format date to local datetime string without milliseconds and Z.
+  const formatDate = (dateString) => {
+    return new Date(dateString).toISOString().slice(0, -5);
+  };
 
+  const handleSubmit = () => {
+    // Validate fields before submission
+    const newErrors = {};
+    newErrors.title = validateField("title", title);
+    newErrors.description = validateField("description", description);
+    newErrors.jackpotPrice = validateField("jackpotPrice", jackpotPrice);
+    newErrors.ticketPrice = validateField("ticketPrice", ticketPrice);
+    newErrors.contestStartDate = validateField(
+      "contestStartDate",
+      contestStartDate
+    );
+    newErrors.imageWidth = validateField("imageWidth", imageWidth);
+    newErrors.imageHeight = validateField("imageHeight", imageHeight);
+    newErrors.maxTickets = validateField("maxTickets", maxTickets);
+    newErrors.cousor = validateField("cousor", cousor);
+
+    // If any error exists, show alert and abort
+    const errorKeys = Object.keys(newErrors).filter((key) => newErrors[key]);
+    if (errorKeys.length > 0) {
+      Swal.fire(
+        "Validation Error",
+        "Please fix the errors before submitting.",
+        "error"
+      );
+      return;
+    }
+
+    setIsLoading(true);
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
@@ -91,11 +275,9 @@ const EditContest = () => {
     formData.append("jackpot_price", jackpotPrice);
     formData.append("ticket_price", ticketPrice);
     formData.append("contest_start_date", contestStartDate);
-    // formData.append("contest_end_date", contestEndDate);
-    formData.append("original_player_image", originalPlayerImage);
-
+    // contest_end_date not used
+    // formData.append("original_player_image", originalPlayerImage);
     formData.append("cursor_color", cousor);
-
     formData.append("image_width", imageWidth);
     formData.append("image_height", imageHeight);
     formData.append("maxTickets", maxTickets);
@@ -120,30 +302,6 @@ const EditContest = () => {
       });
   };
 
-  // const formatDate = (dateString) => {
-  //   const date = new Date(dateString);
-
-  //   const day = String(date.getDate()).padStart(2, "0");
-  //   const month = String(date.getMonth() + 1).padStart(2, "0"); // months are 0-based
-  //   const year = date.getFullYear();
-  //   const hours = String(date.getHours()).padStart(2, "0");
-  //   const minutes = String(date.getMinutes()).padStart(2, "0");
-  //   const seconds = String(date.getSeconds()).padStart(2, "0"); // Add seconds
-
-  //   // return `${day}-${month}-${year}T${hours}:${minutes}:${seconds}`;
-  //   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
-  // };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toISOString().slice(0, -5); // Removes milliseconds and 'Z'
-  };
-
-  // const handleDateChange = (e) => {
-  //   const localDate = new Date(e.target.value);
-  //   const offsetDate = new Date(localDate.getTime() + 5.5 * 60 * 60 * 1000); // Add 5 hours 30 minutes
-  //   const isoDate = offsetDate.toISOString().slice(0, 16); // Get date-time in ISO format without timezone
-  //   setContestStartDate(isoDate);
-  // };
   return (
     <>
       <AppSidebar />
@@ -156,260 +314,206 @@ const EditContest = () => {
           onClick={() => navigate(-1)}
         >
           <ArrowBackIcon />
-          back
+          Back
         </Button>
         <Container maxWidth="sm" className="d-flex justify-content-center">
           {isLoading && <Loader />}
           <Box component="form" sx={{ mt: 4 }}>
             <Typography variant="h6">Edit Contest</Typography>
-
             <label>Title</label>
             <TextField
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={handleTitleChange}
               fullWidth
               margin="normal"
+              placeholder="Enter contest title"
+              helperText={validateField("title", title)}
+              error={!!validateField("title", title)}
             />
-
             <label>Description</label>
             <TextField
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={handleDescriptionChange}
               fullWidth
               margin="normal"
+              placeholder="Enter contest description"
+              helperText={validateField("description", description)}
+              error={!!validateField("description", description)}
             />
-
-            <div>
+            {/* <div>
               <label>Original Player Image</label>
               <TextField
-                onChange={(e) => setOriginalPlayerImage(e.target.files[0])}
-                // onChange={handleOriginalPlayerImageChange}
+                type="file"
+                onChange={(e) => handleFileChange(e, setOriginalPlayerImage)}
                 fullWidth
                 margin="normal"
                 variant="outlined"
-                type="file"
               />
               {originalPlayerImage && (
                 <img
-                  src={originalPlayerImage}
-                  alt="Player Image Preview"
-                  style={{
-                    width: "100px",
-                    height: "auto",
-                    marginTop: "10px",
-                  }}
+                  src={
+                    typeof originalPlayerImage === "string"
+                      ? originalPlayerImage
+                      : URL.createObjectURL(originalPlayerImage)
+                  }
+                  alt="Player Preview"
+                  style={{ width: "100px", marginTop: "10px" }}
                 />
               )}
-              {/* {originalPlayerImage && (
-                <a
-                  href={originalPlayerImage}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Original Player Image
-                </a>
-              )} */}
-            </div>
+            </div> */}
             <div>
-              <label>Contest Banner</label>
+              <label>Contest Banner Image</label>
               <TextField
                 type="file"
-                // value={contestBanner}
-                onChange={(e) => setContestBanner(e.target.files[0])}
+                onChange={(e) => handleFileChange(e, setContestBanner)}
                 fullWidth
                 margin="normal"
               />
               {contestBanner && (
                 <img
-                  src={contestBanner}
-                  alt="Player Image Preview"
-                  style={{ width: "100px", height: "auto", marginTop: "10px" }}
+                  src={
+                    typeof contestBanner === "string"
+                      ? contestBanner
+                      : URL.createObjectURL(contestBanner)
+                  }
+                  alt="Banner Preview"
+                  style={{ width: "100px", marginTop: "10px" }}
                 />
               )}
-              {/* {contestBanner && contestBanner.startsWith("http") && (
-                <a
-                  href={contestBanner}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Contest Image
-                </a>
-              )} */}
             </div>
-
             <div>
-              <label>Player Image</label>
+              <label>Play Screen  Image</label>
               <TextField
                 type="file"
-                // value={playerImage}
-                onChange={(e) => setPlayerImage(e.target.files[0])}
+                onChange={handlePlayerImageChange}
                 fullWidth
                 margin="normal"
               />
               {playerImage && (
                 <img
-                  src={playerImage}
-                  alt="Player Image Preview"
-                  style={{ width: "100px", height: "auto", marginTop: "10px" }}
+                  src={
+                    typeof playerImage === "string"
+                      ? playerImage
+                      : URL.createObjectURL(playerImage)
+                  }
+                  alt="Player Preview"
+                  style={{ width: "100px", marginTop: "10px" }}
                 />
               )}
-              {/* {playerImage && playerImage.startsWith("http") && (
-                <a href={playerImage} target="_blank" rel="noopener noreferrer">
-                  View Player Image
-                </a>      
-              )} */}
             </div>
             <label>Jackpot Price</label>
             <TextField
               value={jackpotPrice}
-              onChange={(e) => setJackpotPrice(e.target.value)}
+              onChange={handleChange}
+              name="jackpotPrice"
               fullWidth
               margin="normal"
+              placeholder="Enter jackpot price"
+              inputProps={{ maxLength: 5 }}
+              helperText={validateField("jackpotPrice", jackpotPrice)}
+              error={!!validateField("jackpotPrice", jackpotPrice)}
             />
-
             <label>Ticket Price</label>
             <TextField
               value={ticketPrice}
-              onChange={(e) => setTicketPrice(e.target.value)}
+              onChange={handleChange}
+              name="ticketPrice"
               fullWidth
               margin="normal"
+              placeholder="Enter ticket price"
+              inputProps={{ maxLength: 5 }}
+              helperText={validateField("ticketPrice", ticketPrice)}
+              error={!!validateField("ticketPrice", ticketPrice)}
             />
-
             <label>Contest Start Date</label>
             <TextField
               type="datetime-local"
               value={contestStartDate}
-              onChange={(e) => setContestStartDate(e.target.value)}
+              onChange={handleChange}
+              name="contestStartDate"
               fullWidth
               margin="normal"
               InputProps={{
                 inputProps: {
-                  min: new Date().toISOString().slice(0, 16), // Restrict to current or future date
+                  min: new Date().toISOString().slice(0, 16),
                 },
               }}
+              helperText={validateField("contestStartDate", contestStartDate)}
+              error={!!validateField("contestStartDate", contestStartDate)}
             />
-
-            {/* <label>Contest End Date</label>
-            <TextField
-              type="datetime-local"
-              value={contestEndDate}
-              onChange={(e) => setContestEndDate(e.target.value)}
-              fullWidth
-              margin="normal"
-              // value={description}
-            /> */}
-            {/* 
-            <label>Winning Coordinates</label>
-            <TextField
-              value={`{"x": ${winningCoordinates.x}, "y": ${winningCoordinates.y}}`}
-              // value={winningCoordinates}
-              onChange={(e) => setWinningCoordinates(e.target.value)}
-              fullWidth
-              margin="normal"
-              placeholder='{"x": , "y": }'
-            /> */}
-
             <label>Image Width</label>
             <TextField
               value={imageWidth}
-              onChange={(e) => setImageWidth(e.target.value)}
               fullWidth
               margin="normal"
+              placeholder="Auto-populated"
+              disabled
+              helperText={validateField("imageWidth", imageWidth)}
+              error={!!validateField("imageWidth", imageWidth)}
             />
-
             <label>Image Height</label>
             <TextField
               value={imageHeight}
-              onChange={(e) => setImageHeight(e.target.value)}
               fullWidth
               margin="normal"
+              placeholder="Auto-populated"
+              disabled
+              helperText={validateField("imageHeight", imageHeight)}
+              error={!!validateField("imageHeight", imageHeight)}
             />
-
             <label>Max Tickets</label>
             <TextField
               value={maxTickets}
-              onChange={(e) => setMaxTickets(e.target.value)}
+              onChange={handleChange}
+              name="maxTickets"
               fullWidth
               margin="normal"
+              placeholder="Enter max tickets"
+              inputProps={{ maxLength: 3 }}
+              helperText={validateField("maxTickets", maxTickets)}
+              error={!!validateField("maxTickets", maxTickets)}
             />
-
             <label>Ticket Quantities</label>
             <div>
-              <TextField
-                value={quantities[0]}
-                onChange={(e) => {
-                  const newQuantities = [...quantities];
-                  newQuantities[0] = e.target.value;
-                  setQuantities(newQuantities);
-                }}
-                margin="normal"
-                placeholder="Quantity 1"
-              />
-              <TextField
-                value={quantities[1]}
-                onChange={(e) => {
-                  const newQuantities = [...quantities];
-                  newQuantities[1] = e.target.value;
-                  setQuantities(newQuantities);
-                }}
-                margin="normal"
-                placeholder="Quantity 2"
-              />
-              <TextField
-                value={quantities[2]}
-                onChange={(e) => {
-                  const newQuantities = [...quantities];
-                  newQuantities[2] = e.target.value;
-                  setQuantities(newQuantities);
-                }}
-                margin="normal"
-                placeholder="Quantity 3"
-              />
-              <TextField
-                value={quantities[3]}
-                onChange={(e) => {
-                  const newQuantities = [...quantities];
-                  newQuantities[3] = e.target.value;
-                  setQuantities(newQuantities);
-                }}
-                margin="normal"
-                placeholder="Quantity 4"
-              />
+              {quantities.map((qty, index) => (
+                <TextField
+                  key={index}
+                  value={qty}
+                  onChange={(e) => handleQuantityChange(index, e.target.value)}
+                  margin="normal"
+                  placeholder={`Quantity ${index + 1}`}
+                />
+              ))}
             </div>
-
             <label>GST Rate</label>
-            <TextField fullWidth margin="normal" value={gstRate} disabled />
-
+            <TextField value={gstRate} fullWidth margin="normal" disabled />
             <label>Platform Fee Rate</label>
             <TextField
+              value={platformFeeRate}
               fullWidth
               margin="normal"
-              value={platformFeeRate}
               disabled
             />
-
             <label>GST on Platform Fee Rate</label>
             <TextField
+              value={gstOnPlatformFeeRate}
               fullWidth
               margin="normal"
-              value={gstOnPlatformFeeRate}
               disabled
             />
-            <label>Choose Cousor Color</label>
+            <label>Choose Cursor Color</label>
             <TextField
               value={cousor}
-              onChange={(e) => setCousor(e.target.value)}
+              onChange={handleChange}
+              name="cousor"
               fullWidth
               margin="normal"
+              placeholder="Enter cursor color"
+              helperText={validateField("cousor", cousor)}
+              error={!!validateField("cousor", cousor)}
             />
             <Button
-              sx={{
-                mt: 4,
-                ml: 2,
-                mb: 4,
-                display: "block",
-                backgroundColor: "orange",
-              }}
+              sx={{ mt: 4, mb: 4 }}
               variant="contained"
               color="primary"
               fullWidth

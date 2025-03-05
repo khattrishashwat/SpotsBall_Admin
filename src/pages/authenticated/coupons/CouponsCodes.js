@@ -1,24 +1,25 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
-import { CCol, CContainer } from "@coreui/react";
 import PageTitle from "../../common/PageTitle";
-import { DataGrid } from "@mui/x-data-grid";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Button, IconButton, Snackbar, Switch } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
 import httpClient from "../../../util/HttpClient";
-import EditIcon from "@mui/icons-material/Edit";
+import { CContainer } from "@coreui/react";
+import { DataGrid } from "@mui/x-data-grid";
+import { Button, IconButton, Snackbar, Switch } from "@mui/material";
+import {
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Close as CloseIcon,
+} from "@mui/icons-material";
+import Swal from "sweetalert2";
 
 const CouponsCodes = () => {
-  const [alertMessage, setAlertMessage] = useState("");
-  const [apiSuccess, setApiSuccess] = useState(false);
-  const [closeSnackbar, setCloseSnackbar] = useState(false);
-  const [userCount, setUserCount] = useState(0);
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [apiSuccess, setApiSuccess] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
@@ -26,139 +27,123 @@ const CouponsCodes = () => {
 
   const navigate = useNavigate();
 
-  const columns = [
-    { field: "col1", headerName: "#", width: 80 },
-    { field: "col2", headerName: "Name", width: 150 },
-    { field: "col3", headerName: "Amount", width: 150 },
-    { field: "col4", headerName: "Active", width: 130 },
+  useEffect(() => {
+    fetchPromoCodes();
+  }, [paginationModel]);
 
-    { field: "col5", headerName: "Created At", width: 180 },
-    { field: "col6", headerName: "Updated At", width: 180 },
+  const fetchPromoCodes = async () => {
+    setLoading(true);
+    try {
+      const res = await httpClient.get("admin/promocode/get-promocode");
+      const data = res.data?.data || [];
+      setRows(
+        data.map((record, index) => ({
+          id: record._id,
+          index: paginationModel.page * paginationModel.pageSize + (index + 1),
+          name: record.name || "N/A",
+          amount: record.amount || "N/A",
+          active: record.isActive,
+          createdAt: record.createdAt?.substring(0, 10) || "N/A",
+          updatedAt: record.updatedAt?.substring(0, 10) || "N/A",
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching promo codes:", error);
+    }
+    setLoading(false);
+  };
+
+  const handleStatusChange = async (row) => {
+    const updatedStatus = !row.active;
+    setRows((prevRows) =>
+      prevRows.map((r) =>
+        r.id === row.id ? { ...r, active: updatedStatus } : r
+      )
+    );
+
+    try {
+      const res = await httpClient.patch(
+        `admin/promocode/edit-promocode/${row.id}`,
+        {
+          name: row.name,
+          amount: row.amount,
+          isActive: updatedStatus,
+        }
+      );
+      setAlertMessage(res.data.message || "Status updated successfully");
+      setApiSuccess(true);
+    } catch (error) {
+      setAlertMessage(error.response?.data?.message || "Error updating status");
+      setApiSuccess(false);
+      setRows((prevRows) =>
+        prevRows.map((r) =>
+          r.id === row.id ? { ...r, active: !updatedStatus } : r
+        )
+      );
+    }
+    setShowSnackbar(true);
+  };
+
+  const handleDelete = (row) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will not be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) deletePromoCode(row.id);
+    });
+  };
+
+  const deletePromoCode = async (id) => {
+    setLoading(true);
+    try {
+      await httpClient.delete(`admin/promocode/delete-promocode/${id}`);
+      setRows((prevRows) => prevRows.filter((row) => row.id !== id));
+      setAlertMessage("Promo code deleted successfully");
+      setApiSuccess(true);
+    } catch (error) {
+      setAlertMessage(error.response?.data?.message || "An error occurred");
+      setApiSuccess(false);
+    }
+    setShowSnackbar(true);
+    setLoading(false);
+  };
+
+  const columns = [
+    { field: "index", headerName: "#", width: 80 },
+    { field: "name", headerName: "Name", width: 150 },
+    { field: "amount", headerName: "Amount", width: 150 },
+    { field: "createdAt", headerName: "Created At", width: 180 },
+    { field: "updatedAt", headerName: "Updated At", width: 180 },
     {
-      field: "col7",
+      field: "active",
       headerName: "Status",
       width: 120,
-      renderCell: (params) => {
-        return (
-          <Switch
-            checked={params.row.col7} // checked={params.row.col3 === true ? true : false}
-            onChange={(e) => handleStatusChange(e, params.row)}
-          />
-        );
-      },
+      renderCell: (params) => (
+        <Switch
+          checked={params.row.active}
+          onChange={() => handleStatusChange(params.row)}
+        />
+      ),
     },
     {
-      field: "col8",
-      headerName: "Action",
+      field: "actions",
+      headerName: "Actions",
       width: 200,
       renderCell: (params) => (
         <>
-          <EditIcon
-            cursor="pointer"
-            style={{ color: "gold", marginRight: "20px" }}
-            onClick={() => navigate(`edit_promo/${params.row.id}`)}
-            titleAccess="Edit"
-          />
-          {/* <DeleteIcon
-            cursor="pointer"
-            style={{ color: "red" }}
-            onClick={() => confirmBeforeDelete(params.row)}
-            titleAccess="Delete"
-          /> */}
+          <IconButton onClick={() => navigate(`edit_promo/${params.row.id}`)}>
+            <EditIcon style={{ color: "gold" }} />
+          </IconButton>
+          <IconButton onClick={() => handleDelete(params.row)}>
+            <DeleteIcon style={{ color: "red" }} />
+          </IconButton>
         </>
       ),
     },
   ];
-  const handleStatusChange = (e, row) => {
-    const updatedStatus = !row.col4; // Toggle the boolean value
-
-    setRows((prevRows) =>
-      prevRows.map((r) => (r.id === row.id ? { ...r, col4: updatedStatus } : r))
-    );
-
-    updateStatus(row.id, updatedStatus);
-  };
-
-  const updateStatus = (id, status) => {
-    const payload = {
-      name: rows.find((row) => row.id === id)?.col2 || "", // Get name from rows
-      amount: rows.find((row) => row.id === id)?.col3 || 0, // Get amount
-      isActive: status, // Set correct boolean value
-    };
-
-    httpClient
-      .patch(`admin/promocode/edit-promocode/${id}`, payload)
-      .then((res) => {
-        console.log("Update status ==> ", res);
-      })
-      .catch((err) => {
-        console.error("Error updating status", err);
-      });
-  };
-
-  useEffect(() => {
-    setLoading(true);
-    httpClient
-      .get(`admin/promocode/get-promocode`)
-      .then((res) => {
-        const data = res.data?.data || [];
-        setUserCount(data.length);
-        setRows(
-          data.map((record, index) => ({
-            id: record._id,
-            col1: paginationModel.page * paginationModel.pageSize + (index + 1),
-            col2: record.name || "N/A",
-            col3: record.amount || "N/A",
-
-            col4: record.isActive ? "true" : "false",
-            col5: record.createdAt?.substring(0, 10) || "N/A",
-            col6: record.updatedAt?.substring(0, 10) || "N/A",
-            col7: record.isActive,
-          }))
-        );
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching promo codes:", error);
-        setLoading(false);
-      });
-  }, [paginationModel]);
-
-  const confirmBeforeDelete = (row) => {
-    swal
-      .fire({
-        title: "Are you sure?",
-        text: "You will not be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, delete it!",
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          deletePromoCode(row.id);
-        }
-      });
-  };
-
-  const deletePromoCode = (id) => {
-    setLoading(true);
-    httpClient
-      .delete(`admin/promocode/delete-promocode/${id}`)
-      .then((res) => {
-        setAlertMessage(res.data.message);
-        setApiSuccess(true);
-        setCloseSnackbar(true);
-        setRows((prevRows) => prevRows.filter((row) => row.id !== id));
-        setUserCount((prevCount) => prevCount - 1);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setAlertMessage(error.response?.data?.message || "An error occurred");
-        setApiSuccess(false);
-        setCloseSnackbar(true);
-        setLoading(false);
-      });
-  };
 
   return (
     <>
@@ -168,7 +153,7 @@ const CouponsCodes = () => {
         <PageTitle title="Promo Codes" />
         <CContainer>
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h4>PromoCodes:</h4>
+            <h4>Promo Codes</h4>
             <Button
               variant="contained"
               style={{ backgroundColor: "orange" }}
@@ -186,9 +171,9 @@ const CouponsCodes = () => {
             }}
           >
             <Snackbar
-              open={closeSnackbar}
+              open={showSnackbar}
               autoHideDuration={3000}
-              onClose={() => setCloseSnackbar(false)}
+              onClose={() => setShowSnackbar(false)}
               message={alertMessage}
               ContentProps={{
                 sx: apiSuccess
@@ -198,31 +183,30 @@ const CouponsCodes = () => {
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               action={
                 <IconButton
-                  aria-label="close"
                   color="inherit"
-                  onClick={() => setCloseSnackbar(false)}
+                  onClick={() => setShowSnackbar(false)}
                 >
                   <CloseIcon />
                 </IconButton>
               }
             />
             <DataGrid
+              rows={rows}
+              columns={columns}
+              pagination
+              paginationMode="server"
+              rowCount={rows.length}
+              paginationModel={paginationModel}
+              onPaginationModelChange={setPaginationModel}
+              loading={loading}
+              autoHeight
+              disableRowSelectionOnClick
               sx={{
                 "& .MuiDataGrid-row:nth-of-type(2n)": {
                   backgroundColor: "#f5f5f5",
                 },
                 "& .MuiDataGrid-columnHeader": { backgroundColor: "#f0f0f0" },
               }}
-              rows={rows}
-              columns={columns}
-              rowCount={userCount}
-              pagination
-              paginationMode="server"
-              paginationModel={paginationModel}
-              onPaginationModelChange={setPaginationModel}
-              loading={loading}
-              autoHeight
-              disableRowSelectionOnClick
             />
           </div>
         </CContainer>

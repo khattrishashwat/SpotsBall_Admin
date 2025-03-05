@@ -1,41 +1,49 @@
 import React, { useState } from "react";
 import { TextField, Button, Container, Box, Typography } from "@mui/material";
-import httpClient from "../../../util/HttpClient"; // Adjust the import path based on your project structure
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import httpClient from "../../../util/HttpClient";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import { useNavigate } from "react-router-dom";
 
 const AddCouponsCodes = () => {
-  const [name, setName] = useState("");
-  const [amount, setAmount] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   let navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
+  const validationSchema = Yup.object({
+    name: Yup.string()
+      .trim()
+      .min(3, "Name must be at least 3 characters")
+      .max(50, "Name must not exceed 50 characters")
+      .required("Name is required"),
+    amount: Yup.number()
+      .typeError("Amount must be a valid number")
+      .positive("Amount must be greater than zero")
+      .required("Amount is required"),
+  });
 
-    await httpClient
-      .post("admin/promocode/add-promocode", {
-        name,
-        amount,
-      })
-      .then((res) => {
+  const formik = useFormik({
+    initialValues: { name: "", amount: "" },
+    validationSchema,
+    onSubmit: async (values, { resetForm }) => {
+      setLoading(true);
+      setMessage("");
+
+      try {
+        await httpClient.post("admin/promocode/add-promocode", values);
         setMessage("Promo code created successfully!");
-        setName("");
-        setAmount("");
-
-        navigate(-1); // Go back to the previous page
-      })
-      .catch((err) => {
-        console.log("error => ", err?.response?.data?.errors[0]?.msg);
-        setMessage(err?.response?.data?.errors[0]?.msg);
+        resetForm();
+        navigate(-1);
+      } catch (err) {
+        console.error("Error:", err?.response?.data?.errors[0]?.msg);
+        setMessage(err?.response?.data?.errors[0]?.msg || "An error occurred");
+      } finally {
         setLoading(false);
-      });
-  };
+      }
+    },
+  });
 
   return (
     <>
@@ -55,27 +63,36 @@ const AddCouponsCodes = () => {
             }}
           >
             <Typography variant="h5" component="h1" gutterBottom>
-              Add New's Promo COdes
+              Add New Promo Code
             </Typography>
-            <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+            <form onSubmit={formik.handleSubmit} style={{ width: "100%" }}>
               <span>Name</span>
               <TextField
                 variant="outlined"
                 fullWidth
                 margin="normal"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
+                id="name"
+                name="name"
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText={formik.touched.name && formik.errors.name}
               />
+
               <span>Amount</span>
               <TextField
                 variant="outlined"
                 fullWidth
                 margin="normal"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                required
+                id="amount"
+                name="amount"
                 type="number"
+                value={formik.values.amount}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.amount && Boolean(formik.errors.amount)}
+                helperText={formik.touched.amount && formik.errors.amount}
               />
 
               <Button

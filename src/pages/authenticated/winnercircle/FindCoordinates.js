@@ -7,9 +7,11 @@ import {
   Box,
   Typography,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import httpClient from "../../../util/HttpClient";
+import { throttle } from "lodash"; // For throttling mouse move
 
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
@@ -27,12 +29,12 @@ const FindCoordinates = () => {
   const [imgFile, setImgFile] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [originalPlayerImage, setOriginalPlayerImage] = useState(null);
+
   // Get the image passed from the state or location
-  // console.log("location", location?.state);
   useEffect(() => {
     if (location?.state) {
       setImgFile(location.state?.bannerImage);
-      // console.log("location?.state?.image", location?.state?.bannerImage);
     }
   }, [location]);
 
@@ -42,14 +44,14 @@ const FindCoordinates = () => {
       const rect = img.getBoundingClientRect();
       const clickX = e.clientX - rect.left;
       const clickY = e.clientY - rect.top;
-      const realX = Math.round((clickX / rect.width) * img.naturalWidth);
-      const realY = Math.round((clickY / rect.height) * img.naturalHeight);
+      const realX = ((clickX / rect.width) * img.naturalWidth).toFixed(2);
+      const realY = ((clickY / rect.height) * img.naturalHeight).toFixed(2);
       setXCoordinate(realX);
       setYCoordinate(realY);
     }
   };
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = throttle((e) => {
     const image = e.target;
     const rect = image.getBoundingClientRect();
     const xRelative = e.clientX - rect.left;
@@ -57,7 +59,7 @@ const FindCoordinates = () => {
     const x = ((xRelative / rect.width) * image.naturalWidth).toFixed(2);
     const y = ((yRelative / rect.height) * image.naturalHeight).toFixed(2);
     setCoordinates({ x, y });
-  };
+  }, 100);
 
   const handleMouseEnter = () => setShowTooltip(true);
   const handleMouseLeave = () => setShowTooltip(false);
@@ -68,7 +70,6 @@ const FindCoordinates = () => {
       return;
     }
 
-    // Prepare the coordinates data
     const winning_coordinates = {
       x: xCoordinate,
       y: yCoordinate,
@@ -76,14 +77,14 @@ const FindCoordinates = () => {
 
     setIsLoading(true);
     const formData = new FormData();
-
-    formData.append("winning_coordinates", JSON.stringify(winning_coordinates)); // Always stringify for FormData
+    formData.append("original_player_image", originalPlayerImage);
+    formData.append("winning_coordinates", JSON.stringify(winning_coordinates));
 
     httpClient
-      .patch(`admin/contest/edit-contest/${params.id}`, formData) // Assuming `params.id` is the contest id
+      .patch(`admin/contest/edit-contest/${params.id}`, formData)
       .then((response) => {
         setIsLoading(false);
-        navigate(-1); // Navigate back after successful save
+        navigate(-1);
       })
       .catch((err) => {
         setIsLoading(false);
@@ -91,6 +92,19 @@ const FindCoordinates = () => {
         console.error("Error:", err);
       });
   };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setOriginalPlayerImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImgFile(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <>
       <AppSidebar />
@@ -107,6 +121,21 @@ const FindCoordinates = () => {
           </Box>
 
           <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
+            <Button
+              variant="contained"
+              color="primary"
+              component="label"
+              sx={{ mb: 2 }}
+            >
+              Choose Your Original Image
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={handleImageUpload}
+              />
+            </Button>
+
             {imgFile && (
               <Box position="relative" mb={2} width="100%" maxWidth="500px">
                 <img
@@ -141,6 +170,8 @@ const FindCoordinates = () => {
                     color="#fff"
                     pointerEvents="none"
                     zIndex={10}
+                    padding="2px 5px"
+                    borderRadius="5px"
                   >
                     X: {coordinates.x}, Y: {coordinates.y}
                   </Box>
@@ -164,6 +195,7 @@ const FindCoordinates = () => {
               fullWidth
               sx={{ maxWidth: 300 }}
               aria-label="X Coordinate"
+              disabled
             />
             <span>Y Coordinate</span>
             <TextField
@@ -173,21 +205,31 @@ const FindCoordinates = () => {
               fullWidth
               sx={{ maxWidth: 300 }}
               aria-label="Y Coordinate"
+              disabled
             />
             {!xCoordinate || !yCoordinate ? (
               <Typography color="error" sx={{ mt: 1 }}>
                 Please select X and Y coordinates before saving.
               </Typography>
             ) : null}
+            {error && (
+              <Typography color="error" sx={{ mt: 1 }}>
+                {error}
+              </Typography>
+            )}
             <Button
               onClick={handleSaveCoordinates}
               variant="contained"
               color="primary"
               sx={{ mt: 2 }}
               aria-label="Save Coordinates"
-              disabled={!xCoordinate || !yCoordinate}
+              disabled={!xCoordinate || !yCoordinate || isLoading}
             >
-              Save Coordinates
+              {isLoading ? (
+                <CircularProgress size={24} sx={{ color: "white" }} />
+              ) : (
+                "Save Coordinates"
+              )}
             </Button>
           </Box>
         </Container>

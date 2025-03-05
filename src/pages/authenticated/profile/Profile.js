@@ -123,7 +123,7 @@ const Profile = () => {
 
   useEffect(() => {
     httpClient
-      .get("admin/get-profile")
+      .get("admin/auth/get-profile")
       .then((res) => {
         const { name, email } = res.data.data; // Extract name and email from the response
         setProfileData({ name, email });
@@ -143,7 +143,7 @@ const Profile = () => {
   const handleSaveClick = () => {
     // Save the updated name
     httpClient
-      .post("admin/update-profile", { name: editedName })
+      .post("admin/auth/update-profile", { name: editedName })
       .then(() => {
         setProfileData((prev) => ({ ...prev, name: editedName }));
         setIsEditing(false);

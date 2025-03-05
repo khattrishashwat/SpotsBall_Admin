@@ -11,6 +11,8 @@ import Swal from "sweetalert2";
 const AddContest = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Form states
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [contestBanner, setContestBanner] = useState(null);
@@ -22,14 +24,223 @@ const AddContest = () => {
   const [imageWidth, setImageWidth] = useState("");
   const [imageHeight, setImageHeight] = useState("");
   const [maxTickets, setMaxTickets] = useState("");
-  const [quantities, setQuantities] = useState([0, 0, 0, 0]); // Adjusted to have 4 quantities
-  const [isLoading, setIsLoading] = useState(false);
+  const [quantities, setQuantities] = useState([0, 0, 0, 0]);
   const [cousor, setCousor] = useState("");
 
+  // Constants for rates
   const gstRate = 28;
   const platformFeeRate = 2.5;
   const gstOnPlatformFeeRate = 18;
+
+  // Loading and error states
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  // Helper to count words
+  const countWords = (str) => {
+    return str.trim().split(/\s+/).filter(Boolean).length;
+  };
+
+  // For numeric fields, we use a RegExp to allow only digits.
+  const isNumeric = (value) => /^\d*$/.test(value);
+
+  // Validations for individual fields.
+  // NOTE: These functions now are used in the submit handler (and to show helperText)
+  const validateField = (name, value) => {
+    let error = "";
+    switch (name) {
+      case "title":
+        if (!value.trim()) error = "Title is required";
+        else if (countWords(value) > 150)
+          error = "Title must not exceed 150 words";
+        break;
+      case "description":
+        if (!value.trim()) error = "Description is required";
+        else if (countWords(value) > 200)
+          error = "Description must not exceed 200 words";
+        break;
+      case "jackpotPrice":
+        if (!value.trim()) error = "Jackpot Price is required";
+        else if (!isNumeric(value)) error = "Jackpot Price must be numeric";
+        else if (value.length < 1 || value.length > 5)
+          error = "Jackpot Price must be between 1 and 5 digits";
+        break;
+      case "ticketPrice":
+        if (!value.trim()) error = "Ticket Price is required";
+        else if (!isNumeric(value)) error = "Ticket Price must be numeric";
+        else if (value.length < 1 || value.length > 5)
+          error = "Ticket Price must be between 1 and 5 digits";
+        break;
+      case "contestStartDate":
+        if (!value.trim()) error = "Contest Start Date is required";
+        break;
+      case "imageWidth":
+        if (!value.trim()) error = "Image Width is required";
+        else if (isNaN(value)) error = "Image Width must be a number";
+        break;
+      case "imageHeight":
+        if (!value.trim()) error = "Image Height is required";
+        else if (isNaN(value)) error = "Image Height must be a number";
+        break;
+      case "maxTickets":
+        if (!value.trim()) error = "Max Tickets is required";
+        else if (!isNumeric(value)) error = "Max Tickets must be numeric";
+        else if (value.length < 1 || value.length > 3)
+          error = "Max Tickets must be between 1 and 3 digits";
+        break;
+      case "cousor":
+        if (!value.trim()) error = "Cursor color is required";
+        break;
+      default:
+        break;
+    }
+    return error;
+  };
+
+  // Handler for Title (word limit: 150 words)
+  const handleTitleChange = (e) => {
+    const value = e.target.value;
+    if (countWords(value) <= 150) {
+      setTitle(value);
+      setErrors((prev) => ({ ...prev, title: "" }));
+    } else {
+      setErrors((prev) => ({
+        ...prev,
+        title: "Title must not exceed 150 words",
+      }));
+    }
+  };
+
+  // Handler for Description (word limit: 200 words)
+  const handleDescriptionChange = (e) => {
+    const value = e.target.value;
+    if (countWords(value) <= 200) {
+      setDescription(value);
+      setErrors((prev) => ({ ...prev, description: "" }));
+    } else {
+      setErrors((prev) => ({
+        ...prev,
+        description: "Description must not exceed 200 words",
+      }));
+    }
+  };
+
+  // General handler for other fields
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    // For numeric fields (jackpotPrice, ticketPrice, maxTickets) allow only digits.
+    if (
+      (name === "jackpotPrice" ||
+        name === "ticketPrice" ||
+        name === "maxTickets") &&
+      !isNumeric(value)
+    ) {
+      return;
+    }
+
+    switch (name) {
+      case "jackpotPrice":
+        if (value.length <= 5) {
+          setJackpotPrice(value);
+          setErrors((prev) => ({ ...prev, jackpotPrice: "" }));
+        }
+        break;
+      case "ticketPrice":
+        if (value.length <= 5) {
+          setTicketPrice(value);
+          setErrors((prev) => ({ ...prev, ticketPrice: "" }));
+        }
+        break;
+      case "contestStartDate":
+        setContestStartDate(value);
+        setErrors((prev) => ({ ...prev, contestStartDate: "" }));
+        break;
+      case "maxTickets":
+        if (value.length <= 3) {
+          setMaxTickets(value);
+          setErrors((prev) => ({ ...prev, maxTickets: "" }));
+        }
+        break;
+      case "cousor":
+        setCousor(value);
+        setErrors((prev) => ({ ...prev, cousor: "" }));
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Handler for quantities that only allows positive integers (no negative or decimals)
+  const handleQuantityChange = (index, value) => {
+    // Only allow digits and ensure it doesn't start with zero unless it's exactly "0"
+    if (/^(0|[1-9]\d*)?$/.test(value)) {
+      const updatedQuantities = [...quantities];
+      updatedQuantities[index] = value;
+      setQuantities(updatedQuantities);
+    }
+  };
+
+  const validateImage = (file) => {
+    const allowedTypes = ["image/png", "image/jpeg"];
+    if (!file || !allowedTypes.includes(file.type)) {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid File",
+        text: "Only PNG and JPEG images are allowed.",
+      });
+      return false;
+    }
+    return true;
+  };
+
+  const handleImageChange = (e, setImageState) => {
+    const file = e.target.files[0];
+    if (validateImage(file)) {
+      setImageState(file);
+    }
+  };
+
+  const handlePlayerImageChange = (e) => {
+    const file = e.target.files[0];
+    if (validateImage(file)) {
+      setPlayerImage(file);
+      const img = new Image();
+      img.onload = () => {
+        // Auto-populate and disable editing of these fields
+        setImageWidth(img.width.toString());
+        setImageHeight(img.height.toString());
+      };
+      img.src = URL.createObjectURL(file);
+    }
+  };
+
   const handleSubmit = () => {
+    // Validate all fields before submitting using our validateField function.
+    const newErrors = {};
+    newErrors.title = validateField("title", title);
+    newErrors.description = validateField("description", description);
+    newErrors.jackpotPrice = validateField("jackpotPrice", jackpotPrice);
+    newErrors.ticketPrice = validateField("ticketPrice", ticketPrice);
+    newErrors.contestStartDate = validateField(
+      "contestStartDate",
+      contestStartDate
+    );
+    newErrors.imageWidth = validateField("imageWidth", imageWidth);
+    newErrors.imageHeight = validateField("imageHeight", imageHeight);
+    newErrors.maxTickets = validateField("maxTickets", maxTickets);
+    newErrors.cousor = validateField("cousor", cousor);
+
+    Object.keys(newErrors).forEach(
+      (key) => !newErrors[key] && delete newErrors[key]
+    );
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      
+      return;
+    }
+
     setIsLoading(true);
     let formData = new FormData();
     formData.append("title", title);
@@ -39,8 +250,7 @@ const AddContest = () => {
     formData.append("jackpot_price", jackpotPrice);
     formData.append("ticket_price", ticketPrice);
     formData.append("contest_start_date", contestStartDate);
-    // formData.append("contest_end_date", contestEndDate);
-    formData.append("original_player_image", original_player_image);
+    // formData.append("original_player_image", original_player_image);
     formData.append("image_width", imageWidth);
     formData.append("image_height", imageHeight);
     formData.append("maxTickets", maxTickets);
@@ -83,19 +293,6 @@ const AddContest = () => {
       });
   };
 
-  const handlePlayerImageChange = (e) => {
-    const file = e.target.files[0];
-    setPlayerImage(file);
-
-    // Load the image dimensions automatically
-    const img = new Image();
-    img.onload = () => {
-      setImageWidth(img.width);
-      setImageHeight(img.height);
-    };
-    img.src = URL.createObjectURL(file);
-  };
-
   return (
     <>
       <AppSidebar />
@@ -108,7 +305,7 @@ const AddContest = () => {
           onClick={() => navigate("/contest_management")}
         >
           <ArrowBackIcon />
-          back
+          Back
         </Button>
 
         <Container maxWidth="sm" className="d-flex justify-content-center">
@@ -119,38 +316,42 @@ const AddContest = () => {
             autoComplete="off"
             sx={{ mt: 4, width: "80%" }}
           >
-            {/* Disable form inputs if coordinates are not chosen */}
             <label>Title</label>
             <TextField
+              name="title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={handleTitleChange}
               fullWidth
               margin="normal"
               placeholder="Enter contest title"
-              sx={{ border: "none" }}
+              error={!!errors.title}
+              helperText={errors.title}
             />
 
             <label>Description</label>
             <TextField
+              name="description"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={handleDescriptionChange}
               fullWidth
               margin="normal"
               placeholder="Enter contest description"
-              sx={{ border: "none" }}
+              error={!!errors.description}
+              helperText={errors.description}
             />
 
-            <label>Original Image</label>
+            {/* <label>Original Image</label>
             <TextField
-              onChange={(e) => setOriginal_player_image(e.target.files[0])}
+              onChange={(e) => handleImageChange(e, setOriginal_player_image)}
               fullWidth
               margin="normal"
               variant="outlined"
               type="file"
-            />
-            <label>Contest Banner</label>
+            /> */}
+
+            <label>Contest Banner Image</label>
             <TextField
-              onChange={(e) => setContestBanner(e.target.files[0])}
+              onChange={(e) => handleImageChange(e, setContestBanner)}
               fullWidth
               margin="normal"
               variant="outlined"
@@ -159,40 +360,46 @@ const AddContest = () => {
 
             <label>Jackpot Price</label>
             <TextField
+              name="jackpotPrice"
               value={jackpotPrice}
-              onChange={(e) => setJackpotPrice(e.target.value)}
+              onChange={handleChange}
               fullWidth
               margin="normal"
               placeholder="Enter jackpot price"
-              sx={{ border: "none" }}
+              error={!!errors.jackpotPrice}
+              helperText={errors.jackpotPrice}
+              inputProps={{ maxLength: 5 }}
             />
 
             <label>Ticket Price</label>
             <TextField
+              name="ticketPrice"
               value={ticketPrice}
-              onChange={(e) => setTicketPrice(e.target.value)}
+              onChange={handleChange}
               fullWidth
               margin="normal"
               placeholder="Enter ticket price"
-              sx={{ border: "none" }}
+              error={!!errors.ticketPrice}
+              helperText={errors.ticketPrice}
+              inputProps={{ maxLength: 5 }}
             />
 
             <label>Contest Start Date</label>
             <TextField
+              name="contestStartDate"
               value={contestStartDate}
-              onChange={(e) => setContestStartDate(e.target.value)}
+              onChange={handleChange}
               fullWidth
               margin="normal"
               type="datetime-local"
-              sx={{ border: "none" }}
+              error={!!errors.contestStartDate}
+              helperText={errors.contestStartDate}
               InputProps={{
-                inputProps: {
-                  min: new Date().toISOString().slice(0, 16), // Restrict to current or future date
-                },
+                inputProps: { min: new Date().toISOString().slice(0, 16) },
               }}
             />
 
-            <label>Player Image</label>
+            <label>Play Screen Image</label>
             <TextField
               onChange={handlePlayerImageChange}
               fullWidth
@@ -203,49 +410,50 @@ const AddContest = () => {
 
             <label>Image Width</label>
             <TextField
+              name="imageWidth"
               value={imageWidth}
-              onChange={(e) => setImageWidth(e.target.value)}
               fullWidth
               margin="normal"
-              placeholder="Enter image width"
-              sx={{ border: "none" }}
+              placeholder="Image width auto-populated"
+              disabled
+              error={!!errors.imageWidth}
+              helperText={errors.imageWidth}
             />
 
             <label>Image Height</label>
             <TextField
+              name="imageHeight"
               value={imageHeight}
-              onChange={(e) => setImageHeight(e.target.value)}
               fullWidth
               margin="normal"
-              placeholder="Enter image height"
-              sx={{ border: "none" }}
+              placeholder="Image height auto-populated"
+              disabled
+              error={!!errors.imageHeight}
+              helperText={errors.imageHeight}
             />
 
             <label>Max Tickets</label>
             <TextField
+              name="maxTickets"
               value={maxTickets}
-              onChange={(e) => setMaxTickets(e.target.value)}
+              onChange={handleChange}
               fullWidth
               margin="normal"
               placeholder="Enter max ticket count"
-              sx={{ border: "none" }}
+              error={!!errors.maxTickets}
+              helperText={errors.maxTickets}
+              inputProps={{ maxLength: 3 }}
             />
 
-            {/* Quantities */}
             <label>Ticket Quantities</label>
-            {[0, 1, 2, 3].map((index) => (
+            {quantities.map((quantity, index) => (
               <TextField
                 key={index}
-                value={quantities[index]}
-                onChange={(e) => {
-                  const updatedQuantities = [...quantities];
-                  updatedQuantities[index] = e.target.value;
-                  setQuantities(updatedQuantities);
-                }}
+                value={quantity}
+                onChange={(e) => handleQuantityChange(index, e.target.value)}
                 fullWidth
                 margin="normal"
                 placeholder={`Enter quantity for ticket type ${index + 1}`}
-                sx={{ border: "none" }}
               />
             ))}
 
@@ -268,15 +476,16 @@ const AddContest = () => {
               disabled
             />
 
-            <label>Choose Cousor Color</label>
+            <label>Choose Cursor Color</label>
             <TextField
-              // type="color"
+              name="cousor"
               value={cousor}
-              onChange={(e) => setCousor(e.target.value)}
+              onChange={handleChange}
               fullWidth
               margin="normal"
-              placeholder="Enter Cousor Color"
-              sx={{ border: "none" }}
+              placeholder="Enter Cursor Color"
+              error={!!errors.cousor}
+              helperText={errors.cousor}
             />
 
             <Button

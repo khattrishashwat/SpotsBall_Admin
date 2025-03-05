@@ -50,6 +50,7 @@ const ContestManagement = () => {
             col7: contest.contest_end_date
               ? contest.contest_end_date.substring(0, 10)
               : "N/A",
+            col8: contest.is_active,
           }))
         );
         setLoading(false);
@@ -120,18 +121,52 @@ const ContestManagement = () => {
     { field: "col7", headerName: "Contest End Date", width: 180 },
     {
       field: "col8",
+      headerName: "Status",
+      width: 120,
+      renderCell: (params) => (
+        <span style={{ color: params.value ? "green" : "red" }}>
+          {params.value ? "Active" : "Inactive"}
+        </span>
+      ),
+    },
+    // {
+    //   field: "col9",
+    //   headerName: "Action",
+    //   width: 200,
+    //   renderCell: (params) => (
+    //     <>
+    //       <IconButton
+    //         color="primary"
+    //         onClick={() => navigate(`edit-contest/${params.row.id}`)}
+    //       >
+    //         <EditIcon />
+    //       </IconButton>
+    //     </>
+    //   ),
+    // },
+    {
+      field: "col9",
       headerName: "Action",
       width: 200,
-      renderCell: (params) => (
-        <>
+      renderCell: (params) => {
+        // Convert dates to Date objects
+        const contestStartDate = new Date(params.row.col6);
+        const contestEndDate = new Date(params.row.col7);
+        const today = new Date();
+
+        // Disable the edit button if the contest has started (ongoing or ended)
+        const isDisabled = today >= contestStartDate;
+
+        return (
           <IconButton
             color="primary"
             onClick={() => navigate(`edit-contest/${params.row.id}`)}
+            disabled={isDisabled} // Disable button if condition is met
           >
             <EditIcon />
           </IconButton>
-        </>
-      ),
+        );
+      },
     },
   ];
 

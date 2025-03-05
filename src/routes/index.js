@@ -427,7 +427,7 @@ const routes = createBrowserRouter(
     },
   ],
   {
-    basename: "/admin-panel",
+    basename: "/spotsball/admin-panel",
   }
 );
 

@@ -45,17 +45,30 @@ const _nav = [
     to: "/users",
     icon: <ManageAccountsIcon />,
   },
-  {
-    component: CNavItem,
-    name: "Banner Management",
-    to: "/banner",
-    icon: <Diversity1Icon />,
-  },
+
   {
     component: CNavItem,
     name: "Contest Management",
     to: "/contest_management",
     icon: <EmojiEventsIcon />,
+  },
+  {
+    component: CNavItem,
+    name: "Winner Announcement",
+    to: "/winners_circle",
+    icon: <EmojiEventsIcon />,
+  },
+  {
+    component: CNavItem,
+    name: "Winner Management",
+    to: "/winner",
+    icon: <EmojiEventsIcon />,
+  },
+  {
+    component: CNavItem,
+    name: "Banner Management",
+    to: "/banner",
+    icon: <Diversity1Icon />,
   },
   {
     component: CNavItem,
@@ -102,22 +115,11 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: "Coupons",
+    name: "Discount Coupons",
     to: "/coupons",
     icon: <CardGiftcardIcon />, // Icon for Coupons
   },
-  {
-    component: CNavItem,
-    name: "Announce Winner",
-    to: "/winners_circle",
-    icon: <EmojiEventsIcon />,
-  },
-  {
-    component: CNavItem,
-    name: "Winner",
-    to: "/winner",
-    icon: <EmojiEventsIcon />,
-  },
+
   {
     component: CNavItem,
     name: "Who We Are",
