@@ -1,6 +1,5 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
   CContainer,
   CHeader,
@@ -8,73 +7,109 @@ import {
   CHeaderDivider,
   CHeaderNav,
   CHeaderToggler,
-  CNavLink,
   CNavItem,
-} from '@coreui/react'
-// import CIcon from '@coreui/icons-react'
-// import { cilBell, cilEnvelopeOpen, cilList, cilMenu } from '@coreui/icons'
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu,
+  CDropdownItem,
+} from "@coreui/react";
 
-// import { AppBreadcrumb } from './index'
-import { AppHeaderDropdown } from './header/index'
-// import { logo } from 'src/assets/brand/logo'
-import { logo } from '../assets/brand/logo'
+import { AppHeaderDropdown } from "./header/index";
+import "./AppHeader.css"; // Import CSS file
 
 const AppHeader = () => {
-  const dispatch = useDispatch()
-  const sidebarShow = useSelector((state) => state.sidebarShow)
+  const dispatch = useDispatch();
+  const sidebarShow = useSelector((state) => state.sidebarShow);
+
+  const [messageDropdownOpen, setMessageDropdownOpen] = useState(false);
+  const [notificationDropdownOpen, setNotificationDropdownOpen] =
+    useState(false);
+
+  const toggleDropdown = (type) => {
+    if (type === "message") {
+      setMessageDropdownOpen(!messageDropdownOpen);
+      setNotificationDropdownOpen(false);
+    } else if (type === "notification") {
+      setNotificationDropdownOpen(!notificationDropdownOpen);
+      setMessageDropdownOpen(false);
+    }
+  };
 
   return (
     <CHeader position="sticky" className="mb-4">
       <CContainer fluid>
         <CHeaderToggler
           className="ps-1"
-          onClick={() => dispatch({ type: 'set', sidebarShow: !sidebarShow })}
+          onClick={() => dispatch({ type: "set", sidebarShow: !sidebarShow })}
         >
-          <i className='bi bi-list'></i>
+          <i className="bi bi-list"></i>
         </CHeaderToggler>
-        <CHeaderBrand className="mx-auto d-md-none" to="/">
-          {/* <CIcon icon={logo} height={48} alt="Logo" /> */}
-        </CHeaderBrand>
-        <CHeaderNav className="d-none d-md-flex me-auto">
-          {/* <CNavItem>
-            <CNavLink to="/dashboard" component={NavLink}>
-              Dashboard
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">Users</CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">Settings</CNavLink>
-          </CNavItem> */}
+        <CHeaderBrand className="mx-auto d-md-none" to="/"></CHeaderBrand>
+        <CHeaderNav className="d-none d-md-flex me-auto"></CHeaderNav>
+
+        {/* Message and Notification Icons with Dropdowns */}
+        <CHeaderNav className="d-flex gap-4">
+          {/* Message Dropdown with Green Dot */}
+          <CDropdown
+            variant="nav-item"
+            visible={messageDropdownOpen}
+            onClick={() => toggleDropdown("message")}
+            className="ms-4"
+          >
+            <CDropdownToggle
+              caret={false}
+              className="p-0 icon-wrapper message-icon"
+            >
+              <i className="bi bi-envelope fs-5"></i>
+            </CDropdownToggle>
+            <CDropdownMenu className="p-2">
+              <CDropdownItem href="#">📩 New message from John</CDropdownItem>
+              <CDropdownItem href="#">
+                💬 Alice sent you a message
+              </CDropdownItem>
+              <CDropdownItem href="#">📝 Team meeting scheduled</CDropdownItem>
+              <CDropdownItem href="#" className="text-center text-primary">
+                View All Messages
+              </CDropdownItem>
+            </CDropdownMenu>
+          </CDropdown>
+
+          {/* Notification Dropdown with Red Dot */}
+          <CDropdown
+            variant="nav-item"
+            visible={notificationDropdownOpen}
+            onClick={() => toggleDropdown("notification")}
+          >
+            <CDropdownToggle
+              caret={false}
+              className="p-0 icon-wrapper notification-icon"
+            >
+              <i className="bi bi-bell fs-5"></i>
+            </CDropdownToggle>
+            <CDropdownMenu className="p-2">
+              <CDropdownItem href="#">
+                🔔 New comment on your post
+              </CDropdownItem>
+              <CDropdownItem href="#">
+                📅 Meeting tomorrow at 10 AM
+              </CDropdownItem>
+              <CDropdownItem href="#">
+                ✅ Task marked as completed
+              </CDropdownItem>
+              <CDropdownItem href="#" className="text-center text-primary">
+                View All Notifications
+              </CDropdownItem>
+            </CDropdownMenu>
+          </CDropdown>
         </CHeaderNav>
-        <CHeaderNav>
-          <CNavItem>
-            <CNavLink href="#">
-              {/* <CIcon icon={cilBell} size="lg" /> */}
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">
-              {/* <CIcon icon={cilList} size="lg" /> */}
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">
-              {/* <CIcon icon={cilEnvelopeOpen} size="lg" /> */}
-            </CNavLink>
-          </CNavItem>
-        </CHeaderNav>
+
         <CHeaderNav className="ms-3">
           <AppHeaderDropdown />
         </CHeaderNav>
       </CContainer>
       <CHeaderDivider />
-      {/* <CContainer fluid>
-        <AppBreadcrumb />
-      </CContainer> */}
     </CHeader>
-  )
-}
+  );
+};
 
-export default AppHeader
+export default AppHeader;

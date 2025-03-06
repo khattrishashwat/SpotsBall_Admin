@@ -43,17 +43,7 @@ function Card(props) {
   return (
     <>
       <div className="row d-flex gap- flex-wrap px-2">
-        <div
-          style={
-            {
-              // width: "100%",
-              // height: "100%",
-              // position: "absolute",
-              // top: "100%",
-              // left: "40%",
-            }
-          }
-        >
+        <div>
           <ClipLoader
             // color={color}
             loading={loading}
@@ -92,19 +82,12 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            {/* <div className="card-footer p-3">
-              <p className="mb-0">
-                <span className="text-success text-sm font-weight-bolder">
-                </span>
-              </p>
-            </div> */}
-          </div>
+            </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/banner")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
-              // onClick={() => navigate("/category")}
               style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
@@ -129,11 +112,6 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            {/* <div className="card-footer p-3">
-              <p className="mb-0">
-                <span className="text-success text-sm font-weight-bolder"></span>
-              </p>
-            </div> */}
           </div>
         </div>
 
@@ -141,7 +119,6 @@ function Card(props) {
           <div className="card" onClick={() => navigate("/contest_management")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
-              // onClick={() => navigate("/category")}
               style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
@@ -166,19 +143,14 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            {/* <div className="card-footer p-3">
-              <p className="mb-0">
-                <span className="text-success text-sm font-weight-bolder"></span>
-              </p>
-            </div> */}
-          </div>
+            </div>
         </div>
 
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/content")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
-              // onClick={() => navigate("/category")}
+              
               style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
@@ -200,18 +172,12 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            {/* <div className="card-footer p-3">
-              <p className="mb-0">
-                <span className="text-success text-sm font-weight-bolder"></span>
-              </p>
-            </div> */}
           </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/faqs")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
-              // onClick={() => navigate("/category")}
               style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
@@ -233,18 +199,12 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            {/* <div className="card-footer p-3">
-              <p className="mb-0">
-                <span className="text-success text-sm font-weight-bolder"></span>
-              </p>
-            </div> */}
-          </div>
+            </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4 mt-4">
           <div
             className="card"
-            // style={{ height: "155px" }}
-            onClick={() => navigate("/how_to_play")}
+             onClick={() => navigate("/how_to_play")}
           >
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
@@ -258,7 +218,6 @@ function Card(props) {
               </div>
               <div
                 className="text-end pt-1 d-flex flex-column justify-content-center align-items-center"
-                // onClick={handleToggle}
               >
                 <p
                   style={{
@@ -275,19 +234,12 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            {/* <div className="card-footer p-3">
-              <p className="mb-0">
-                <span className="text-success text-sm font-weight-bolder">
-                </span>
-              </p>
-            </div> */}
-          </div>
+            </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/blogs")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
-              // onClick={() => navigate("/category")}
               style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
@@ -309,19 +261,13 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            {/* <div className="card-footer p-3">
-              <p className="mb-0">
-                <span className="text-success text-sm font-weight-bolder"></span>
-              </p>
-            </div> */}
-          </div>
+            </div>
         </div>
 
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/payment")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
-              // onClick={() => navigate("/category")}
               style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
@@ -346,18 +292,12 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            {/* <div className="card-footer p-3">
-              <p className="mb-0">
-                <span className="text-success text-sm font-weight-bolder"></span>
-              </p>
-            </div> */}
-          </div>
+             </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/promocodes")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
-              // onClick={() => navigate("/category")}
               style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
@@ -382,18 +322,12 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            {/* <div className="card-footer p-3">
-              <p className="mb-0">
-                <span className="text-success text-sm font-weight-bolder"></span>
-              </p>
-            </div> */}
-          </div>
+            </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/winners_circle")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
-              // onClick={() => navigate("/category")}
               style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
@@ -418,18 +352,12 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            {/* <div className="card-footer p-3">
-              <p className="mb-0">
-                <span className="text-success text-sm font-weight-bolder"></span>
-              </p>
-            </div> */}
-          </div>
+            </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/winner")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
-              // onClick={() => navigate("/category")}
               style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
@@ -454,18 +382,12 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            {/* <div className="card-footer p-3">
-              <p className="mb-0">
-                <span className="text-success text-sm font-weight-bolder"></span>
-              </p>
-            </div> */}
-          </div>
+           </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/contacts")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
-              // onClick={() => navigate("/category")}
               style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
@@ -490,12 +412,7 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            {/* <div className="card-footer p-3">
-              <p className="mb-0">
-                <span className="text-success text-sm font-weight-bolder"></span>
-              </p>
-            </div> */}
-          </div>
+           </div>
         </div>
       </div>
     </>

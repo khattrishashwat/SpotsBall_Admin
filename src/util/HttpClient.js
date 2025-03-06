@@ -1,21 +1,17 @@
 import axios from "axios";
 
 const httpClient = axios.create({
-  // baseURL: "https://webmobrildemo.com/spotsball/admin/", // staging server
-  baseURL: "https://webmobrildemo.com/spotsball/api/v1/", // staging server
-  // baseURL: "https://www.spotsball.com/spotsball/api/v1/", // staging server
+  baseURL: "https://webmobrildemo.com/spotsball/api/v1/",
+  // baseURL: "https://www.spotsball.com/spotsball/api/v1/",
 });
 
-// Request interceptor
+
 httpClient.interceptors.request.use(
   (request) => {
-    // Get token from local storage
     let token = window.localStorage.getItem("token");
 
-    // Set Authorization header if token exists
     if (token) {
       request.headers["Authorization"] = `Bearer ${token}`;
-      // console.log("token => ", `Bearer ${token}`);
     }
 
     return request;
@@ -25,7 +21,6 @@ httpClient.interceptors.request.use(
   }
 );
 
-// Response interceptor
 httpClient.interceptors.response.use(
   (response) => {
     return response;

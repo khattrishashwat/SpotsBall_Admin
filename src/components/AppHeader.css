@@ -1,0 +1,21 @@
+.icon-wrapper {
+    position: relative;
+}
+
+.icon-wrapper::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    position: absolute;
+    top: 5px;
+    right: -1px;
+}
+
+.message-icon::after {
+    background-color: green;
+}
+
+.notification-icon::after {
+    background-color: red;
+}

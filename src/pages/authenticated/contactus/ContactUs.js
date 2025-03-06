@@ -67,12 +67,12 @@ const ContactUs = () => {
       width: 150,
       renderCell: (params) => (
         <>
-          <Visibility
+          {/* <Visibility
             className="me-4"
             cursor="pointer"
             style={{ color: "green" }}
             onClick={() => handleView(params.row)}
-          />
+          /> */}
           <MailOutlineIcon
             className="me-2"
             cursor="pointer"

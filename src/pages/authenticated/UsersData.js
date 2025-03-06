@@ -111,8 +111,8 @@ const UserData = () => {
     },
     {
       field: "col3",
-      headerName: "Status",
-      width: 120,
+      headerName: "Deactive/Active",
+      width: 180,
       renderCell: (params) => {
         return (
           <Switch
@@ -125,7 +125,9 @@ const UserData = () => {
     { field: "col4", headerName: "Name", width: 200 },
     { field: "col5", headerName: "email", width: 200 },
     { field: "col6", headerName: "Phone Number", width: 160 },
-    { field: "col7", headerName: "Created Date", width: 170 },
+    { field: "col7", headerName: "Status", width: 170 },
+    { field: "col8", headerName: "TimeStamp", width: 170 },
+    { field: "col9", headerName: "Created Date", width: 170 },
     // {
     //   field: "col8",
     //   headerName: "Action",
@@ -217,7 +219,7 @@ const UserData = () => {
               }`.trim(),
               col5: user.email || "Not Available",
               col6: user.phone || "Not Available",
-              col7: user.createdAt?.substring(0, 10) || "N/A",
+              col9: user.createdAt?.substring(0, 10) || "N/A",
             }))
           );
         })

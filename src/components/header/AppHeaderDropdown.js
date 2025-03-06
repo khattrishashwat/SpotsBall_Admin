@@ -15,7 +15,7 @@ const AppHeaderDropdown = () => {
 
   const handleLogOut = () => {
     console.log("Logging out...");
-    localStorage.clear(); // Clear all local storage data
+    localStorage.clear(); 
     navigate("/auth/login");
   };
 
