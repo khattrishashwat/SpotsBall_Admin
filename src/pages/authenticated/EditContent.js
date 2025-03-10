@@ -145,9 +145,8 @@ const EditContent = ({ editContent, callback }) => {
                     >
                       <JoditEditor
                         ref={editor}
-                        value={content} //value from api
-                        // config={config}
-                        tabIndex={1} // tabIndex of textarea
+                        value={content} 
+                        tabIndex={1} 
                         onBlur={(newContent) => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
                       />
                     </div>
