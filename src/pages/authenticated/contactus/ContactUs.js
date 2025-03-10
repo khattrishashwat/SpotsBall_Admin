@@ -53,8 +53,8 @@ const ContactUs = () => {
     { field: "col1", headerName: "#", width: 100 },
     { field: "col2", headerName: "User", width: 150 },
     { field: "col3", headerName: "Phone Number", width: 150 },
-    { field: "col4", headerName: "Email", width: 250 },
-    { field: "col5", headerName: "Subject", width: 120 },
+    { field: "col4", headerName: "Email", width: 200 },
+    { field: "col5", headerName: "Team", width: 120 },
     { field: "col6", headerName: "Message", width: 250 },
     {
       field: "col7",
@@ -193,10 +193,10 @@ const ContactUs = () => {
       <AppSidebar />
       <div className="wrapper bg-light d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="contacts" />
+        <PageTitle title="supports" />
 
         <CContainer>
-          <h4 className="">Contacts :</h4>
+          <h4 className="">Support :</h4>
           <div
             style={{
               height: "auto",

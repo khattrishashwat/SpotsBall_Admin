@@ -82,7 +82,7 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            </div>
+          </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/banner")}>
@@ -143,14 +143,13 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            </div>
+          </div>
         </div>
 
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/content")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
-              
               style={{ cursor: "pointer", height: "100px" }}
             >
               <div className="">
@@ -199,13 +198,10 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            </div>
+          </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4 mt-4">
-          <div
-            className="card"
-             onClick={() => navigate("/how_to_play")}
-          >
+          <div className="card" onClick={() => navigate("/how_to_play")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
               style={{ cursor: "pointer", height: "100px" }}
@@ -216,9 +212,7 @@ function Card(props) {
                   style={{ color: "purple" }}
                 />
               </div>
-              <div
-                className="text-end pt-1 d-flex flex-column justify-content-center align-items-center"
-              >
+              <div className="text-end pt-1 d-flex flex-column justify-content-center align-items-center">
                 <p
                   style={{
                     color: "black",
@@ -234,7 +228,7 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            </div>
+          </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/blogs")}>
@@ -261,7 +255,7 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            </div>
+          </div>
         </div>
 
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
@@ -292,7 +286,7 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-             </div>
+          </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/promocodes")}>
@@ -322,7 +316,7 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            </div>
+          </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/winners_circle")}>
@@ -352,7 +346,7 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-            </div>
+          </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/winner")}>
@@ -382,7 +376,7 @@ function Card(props) {
             </div>
 
             <hr className="dark horizontal my-0" />
-           </div>
+          </div>
         </div>
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/contacts")}>
@@ -405,14 +399,14 @@ function Card(props) {
                   }}
                   className=" mb-0 text-capitalize "
                 >
-                  Contact Us
+                  Support
                 </p>
                 <h4 className="mb-0 mt-2">{props?.data?.ContactUs}</h4>
               </div>
             </div>
 
             <hr className="dark horizontal my-0" />
-           </div>
+          </div>
         </div>
       </div>
     </>

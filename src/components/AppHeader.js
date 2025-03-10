@@ -16,7 +16,18 @@ import {
 
 import { AppHeaderDropdown } from "./header/index";
 import "./AppHeader.css"; // Import CSS file
+import Eng from "./images/flags/eng.png";
+import Hin from "./images/flags/hindi.jpg";
+import French from "./images/flags/french.png";
+import Germany from "./images/flags/greman.png";
 
+const languageOptions = {
+  en: { name: "English", flag: Eng },
+  hi: { name: "हिन्दी", flag: Hin },
+  fr: { name: "Français", flag: French },
+  de: { name: "Deutsch", flag: Germany },
+};
+console.log("new", "./images/flags/eng.png");
 const AppHeader = () => {
   const dispatch = useDispatch();
   const sidebarShow = useSelector((state) => state.sidebarShow);
@@ -24,15 +35,28 @@ const AppHeader = () => {
   const [messageDropdownOpen, setMessageDropdownOpen] = useState(false);
   const [notificationDropdownOpen, setNotificationDropdownOpen] =
     useState(false);
+  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState(languageOptions.en);
 
   const toggleDropdown = (type) => {
     if (type === "message") {
       setMessageDropdownOpen(!messageDropdownOpen);
       setNotificationDropdownOpen(false);
+      setLanguageDropdownOpen(false);
     } else if (type === "notification") {
       setNotificationDropdownOpen(!notificationDropdownOpen);
       setMessageDropdownOpen(false);
+      setLanguageDropdownOpen(false);
+    } else if (type === "language") {
+      setLanguageDropdownOpen(!languageDropdownOpen);
+      setMessageDropdownOpen(false);
+      setNotificationDropdownOpen(false);
     }
+  };
+
+  const changeLanguage = (langKey) => {
+    setSelectedLanguage(languageOptions[langKey]);
+    setLanguageDropdownOpen(false);
   };
 
   return (
@@ -47,9 +71,30 @@ const AppHeader = () => {
         <CHeaderBrand className="mx-auto d-md-none" to="/"></CHeaderBrand>
         <CHeaderNav className="d-none d-md-flex me-auto"></CHeaderNav>
 
-        {/* Message and Notification Icons with Dropdowns */}
         <CHeaderNav className="d-flex gap-4">
-          {/* Message Dropdown with Green Dot */}
+          <CDropdown
+            variant="nav-item"
+            visible={languageDropdownOpen}
+            onClick={() => toggleDropdown("language")}
+          >
+            <CDropdownToggle caret={false} className="p-0 icon-wrapper">
+              <img
+                src={selectedLanguage.flag}
+                alt={selectedLanguage.name}
+                className="flag-icon"
+              />
+              <span className="ms-2">{selectedLanguage.name}</span>
+            </CDropdownToggle>
+            <CDropdownMenu className="p-2">
+              {Object.entries(languageOptions).map(([key, { name, flag }]) => (
+                <CDropdownItem key={key} onClick={() => changeLanguage(key)}>
+                  <img src={flag} alt={name} className="flag-icon me-2" />
+                  {name}
+                </CDropdownItem>
+              ))}
+            </CDropdownMenu>
+          </CDropdown>
+
           <CDropdown
             variant="nav-item"
             visible={messageDropdownOpen}
@@ -74,7 +119,6 @@ const AppHeader = () => {
             </CDropdownMenu>
           </CDropdown>
 
-          {/* Notification Dropdown with Red Dot */}
           <CDropdown
             variant="nav-item"
             visible={notificationDropdownOpen}

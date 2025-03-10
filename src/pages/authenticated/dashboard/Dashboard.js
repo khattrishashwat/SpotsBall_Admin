@@ -5,6 +5,7 @@ import PageTitle from "../../common/PageTitle";
 import { CContainer } from "@coreui/react";
 import Card from "./Card";
 import httpClient from "../../../util/HttpClient";
+import BarGraph from "./BarGraph";
 
 const Dashboard = () => {
   const [data, setData] = useState([]);
@@ -21,6 +22,7 @@ const Dashboard = () => {
         <AppHeader />
         <PageTitle title="Dashboard" />
         <Card data={data} />
+        <BarGraph data={data} />
       </div>
     </>
   );

@@ -19,3 +19,12 @@
 .notification-icon::after {
     background-color: red;
 }
+
+.flag-icon {
+    width: auto;
+    /* Adjust width automatically */
+    height: 27px;
+    /* Set height to 27px */
+    object-fit: cover;
+    border-radius: 2px;
+}
