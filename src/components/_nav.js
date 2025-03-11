@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { CNavItem, CNavGroup } from "@coreui/react";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
@@ -26,278 +27,281 @@ import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import Logo from "./logo.png";
 import SettingsIcon from "@mui/icons-material/Settings";
 
-const _nav = [
-  {
-    component: CNavItem,
-    to: "/dashboard",
-    icon: (
-      <img
-        src={Logo}
-        width={"45%"}
-        style={{
-          width: "100%",
-          height: "50%",
-          cursor: "pointer",
-          background: "transparent",
-        }}
-        alt="Logo"
-      />
-    ),
-  },
-  {
-    component: CNavItem,
-    name: "Dashboard",
-    to: "/dashboard",
-    icon: <DashboardIcon />,
-  },
-  {
-    component: CNavGroup,
-    name: "Admin Management",
-    to: "/",
-    icon: <AdminPanelSettingsIcon />,
-    items: [
-      {
-        component: CNavItem,
-        name: "Admins",
-        to: "/admins",
-        icon: <SupervisorAccountIcon />,
-      },
-      {
-        component: CNavItem,
-        name: "Admins Activities",
-        to: "/admins-activities",
-        icon: <ManageAccountsIcon />,
-      },
-    ],
-  },
-  //!isAdmin && {
-  //   component: CNavGroup,
-  //   name: "Admin Management",
-  //   to: "/",
-  //   icon: <AdminPanelSettingsIcon />,
-  //   items: [
-  //     {
-  //       component: CNavItem,
-  //       name: "Admins",
-  //       to: "/admins",
-  //       icon: <SupervisorAccountIcon />,
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: "Admins Activities",
-  //       to: "/admins-activities",
-  //       icon: <ManageAccountsIcon />,
-  //     },
-  //   ],
-  // },
-  {
-    component: CNavGroup,
-    name: "User Management",
-    to: "/",
-    icon: <PeopleIcon />,
-    items: [
-      {
-        component: CNavItem,
-        name: "Users",
-        to: "/users",
-        icon: <PersonAddIcon />,
-      },
-      // {
-      //   component: CNavItem,
-      //   name: "Activity",
-      //   to: (id) => `/user/activity/${id}`,
-      //   icon: <Diversity1Icon />,
-      // },
-      {
-        component: CNavItem,
-        name: "Subscriber",
-        to: "/subscribers",
-        icon: <SubscriptionsIcon />,
-      },
-      {
-        component: CNavItem,
-        name: "Send Notification",
-        to: "/notification",
-        icon: <FeedbackIcon />,
-      },
-    ],
-  },
-  {
-    component: CNavGroup,
-    name: "Contest Management",
-    icon: <SourceIcon />,
-    items: [
-      {
-        component: CNavItem,
-        name: "Contest",
-        to: "/contest_management",
-        icon: <SourceIcon />,
-      },
-      {
-        component: CNavItem,
-        name: "Contest Payment",
-        to: "/payment",
-        icon: <PaymentIcon />,
-      },
-      {
-        component: CNavItem,
-        name: "Promo Codes",
-        to: "/promocodes",
-        icon: <DiscountIcon />, // Icon for PromoCodes
-      },
-      {
-        component: CNavItem,
-        name: "Discount Coupons",
-        to: "/coupons",
-        icon: <CardGiftcardIcon />, // Icon for Coupons
-      },
-      // {
-      //   component: CNavItem,
-      //   name: "FAQ",
-      //   to: "/reported-content",
-      //   icon: <QuizIcon />,
-      // },
-    ],
-  },
-  {
-    component: CNavGroup,
-    name: "Winner Management",
-    to: "/winner",
-    icon: <EmojiEventsIcon />,
-    items: [
-      {
-        component: CNavItem,
-        name: "Winner Announcement",
-        to: "/winners_circle",
-        icon: <EmojiEventsIcon />,
-      },
-      {
-        component: CNavItem,
-        name: "Winner List",
-        to: "/winner",
-        icon: <EmojiEventsIcon />,
-      },
-    ],
-  },
-  {
-    component: CNavGroup,
-    name: "Payments",
-    icon: <PaymentIcon />,
-    items: [
-      {
-        component: CNavItem,
-        name: "All Payments",
-        to: "/allpayments",
-        icon: <AccountBalanceWalletIcon />,
-      },
-    ],
-  },
-  {
-    component: CNavGroup,
-    name: "Content Management",
-    icon: <SettingsIcon />,
-    items: [
-      {
-        component: CNavItem,
-        name: "Content Pages",
-        to: "/content",
-        icon: <SourceIcon />,
-      },
-      {
-        component: CNavItem,
-        name: "FAQ",
-        to: "/faqs",
-        icon: <QuizIcon />,
-      },
-      {
-        component: CNavItem,
-        name: "Blogs",
-        to: "/blogs",
-        icon: <FeedbackIcon />,
-      },
-      {
-        component: CNavItem,
-        name: "Who We Are",
-        to: "/who_we_are",
-        icon: <InfoIcon />,
-      },
-    ],
-  },
-  {
-    component: CNavGroup,
-    name: "PlatForm Setting",
-    icon: <SettingsIcon />,
-    items: [
-      {
-        component: CNavItem,
-        name: "Social Link",
-        to: "/social_links",
-        icon: <LinkIcon />,
-      },
-      {
-        component: CNavItem,
-        name: "Restricted Area",
-        to: "/restricted",
-        icon: <LockOutlinedIcon />,
-      },
-      {
-        component: CNavItem,
-        name: "How To Play",
-        to: "/how_to_play",
-        icon: <SubscriptionsIcon />,
-      },
-      {
-        component: CNavItem,
-        name: "APK Download",
-        to: "/applicatiom_management",
-        icon: <CloudDownloadIcon />,
-      },
-    ],
-  },
-  // !isAdmin && {
-  //   component: CNavGroup,
-  //   name: "Notifications",
-  //   icon: <NotificationsActiveIcon />,
-  //   items: [
-  //     {
-  //       component: CNavItem,
-  //       name: "Send Notification",
-  //       to: "/notifications",
-  //       icon: <FeedbackIcon />,
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: "Send Emails",
-  //       to: "/emails",
-  //       icon: <FeedbackIcon />,
-  //     },
-  //   ],
-  // },
-  {
-    component: CNavGroup,
-    name: "Notifications",
-    icon: <NotificationsActiveIcon />,
-    items: [
-      {
-        component: CNavItem,
-        name: "Send Notification",
-        to: "/notifications",
-        icon: <FeedbackIcon />,
-      },
-      {
-        component: CNavItem,
-        name: "Send Emails",
-        to: "/emails",
-        icon: <EmailIcon />,
-      },
-    ],
-  },
-  {
-    component: CNavItem,
-    name: "Support & Help Center",
-    to: "/support",
-    icon: <ContactMailIcon />,
-  },
-];
+const useNavItems = () => {
+  const { t } = useTranslation();
+  return [
+    {
+      component: CNavItem,
+      to: "/dashboard",
+      icon: (
+        <img
+          src={Logo}
+          width={"45%"}
+          style={{
+            width: "100%",
+            height: "50%",
+            cursor: "pointer",
+            background: "transparent",
+          }}
+          alt="Logo"
+        />
+      ),
+    },
+    {
+      component: CNavItem,
+      name: t("Dashboard"),
+      to: "/dashboard",
+      icon: <DashboardIcon />,
+    },
+    {
+      component: CNavGroup,
+      name: t("Admin Management"),
+      to: "/",
+      icon: <AdminPanelSettingsIcon />,
+      items: [
+        {
+          component: CNavItem,
+          name: t("Admin"),
+          to: "/admins",
+          icon: <SupervisorAccountIcon />,
+        },
+        {
+          component: CNavItem,
+          name: t("Admin Activities"),
+          to: "/admins-activities",
+          icon: <ManageAccountsIcon />,
+        },
+      ],
+    },
+    //!isAdmin && {
+    //   component: CNavGroup,
+    //   name: t("Admin Management"),
+    //   to: "/",
+    //   icon: <AdminPanelSettingsIcon />,
+    //   items: [
+    //     {
+    //       component: CNavItem,
+    //       name: t("Admins"),
+    //       to: "/admins",
+    //       icon: <SupervisorAccountIcon />,
+    //     },
+    //     {
+    //       component: CNavItem,
+    //       name: t("Admins Activities"),
+    //       to: "/admins-activities",
+    //       icon: <ManageAccountsIcon />,
+    //     },
+    //   ],
+    // },
+    {
+      component: CNavGroup,
+      name: t("User Management"),
+      to: "/",
+      icon: <PeopleIcon />,
+      items: [
+        {
+          component: CNavItem,
+          name: t("Users"),
+          to: "/users",
+          icon: <PersonAddIcon />,
+        },
+        // {
+        //   component: CNavItem,
+        //   name: t("Activity"),
+        //   to: (id) => `/user/activity/${id}`,
+        //   icon: <Diversity1Icon />,
+        // },
+        {
+          component: CNavItem,
+          name: t("Subscriber"),
+          to: "/subscribers",
+          icon: <SubscriptionsIcon />,
+        },
+        {
+          component: CNavItem,
+          name: t("Send Notification"),
+          to: "/notification",
+          icon: <FeedbackIcon />,
+        },
+      ],
+    },
+    {
+      component: CNavGroup,
+      name: t("Contest Management"),
+      icon: <SourceIcon />,
+      items: [
+        {
+          component: CNavItem,
+          name: t("Contest"),
+          to: "/contest_management",
+          icon: <SourceIcon />,
+        },
+        {
+          component: CNavItem,
+          name: t("Contest Payment"),
+          to: "/payment",
+          icon: <PaymentIcon />,
+        },
+        {
+          component: CNavItem,
+          name: t("Promo Codes"),
+          to: "/promocodes",
+          icon: <DiscountIcon />, // Icon for PromoCodes
+        },
+        {
+          component: CNavItem,
+          name: t("Discount Coupons"),
+          to: "/coupons",
+          icon: <CardGiftcardIcon />, // Icon for Coupons
+        },
+        // {
+        //   component: CNavItem,
+        //   name: t("FAQ"),
+        //   to: "/reported-content",
+        //   icon: <QuizIcon />,
+        // },
+      ],
+    },
+    {
+      component: CNavGroup,
+      name: t("Winner Management"),
+      to: "/winner",
+      icon: <EmojiEventsIcon />,
+      items: [
+        {
+          component: CNavItem,
+          name: t("Winner Announcement"),
+          to: "/winners_circle",
+          icon: <EmojiEventsIcon />,
+        },
+        {
+          component: CNavItem,
+          name: t("Winner List"),
+          to: "/winner",
+          icon: <EmojiEventsIcon />,
+        },
+      ],
+    },
+    {
+      component: CNavGroup,
+      name: t("Payments"),
+      icon: <PaymentIcon />,
+      items: [
+        {
+          component: CNavItem,
+          name: t("All Payments"),
+          to: "/allpayments",
+          icon: <AccountBalanceWalletIcon />,
+        },
+      ],
+    },
+    {
+      component: CNavGroup,
+      name: t("Content Management"),
+      icon: <SettingsIcon />,
+      items: [
+        {
+          component: CNavItem,
+          name: t("Content Pages"),
+          to: "/content",
+          icon: <SourceIcon />,
+        },
+        {
+          component: CNavItem,
+          name: t("FAQ"),
+          to: "/faqs",
+          icon: <QuizIcon />,
+        },
+        {
+          component: CNavItem,
+          name: t("Blogs"),
+          to: "/blogs",
+          icon: <FeedbackIcon />,
+        },
+        {
+          component: CNavItem,
+          name: t("Who We Are"),
+          to: "/who_we_are",
+          icon: <InfoIcon />,
+        },
+      ],
+    },
+    {
+      component: CNavGroup,
+      name: t("PlatForm Setting"),
+      icon: <SettingsIcon />,
+      items: [
+        {
+          component: CNavItem,
+          name: t("Social Link"),
+          to: "/social_links",
+          icon: <LinkIcon />,
+        },
+        {
+          component: CNavItem,
+          name: t("Restricted Area"),
+          to: "/restricted",
+          icon: <LockOutlinedIcon />,
+        },
+        {
+          component: CNavItem,
+          name: t("How To Play"),
+          to: "/how_to_play",
+          icon: <SubscriptionsIcon />,
+        },
+        {
+          component: CNavItem,
+          name: t("APK Download"),
+          to: "/applicatiom_management",
+          icon: <CloudDownloadIcon />,
+        },
+      ],
+    },
+    // !isAdmin && {
+    //   component: CNavGroup,
+    //   name: t("Notifications"),
+    //   icon: <NotificationsActiveIcon />,
+    //   items: [
+    //     {
+    //       component: CNavItem,
+    //       name: t("Send Notification"),
+    //       to: "/notifications",
+    //       icon: <FeedbackIcon />,
+    //     },
+    //     {
+    //       component: CNavItem,
+    //       name: t("Send Emails"),
+    //       to: "/emails",
+    //       icon: <FeedbackIcon />,
+    //     },
+    //   ],
+    // },
+    {
+      component: CNavGroup,
+      name: t("Notifications"),
+      icon: <NotificationsActiveIcon />,
+      items: [
+        {
+          component: CNavItem,
+          name: t("Send Notification"),
+          to: "/notifications",
+          icon: <FeedbackIcon />,
+        },
+        {
+          component: CNavItem,
+          name: t("Send Emails"),
+          to: "/emails",
+          icon: <EmailIcon />,
+        },
+      ],
+    },
+    {
+      component: CNavItem,
+      name: t("Support & Help Center"),
+      to: "/support",
+      icon: <ContactMailIcon />,
+    },
+  ];
+};
 
-export default _nav;
+export default useNavItems;

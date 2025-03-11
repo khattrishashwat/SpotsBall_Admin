@@ -4,6 +4,8 @@ import AppHeader from "../../../components/AppHeader";
 import { CCol, CContainer } from "@coreui/react";
 import PageTitle from "../../common/PageTitle";
 import { DataGrid } from "@mui/x-data-grid";
+import { useTranslation } from "react-i18next";
+
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
   IconButton,
@@ -34,6 +36,8 @@ const ContactUs = () => {
     pageSize: 5,
   });
   const [update, setUpdate] = useState();
+      const { t } = useTranslation();
+
   const [searchKeyword, setSearchKeyword] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
@@ -51,19 +55,19 @@ const ContactUs = () => {
 
   const columns = [
     { field: "col1", headerName: "#", width: 100 },
-    { field: "col2", headerName: "User", width: 150 },
-    { field: "col3", headerName: "Phone Number", width: 150 },
-    { field: "col4", headerName: "Email", width: 200 },
-    { field: "col5", headerName: "Team", width: 120 },
-    { field: "col6", headerName: "Message", width: 250 },
+    { field: "col2", headerName: t("User"), width: 150 },
+    { field: "col3", headerName: t("Phone Number"), width: 150 },
+    { field: "col4", headerName: t("Email"), width: 200 },
+    { field: "col5", headerName: t("Team"), width: 120 },
+    { field: "col6", headerName: t("Message"), width: 250 },
     {
       field: "col7",
-      headerName: "Created At",
+      headerName: t("Created At"),
       width: 150,
     },
     {
       field: "col8",
-      headerName: "Action",
+      headerName: t("Action"),
       width: 150,
       renderCell: (params) => (
         <>
@@ -193,10 +197,10 @@ const ContactUs = () => {
       <AppSidebar />
       <div className="wrapper bg-light d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="supports" />
+        <PageTitle title={t("supports")} />
 
         <CContainer>
-          <h4 className="">Support :</h4>
+          <h4 className="">{t("Support :")}</h4>
           <div
             style={{
               height: "auto",
@@ -243,7 +247,7 @@ const ContactUs = () => {
               }}
             >
               <CCol xs={5} style={{ display: "flex", alignItems: "center" }}>
-                Show
+                {t("Show")}
                 <input
                   className="mx-2"
                   type="number"
@@ -264,7 +268,7 @@ const ContactUs = () => {
                   }}
                   onChange={handleRecordPerPage}
                 />
-                Records per page
+                {t("Records per page")}
               </CCol>
             </div>
             <DataGrid
@@ -300,11 +304,11 @@ const ContactUs = () => {
 
       {selectedFeedback && (
         <Dialog open={openDialog} onClose={handleCloseDialog}>
-          <DialogTitle>Contact Details</DialogTitle>
+          <DialogTitle>{t("Contact Details")}</DialogTitle>
           <DialogContent>
             <TextField
               margin="dense"
-              label="User"
+              label={t("User")}
               type="text"
               fullWidth
               variant="outlined"
@@ -319,7 +323,7 @@ const ContactUs = () => {
             />
             <TextField
               margin="dense"
-              label="Contact"
+              label={t("Contact")}
               type="text"
               fullWidth
               variant="outlined"
@@ -334,7 +338,7 @@ const ContactUs = () => {
             />
             <TextField
               margin="dense"
-              label="Description"
+              label={t("Description")}
               type="text"
               fullWidth
               variant="outlined"
@@ -351,7 +355,7 @@ const ContactUs = () => {
             />
             <TextField
               margin="dense"
-              label="Subject"
+              label={t("Subject")}
               type="text"
               fullWidth
               variant="outlined"
@@ -367,7 +371,7 @@ const ContactUs = () => {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog} color="primary">
-              Close
+              {t("Close")}
             </Button>
           </DialogActions>
         </Dialog>

@@ -1,15 +1,18 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import PageTitle from "../../common/PageTitle";
 import { TextField, Button, Container, Box, Typography } from "@mui/material";
 import httpClient from "../../../util/HttpClient"; // Ensure this path is correct
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const AddApplication = () => {
   const [apkFile, setApkFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
   let navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleFileChange = (e) => {
     setApkFile(e.target.files[0]);
@@ -18,10 +21,13 @@ const AddApplication = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
 
     if (!apkFile) {
-      setMessage("Please select an APK file.");
+      Swal.fire({
+        icon: "error",
+        title: t("Error"),
+        text: t("Please select an APK file."),
+      });
       setLoading(false);
       return;
     }
@@ -30,20 +36,24 @@ const AddApplication = () => {
     formData.append("apk_file", apkFile); // Ensure the backend expects "apk_file"
 
     try {
-      const response = await httpClient.post(
-        "admin/apk-links/add-apk-links",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      await httpClient.post("admin/apk-links/add-apk-links", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-      setMessage("Application uploaded successfully!");
+      Swal.fire({
+        icon: "success",
+        title: t("Success"),
+        text: t("Application uploaded successfully!"),
+      });
+
       setApkFile(null);
-      navigate(-1);
+      setTimeout(() => navigate(-1), 1500); // Delay before navigation
     } catch (error) {
-      console.log("Upload error:", error);
-      setMessage(error?.response?.data?.message || "File upload failed.");
+      Swal.fire({
+        icon: "error",
+        title: t("Upload Failed"),
+        text: error?.response?.data?.message || t("File upload failed."),
+      });
       setLoading(false);
     }
   };
@@ -53,6 +63,8 @@ const AddApplication = () => {
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
+        <PageTitle title={t("Add Application")} />
+
         <Container maxWidth="sm">
           <Box
             sx={{
@@ -66,16 +78,30 @@ const AddApplication = () => {
             }}
           >
             <Typography variant="h5" component="h1" gutterBottom>
-              Upload Application APK
+              {t("Upload Application APK")}
             </Typography>
             <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-              <input
-                type="file"
-                accept=".apk"
-                onChange={handleFileChange}
-                required
-                style={{ marginBottom: "16px" }}
-              />
+              <Button
+                variant="contained"
+                component="label"
+                fullWidth
+                sx={{ mt: 2, mb: 2 }}
+              >
+                {t("Choose File")}
+                <input
+                  type="file"
+                  accept=".apk"
+                  hidden
+                  onChange={handleFileChange}
+                />
+              </Button>
+
+              {apkFile && (
+                <Typography variant="body2" sx={{ mb: 2 }}>
+                  {t("Selected File")}: {apkFile.name}
+                </Typography>
+              )}
+
               <Button
                 type="submit"
                 variant="contained"
@@ -87,18 +113,9 @@ const AddApplication = () => {
                   backgroundColor: "orange",
                 }}
               >
-                {loading ? "Uploading..." : "Upload"}
+                {loading ? t("Uploading...") : t("Upload")}
               </Button>
             </form>
-            {message && (
-              <Typography
-                variant="body2"
-                color={message.includes("successfully") ? "green" : "red"}
-                sx={{ mt: 2 }}
-              >
-                {message}
-              </Typography>
-            )}
           </Box>
         </Container>
       </div>

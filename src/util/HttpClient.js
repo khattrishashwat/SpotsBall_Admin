@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const httpClient = axios.create({
-  // baseURL: "https://webmobrildemo.com/spotsball/api/v1/",
-  baseURL: "https://www.spotsball.com/spotsball/api/v1/",
+  baseURL: "https://webmobrildemo.com/spotsball/api/v1/",
+  // baseURL: "https://www.spotsball.com/spotsball/api/v1/",
 });
 
 httpClient.interceptors.request.use(

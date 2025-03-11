@@ -16,6 +16,8 @@ import { useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
+
 import { Country } from "country-state-city";
 
 const validationSchema = Yup.object({
@@ -34,6 +36,7 @@ function Notifications() {
   //   useEffect(() => {
   //     setCountries(Country.getAllCountries());
   //   }, []);
+  const { t } = useTranslation();
 
   return (
     <>
@@ -52,7 +55,7 @@ function Notifications() {
           </Button> */}
 
           <Typography variant="h4" align="center" gutterBottom>
-            New Notification
+            {t("New Notification")}
           </Typography>
 
           <Formik
@@ -74,7 +77,7 @@ function Notifications() {
                     <Field
                       as={TextField}
                       name="title"
-                      label="Title"
+                      label={t("Title")}
                       fullWidth
                       error={touched.title && !!errors.title}
                       helperText={touched.title && errors.title}
@@ -103,7 +106,7 @@ function Notifications() {
                     <Field
                       as={TextField}
                       name="message"
-                      label="Message"
+                      label={t("Message")}
                       multiline
                       rows={4}
                       fullWidth
@@ -174,7 +177,7 @@ function Notifications() {
                       color="primary"
                       fullWidth
                     >
-                      Submit
+                      {t("Submit")}
                     </Button>
                   </Grid>
                 </Grid>

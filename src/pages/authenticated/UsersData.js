@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import AppSidebar from "../../components/AppSidebar";
 import AppHeader from "../../components/AppHeader";
 import { CCol, CContainer } from "@coreui/react";
@@ -16,6 +17,8 @@ import { GridOverlay } from "@mui/x-data-grid";
 import { Typography } from "@mui/material";
 
 const CustomNoRowsOverlay = () => {
+  const { t } = useTranslation();
+
   return (
     <GridOverlay>
       <Typography variant="h6" color="textSecondary">
@@ -32,6 +35,8 @@ const UserData = () => {
   const [closeSnakeBar, setCloseSnakeBar] = useState(false);
   const [userCount, setUserCount] = useState(0);
   const [rows, setRows] = useState([]);
+  const { t } = useTranslation();
+
   const [loading, setLoading] = useState(true);
   const [paginationModel, setPaginationModel] = useState({
     page: 0, // Set pagination to start from 1
@@ -71,7 +76,7 @@ const UserData = () => {
     { field: "col1", headerName: "#", width: 80 },
     {
       field: "col2",
-      headerName: "Profile",
+      headerName: t("Profile"),
       width: 140,
       renderCell: (params) => {
         return params.formattedValue !== "N/A" ? (
@@ -111,7 +116,7 @@ const UserData = () => {
     },
     {
       field: "col3",
-      headerName: "Deactive/Active",
+      headerName: t("De-Active/Active"),
       width: 180,
       renderCell: (params) => {
         return (
@@ -122,12 +127,12 @@ const UserData = () => {
         );
       },
     },
-    { field: "col4", headerName: "Name", width: 200 },
-    { field: "col5", headerName: "email", width: 200 },
-    { field: "col6", headerName: "Phone Number", width: 160 },
-    { field: "col7", headerName: "Status", width: 170 },
-    { field: "col8", headerName: "TimeStamp", width: 170 },
-    { field: "col9", headerName: "Created Date", width: 170 },
+    { field: "col4", headerName: t("Name"), width: 200 },
+    { field: "col5", headerName: t("Email"), width: 200 },
+    { field: "col6", headerName: t("Phone Number"), width: 160 },
+    { field: "col7", headerName: t("Status"), width: 170 },
+    { field: "col8", headerName: t("TimeStamp"), width: 170 },
+    { field: "col9", headerName: t("Created Date"), width: 170 },
     // {
     //   field: "col8",
     //   headerName: "Action",
@@ -249,9 +254,9 @@ const UserData = () => {
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="User Management" />
+        <PageTitle title={t("User Management")} />
         <CContainer>
-          <h4 className="">Users</h4>
+          <h4 className="">{t("Users")}</h4>
           <div
             style={{
               minHeight: "300px",
@@ -296,7 +301,7 @@ const UserData = () => {
               }}
             >
               <CCol xs={5}>
-                Show
+                {t("Show")}
                 <input
                   className="mx-2"
                   type="number"
@@ -320,7 +325,7 @@ const UserData = () => {
                   }}
                   onChange={handleRecordPerPage}
                 />
-                Records per page
+                {t("Records per page")}
               </CCol>
               <CCol
                 xs={6}
@@ -330,14 +335,14 @@ const UserData = () => {
                   alignItems: "center",
                 }}
               >
-                Search:
+                {t("Search:")}
                 <input
                   type="text"
                   name="search"
                   className="form-control form-control-sm"
                   style={{ fontSize: "13px", marginLeft: "10px" }}
                   onChange={handleSearch}
-                  placeholder="Search by name, email, phone, etc."
+                  placeholder={t("Search by name, email, phone, etc.")}
                 />
               </CCol>
             </div>

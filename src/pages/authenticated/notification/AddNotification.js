@@ -17,6 +17,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { Country } from "country-state-city";
+import { useTranslation } from "react-i18next";
 
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
@@ -30,6 +31,7 @@ const validationSchema = Yup.object({
 function AddNotification() {
   const navigate = useNavigate();
   const [countries, setCountries] = useState([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     setCountries(Country.getAllCountries());
@@ -48,11 +50,11 @@ function AddNotification() {
             onClick={() => navigate(-1)}
             sx={{ mb: 3 }}
           >
-            Back
+            {t("Back")}
           </Button>
 
           <Typography variant="h4" align="center" gutterBottom>
-            Add New Notification
+            {t("Add New Notification")}
           </Typography>
 
           <Formik
@@ -74,7 +76,7 @@ function AddNotification() {
                     <Field
                       as={TextField}
                       name="title"
-                      label="Title"
+                      label={t("Title")}
                       fullWidth
                       error={touched.title && !!errors.title}
                       helperText={touched.title && errors.title}
@@ -85,7 +87,7 @@ function AddNotification() {
                     <Field
                       as={TextField}
                       name="country"
-                      label="Country"
+                      label={t("Country")}
                       select
                       fullWidth
                       error={touched.country && !!errors.country}
@@ -103,7 +105,7 @@ function AddNotification() {
                     <Field
                       as={TextField}
                       name="message"
-                      label="Message"
+                      label={t("Message")}
                       multiline
                       rows={4}
                       fullWidth
@@ -113,7 +115,7 @@ function AddNotification() {
                   </Grid>
 
                   <Grid item xs={12}>
-                    <Typography variant="subtitle1">Send To:</Typography>
+                    <Typography variant="subtitle1">{t("Send To:")}</Typography>
                     <FormControlLabel
                       control={
                         <Checkbox
@@ -135,7 +137,7 @@ function AddNotification() {
                           }}
                         />
                       }
-                      label="User"
+                      label={t("User")}
                     />
                     <FormControlLabel
                       control={
@@ -158,7 +160,7 @@ function AddNotification() {
                           }}
                         />
                       }
-                      label="Admin"
+                      label={t("Admin")}
                     />
                     {touched.recipient && errors.recipient && (
                       <Typography color="error" variant="body2">
@@ -174,7 +176,7 @@ function AddNotification() {
                       color="primary"
                       fullWidth
                     >
-                      Submit
+                      {t("Submit")}
                     </Button>
                   </Grid>
                 </Grid>

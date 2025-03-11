@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import { CContainer } from "@coreui/react";
+import { useTranslation } from "react-i18next";
+
 import PageTitle from "../../common/PageTitle";
 import { DataGrid } from "@mui/x-data-grid";
 import { Snackbar, IconButton, Button } from "@mui/material";
@@ -21,6 +23,8 @@ const Application = () => {
     page: 0,
     pageSize: 10,
   });
+    const { t } = useTranslation();
+
   const [totalRecords, setTotalRecords] = useState(0);
 
   const navigate = useNavigate();
@@ -89,13 +93,13 @@ const Application = () => {
 
   const columns = [
     { field: "col1", headerName: "#", width: 80 },
-    { field: "col2", headerName: "App", width: 150 },
-    { field: "col3", headerName: "Apk Link", width: 350 },
-    { field: "clo4", headerName: "Created At", width: 180 },
-    { field: "clo5", headerName: "Updated At", width: 180 },
+    { field: "col2", headerName: t("App"), width: 150 },
+    { field: "col3", headerName: t("Apk Link"), width: 350 },
+    { field: "clo4", headerName: t("Created At"), width: 180 },
+    { field: "clo5", headerName: t("Updated At"), width: 180 },
     {
       field: "clo6",
-      headerName: "Action",
+      headerName: t("Action"),
       width: 200,
       renderCell: (params) => (
         <>
@@ -108,7 +112,7 @@ const Application = () => {
             color="error"
             onClick={() => confirmBeforeDelete(params.row)}
           >
-            Delete
+            {t("Delete")}
           </Button>
         </>
       ),
@@ -120,16 +124,16 @@ const Application = () => {
       <AppSidebar />
       <div className="wrapper bg-light">
         <AppHeader />
-        <PageTitle title="Social Links" />
+        <PageTitle title={t("Application Links")} />
         <CContainer>
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <h4>Appication Links</h4>
+            <h4>{t("Appication Links")}</h4>
             <Button
               variant="contained"
               color="primary"
               onClick={() => navigate("add-application")}
             >
-              Add Link
+              {t("Add APP Link")}
             </Button>
           </div>
 

@@ -6,6 +6,7 @@ import { MenuItem, Select, Snackbar, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
@@ -27,6 +28,7 @@ const Subscribers = () => {
   });
   const [status, setStatus] = useState("");
   const [allData, setAllData] = useState([]);
+    const { t } = useTranslation();
 
   const navigate = useNavigate();
 
@@ -41,12 +43,12 @@ const Subscribers = () => {
 
   const columns = [
     { field: "col1", headerName: "#", width: 200 },
-    { field: "col2", headerName: "Email/Phone", width: 350 },
-    { field: "col3", headerName: "Updated At", width: 200 },
-    { field: "col4", headerName: "Created At", width: 200 },
+    { field: "col2", headerName: t("Email/Phone"), width: 350 },
+    { field: "col3", headerName: t("Updated At"), width: 200 },
+    { field: "col4", headerName: t("Created At"), width: 200 },
     {
       field: "col5",
-      headerName: "Action",
+      headerName: t("Action"),
       width: 150,
       renderCell: (params) => (
         <IconButton
@@ -126,11 +128,11 @@ const Subscribers = () => {
       <AppSidebar />
       <div className="wrapper bg-light">
         <AppHeader />
-        <PageTitle title="Subscribers" />
+        <PageTitle title={t("Subscribers")} />
 
         <CContainer className="mt-3">
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h4>Subscribers</h4>
+            <h4>{t("Subscribers")}</h4>
             <Select
               value={paginationModel.pageSize}
               onChange={(e) =>

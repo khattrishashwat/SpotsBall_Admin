@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import { CCol, CContainer } from "@coreui/react";
@@ -16,16 +17,20 @@ import { GridOverlay } from "@mui/x-data-grid";
 import { Typography } from "@mui/material";
 
 const CustomNoRowsOverlay = () => {
+  const { t } = useTranslation();
+
   return (
     <GridOverlay>
       <Typography variant="h6" color="textSecondary">
-        No data found
+        {t("No data found")}
       </Typography>
     </GridOverlay>
   );
 };
 
 const AdminActivities = () => {
+  const { t } = useTranslation();
+
   const [alertMessage, setAlertMessage] = useState();
   const [apiSuccess, setApiSuccess] = useState(false);
   const [apiError, setApiError] = useState(false);
@@ -70,10 +75,10 @@ const AdminActivities = () => {
 
   const columns = [
     { field: "col1", headerName: "#", width: 80 },
-    { field: "col2", headerName: "Country", width: 160 },
+    { field: "col2", headerName: t("Country"), width: 160 },
     {
       field: "col3",
-      headerName: "Member",
+      headerName: t("Member"),
       width: 140,
       renderCell: (params) => {
         return params.formattedValue !== "N/A" ? (
@@ -112,12 +117,12 @@ const AdminActivities = () => {
       },
     },
 
-    { field: "col5", headerName: "Status", width: 170 },
-    { field: "col6", headerName: "Log's", width: 170 },
-    { field: "col4", headerName: "Hours", width: 150 },
+    { field: "col5", headerName: t("Status"), width: 170 },
+    { field: "col6", headerName: t("Log's"), width: 170 },
+    { field: "col4", headerName: t("Hours"), width: 150 },
     {
       field: "clo8",
-      headerName: "Action",
+      headerName: t("Action"),
       width: 200,
       renderCell: (params) => (
         <>
@@ -130,7 +135,7 @@ const AdminActivities = () => {
             color="error"
             onClick={() => confirmBeforeDelete(params.row)}
           >
-            Delete
+            {t("Delete")}
           </Button>
         </>
       ),
@@ -242,9 +247,9 @@ const AdminActivities = () => {
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="AdminActivities Management" />
+        <PageTitle title={t("Admin Activities Management")} />
         <CContainer>
-          <h4 className="">AdminActivities</h4>
+          <h4 className="">{t("Admin Activities")}</h4>
           <div
             style={{
               minHeight: "300px",
@@ -289,7 +294,7 @@ const AdminActivities = () => {
               }}
             >
               <CCol xs={5}>
-                Show
+                {t("Show")}
                 <input
                   className="mx-2"
                   type="number"
@@ -313,7 +318,7 @@ const AdminActivities = () => {
                   }}
                   onChange={handleRecordPerPage}
                 />
-                Records per page
+                {t("Records per page")}
               </CCol>
               <CCol
                 xs={6}
@@ -323,14 +328,14 @@ const AdminActivities = () => {
                   alignItems: "center",
                 }}
               >
-                Search:
+                {t("Search:")}
                 <input
                   type="text"
                   name="search"
                   className="form-control form-control-sm"
                   style={{ fontSize: "13px", marginLeft: "10px" }}
                   onChange={handleSearch}
-                  placeholder="Search by name, email, phone, etc."
+                  placeholder={t("Search by name, email, phone, etc.")}
                 />
               </CCol>
             </div>

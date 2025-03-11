@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Button, Container, Typography } from "@mui/material";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
@@ -14,7 +15,9 @@ const EditApplication = () => {
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id } = useParams();  
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     setIsLoading(true);
@@ -93,7 +96,7 @@ const EditApplication = () => {
             onClick={() => navigate(-1)}
             startIcon={<ArrowBackIcon />}
           >
-            Back
+            {t("Back")}
           </Button>
 
           {isLoading && <Loader />}
@@ -124,7 +127,7 @@ const EditApplication = () => {
               onClick={handleSubmit}
               disabled={isLoading}
             >
-              {isLoading ? "Updating..." : "Update APK File"}
+              {isLoading ? t("Updating...") : t("Update APK File")}
             </Button>
           </Box>
         </Container>

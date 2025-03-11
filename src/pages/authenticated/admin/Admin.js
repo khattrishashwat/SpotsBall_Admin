@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import { CCol, CContainer } from "@coreui/react";
@@ -16,16 +17,20 @@ import { GridOverlay } from "@mui/x-data-grid";
 import { Typography } from "@mui/material";
 
 const CustomNoRowsOverlay = () => {
+    const { t } = useTranslation();
+
   return (
     <GridOverlay>
       <Typography variant="h6" color="textSecondary">
-        No data found
+        {t("No data found")}
       </Typography>
     </GridOverlay>
   );
 };
 
 const Admin = () => {
+  const { t } = useTranslation();
+
   const [alertMessage, setAlertMessage] = useState();
   const [apiSuccess, setApiSuccess] = useState(false);
   const [apiError, setApiError] = useState(false);
@@ -73,7 +78,7 @@ const Admin = () => {
     { field: "col1", headerName: "#", width: 80 },
     {
       field: "col2",
-      headerName: "Profile",
+      headerName: t("Profile"),
       width: 140,
       renderCell: (params) => {
         return params.formattedValue !== "N/A" ? (
@@ -113,7 +118,7 @@ const Admin = () => {
     },
     {
       field: "col3",
-      headerName: "Deactive/Active",
+      headerName: t("De-Active/Active"),
       width: 180,
       renderCell: (params) => {
         return (
@@ -124,16 +129,16 @@ const Admin = () => {
         );
       },
     },
-    { field: "col4", headerName: "Name", width: 200 },
-    { field: "col5", headerName: "email", width: 200 },
-    { field: "col6", headerName: "Phone Number", width: 160 },
-    { field: "col7", headerName: "Country", width: 160 },
-    { field: "col8", headerName: "Status", width: 170 },
-    { field: "col9", headerName: "TimeStamp", width: 170 },
-    { field: "col10", headerName: "Created Date", width: 170 },
+    { field: "col4", headerName: t("Name"), width: 200 },
+    { field: "col5", headerName: t("Email"), width: 200 },
+    { field: "col6", headerName: t("Phone Number"), width: 160 },
+    { field: "col7", headerName: t("Country"), width: 160 },
+    { field: "col8", headerName: t("Status"), width: 170 },
+    { field: "col9", headerName: t("TimeStamp"), width: 170 },
+    { field: "col10", headerName: t("Created Date"), width: 170 },
     {
       field: "col11",
-      headerName: "Action",
+      headerName: t("Action"),
       width: 125,
       renderCell: (params) => {
         return (
@@ -200,11 +205,11 @@ const Admin = () => {
       setLoading(true);
 
       httpClient
-        .get(
-          `admin/users/get-all-users?page=${paginationModel.page}&limit=${
-            paginationModel.pageSize
-          }&search=${keyword.trim()}`
-        )
+        .get
+        // `admin/users/get-all-users?page=${paginationModel.page}&limit=${
+        //   paginationModel.pageSize
+        // }&search=${keyword.trim()}`
+        ()
         .then((response) => {
           const data = response.data.data || {};
           setUserCount(data.pagination?.totalUsers || 0);
@@ -252,15 +257,15 @@ const Admin = () => {
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="Admin Management" />
+        <PageTitle title={t("Admin Management")} />
         <CContainer>
           <div className="d-flex justify-content-between align-items-center">
-            <h4 className="my-4">Admin</h4>
+            <h4 className="my-4">{t("Admin")}</h4>
             <Button
               variant="contained"
               onClick={() => navigate("add-new-admin")}
             >
-              Add New Admin
+              {t("Add New Admin")}
             </Button>
           </div>
           <div
@@ -307,7 +312,7 @@ const Admin = () => {
               }}
             >
               <CCol xs={5}>
-                Show
+                {t("Show")}
                 <input
                   className="mx-2"
                   type="number"
@@ -331,7 +336,7 @@ const Admin = () => {
                   }}
                   onChange={handleRecordPerPage}
                 />
-                Records per page
+                {t("Records per page")}
               </CCol>
               <CCol
                 xs={6}
@@ -341,14 +346,14 @@ const Admin = () => {
                   alignItems: "center",
                 }}
               >
-                Search:
+                {t("Search:")}
                 <input
                   type="text"
                   name="search"
                   className="form-control form-control-sm"
                   style={{ fontSize: "13px", marginLeft: "10px" }}
                   onChange={handleSearch}
-                  placeholder="Search by name, email, phone, etc."
+                  placeholder={t("Search by name, email, phone, etc.")}
                 />
               </CCol>
             </div>

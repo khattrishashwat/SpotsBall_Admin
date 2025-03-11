@@ -3,8 +3,8 @@ import { NavLink, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 import { CBadge } from "@coreui/react";
 
-
 export const AppSidebarNav = ({ items }) => {
+  console.log("abhijita", items);
   const location = useLocation();
   const navLink = (name, icon, badge) => {
     return (
@@ -23,9 +23,10 @@ export const AppSidebarNav = ({ items }) => {
   const navItem = (item, index) => {
     const { component, name, badge, icon, ...rest } = item;
     const Component = component;
+    console.log("item2.0", item);
+
     return (
       <Component
-      
         {...(rest.to &&
           !rest.items && {
             component: NavLink,
@@ -40,6 +41,8 @@ export const AppSidebarNav = ({ items }) => {
   const navGroup = (item, index) => {
     const { component, name, icon, to, ...rest } = item;
     const Component = component;
+    console.log("item", item);
+
     return (
       <Component
         idx={String(index)}
@@ -51,7 +54,6 @@ export const AppSidebarNav = ({ items }) => {
         {item.items?.map((item, index) =>
           item.items ? navGroup(item, index) : navItem(item, index)
         )}
-        
       </Component>
     );
   };

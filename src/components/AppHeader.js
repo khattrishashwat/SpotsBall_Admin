@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import {
   CContainer,
@@ -27,7 +28,7 @@ const languageOptions = {
   fr: { name: "Français", flag: French },
   de: { name: "Deutsch", flag: Germany },
 };
-console.log("new", "./images/flags/eng.png");
+
 const AppHeader = () => {
   const dispatch = useDispatch();
   const sidebarShow = useSelector((state) => state.sidebarShow);
@@ -36,8 +37,10 @@ const AppHeader = () => {
   const [notificationDropdownOpen, setNotificationDropdownOpen] =
     useState(false);
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState(languageOptions.en);
-
+  const { i18n } = useTranslation();
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    languageOptions[localStorage.getItem("language")] || languageOptions.en
+  );
   const toggleDropdown = (type) => {
     if (type === "message") {
       setMessageDropdownOpen(!messageDropdownOpen);
@@ -53,10 +56,14 @@ const AppHeader = () => {
       setNotificationDropdownOpen(false);
     }
   };
+  useEffect(() => {
+    i18n.changeLanguage(localStorage.getItem("language") || "en");
+  }, []);
 
   const changeLanguage = (langKey) => {
+    localStorage.setItem("language", langKey);
     setSelectedLanguage(languageOptions[langKey]);
-    setLanguageDropdownOpen(false);
+    i18n.changeLanguage(langKey);
   };
 
   return (
