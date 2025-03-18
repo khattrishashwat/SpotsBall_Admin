@@ -94,6 +94,8 @@ i18n
           Delete: "Delete",
           "Apk Link": "Apk Link",
           App: "App",
+          Platform: "Platform",
+          "Social Links": "Social Links",
         },
       },
       hi: {
@@ -175,6 +177,8 @@ i18n
           Delete: "हटाएं",
           "Apk Link": "APK लिंक",
           App: "ऐप",
+          Platform: "मंच",
+          "Social Links": "सामाजिक लिंक",
         },
       },
       fr: {

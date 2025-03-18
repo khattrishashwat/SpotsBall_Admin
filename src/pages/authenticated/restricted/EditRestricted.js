@@ -16,12 +16,14 @@ import Loader from "../../../components/loader/Loader";
 import { useNavigate, useParams } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { State } from "country-state-city";
+import { useTranslation } from "react-i18next";
 
 const EditRestricted = () => {
   const [state, setState] = useState("");
   const [statesList, setStatesList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const { t } = useTranslation();
 
   let navigate = useNavigate();
   let params = useParams();
@@ -89,7 +91,7 @@ const EditRestricted = () => {
             onClick={() => navigate(-1)}
           >
             <ArrowBackIcon />
-            Back
+            {t("Back")}
           </Button>
           {isLoading && <Loader />}
           <Box component="form" noValidate autoComplete="off" sx={{ mt: 4 }}>
@@ -130,7 +132,7 @@ const EditRestricted = () => {
               onClick={handleSubmit}
               disabled={isLoading}
             >
-              {isLoading ? "Updating..." : "Update State"}
+              {isLoading ? t("Updating...") : t("Update State")}
             </Button>
           </Box>
         </Container>

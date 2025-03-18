@@ -12,6 +12,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import httpClient from "../../../util/HttpClient";
 import { throttle } from "lodash"; // For throttling mouse move
+import { useTranslation } from "react-i18next";
 
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
@@ -30,6 +31,7 @@ const FindCoordinates = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [originalPlayerImage, setOriginalPlayerImage] = useState(null);
+    const { t } = useTranslation();
 
   // Get the image passed from the state or location
   useEffect(() => {
@@ -116,7 +118,7 @@ const FindCoordinates = () => {
               <ArrowBackIcon />
             </IconButton>
             <Typography variant="h5" component="h3" ml={1}>
-              Find Coordinates for Image
+              {t("Find Coordinates for Image")}
             </Typography>
           </Box>
 
@@ -127,7 +129,7 @@ const FindCoordinates = () => {
               component="label"
               sx={{ mb: 2 }}
             >
-              Choose Your Original Image
+              {t("Choose Your Original Image")}
               <input
                 type="file"
                 accept="image/*"
@@ -187,7 +189,7 @@ const FindCoordinates = () => {
             gap={2}
             mb={3}
           >
-            <span>X Coordinate</span>
+            <span>{t("X Coordinate")}</span>
             <TextField
               value={xCoordinate}
               onChange={(e) => setXCoordinate(e.target.value)}
@@ -197,7 +199,7 @@ const FindCoordinates = () => {
               aria-label="X Coordinate"
               disabled
             />
-            <span>Y Coordinate</span>
+            <span>{t("Y Coordinate")}</span>
             <TextField
               value={yCoordinate}
               onChange={(e) => setYCoordinate(e.target.value)}
@@ -209,7 +211,7 @@ const FindCoordinates = () => {
             />
             {!xCoordinate || !yCoordinate ? (
               <Typography color="error" sx={{ mt: 1 }}>
-                Please select X and Y coordinates before saving.
+                {t("Please select X and Y coordinates before saving.")}
               </Typography>
             ) : null}
             {error && (

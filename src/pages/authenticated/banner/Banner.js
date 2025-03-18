@@ -12,6 +12,7 @@ import swal from "sweetalert2";
 import Loader from "../../../components/loader/Loader";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
+import { useTranslation } from "react-i18next";
 
 const Banner = () => {
   const [alertMessage, setAlertMessage] = useState("");
@@ -26,13 +27,14 @@ const Banner = () => {
   });
   const [banners, setBanners] = useState("");
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const columns = [
     { field: "col1", headerName: "#", width: 150 },
-    { field: "col2", headerName: "Title", width: 305 },
+    { field: "col2", headerName: t("Title"), width: 305 },
     {
       field: "col3",
-      headerName: "Banner Image",
+      headerName: t("Banner Image"),
       width: 200,
       renderCell: (params) =>
         params.formattedValue !== "N/A" ? (
@@ -41,11 +43,11 @@ const Banner = () => {
           ""
         ),
     },
-    { field: "col4", headerName: "Created At", width: 180 },
-    { field: "col5", headerName: "Updated At", width: 180 },
+    { field: "col4", headerName: t("Created At"), width: 180 },
+    { field: "col5", headerName: t("Updated At"), width: 180 },
     {
       field: "col6",
-      headerName: "Action",
+      headerName: t("Action"),
       width: 200,
       renderCell: (params) => (
         <>
@@ -149,19 +151,9 @@ const Banner = () => {
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="Banner" />
+        <PageTitle title={t("Banner")} />
 
         <CContainer>
-          {/* <div className="d-flex justify-content-between align-items-center">
-            <h4>Banner Management:</h4>
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: "orange" }}
-              onClick={() => navigate("add-banner")}
-            >
-              Add Banner
-            </Button>
-          </div> */}
           <div
             style={{
               height: "600px",

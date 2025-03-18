@@ -12,6 +12,7 @@ import swal from "sweetalert2";
 import Loader from "../../../components/loader/Loader";
 import { useNavigate, useParams } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
+import { useTranslation } from "react-i18next";
 
 const Content = () => {
   const [alertMessage, setAlertMessage] = useState();
@@ -24,7 +25,9 @@ const Content = () => {
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
-  });
+  });    
+  const { t } = useTranslation();
+
 
   const [status, setStatus] = useState("");
 
@@ -45,22 +48,22 @@ const Content = () => {
     { field: "col1", headerName: "#", width: 200 },
     {
       field: "col2",
-      headerName: "Title",
+      headerName: t("Title"),
       width: 400,
     },
     {
       field: "col3",
-      headerName: "Created At",
+      headerName: t("Created At"),
       width: 200,
     },
     {
       field: "col4",
-      headerName: "Updated At",
+      headerName: t("Updated At"),
       width: 200,
     },
     {
       field: "col5",
-      headerName: "Action",
+      headerName: t("Action"),
       width: 200,
       renderCell: (params) => {
         return (
@@ -167,11 +170,11 @@ const Content = () => {
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="Content Page" />
+        <PageTitle title={t("Content Page")}/>
 
         <CContainer>
           <div className="d-flex justify-content-between align-items-center">
-            <h4 className="">Contents : </h4>
+            <h4 className="">{t("Contents :")} </h4>
             {/* <Button
               variant="contained"
               className="my-2"
@@ -229,55 +232,7 @@ const Content = () => {
                 padding: "10px 0",
               }}
             >
-              {/* <CCol xs={5}>
-                <button
-                  onClick={() => {
-                    console.log("add content");
-                    navigate("/content/new-content");
-                  }}
-                  className="border-0 p-2 px-3"
-                  style={{
-                    backgroundColor: "#484a7d",
-                    color: "#ffff",
-                    padding: "5px",
-                    fontWeight: "700",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    "&:hover": {
-                      backgroundColor: "#3a3c6c !important",
-                    },
-                  }}
-                >
-                  New Content
-                </button>
-              </CCol> */}
-              {/* <CCol
-                xs={6}
-                style={{
-                  width: "30%",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                Search:
-                <input
-                  className="ms-2 ps-1"
-                  type="text"
-                  name="search"
-                  id="search"
-                  placeholder="name..."
-                  style={{
-                    width: "100%",
-                    outline: "none",
-                    borderRadius: 5,
-                    border: "1px solid gray",
-                  }}
-                  onChange={(e) => {
-                    let keyword = e.target.value.trim();
-                    setKeyword(keyword);
-                  }}
-                />
-              </CCol> */}
+            
             </div>
             <DataGrid
               sx={{

@@ -12,6 +12,7 @@ import swal from "sweetalert2";
 import Loader from "../../../components/loader/Loader";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
+import { useTranslation } from "react-i18next";
 
 const Restricted = () => {
   const [alertMessage, setAlertMessage] = useState("");
@@ -25,15 +26,16 @@ const Restricted = () => {
     pageSize: 10,
   });
   const navigate = useNavigate();
+    const { t } = useTranslation();
 
   const columns = [
     { field: "col1", headerName: "#", width: 80 },
-    { field: "col2", headerName: "State", width: 200 },
-    { field: "col3", headerName: "Created At", width: 200 },
-    { field: "col4", headerName: "Updated At", width: 200 },
+    { field: "col2", headerName: t("State"), width: 200 },
+    { field: "col3", headerName: t("Created At"), width: 200 },
+    { field: "col4", headerName: t("Updated At"), width: 200 },
     {
       field: "col5",
-      headerName: "Action",
+      headerName: t("Action"),
       width: 250,
       renderCell: (params) => (
         <>
@@ -128,10 +130,10 @@ const Restricted = () => {
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="Restricted Areas" />
+        <PageTitle title={t("Restricted Areas")} />
         <CContainer className="py-4">
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h4 className="m-0">Restricted Areas</h4>
+            <h4 className="m-0">{t("Restricted Areas")}</h4>
             <Button
               variant="contained"
               sx={{

@@ -12,6 +12,7 @@ import swal from "sweetalert2";
 import Loader from "../../../components/loader/Loader";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
+import { useTranslation } from "react-i18next";
 
 const WeAre = () => {
   const [alertMessage, setAlertMessage] = useState();
@@ -25,37 +26,28 @@ const WeAre = () => {
     page: 0,
     pageSize: 10,
   });
+  const { t } = useTranslation();
+
   const [faqs, setFaqs] = useState("");
   const [status, setStatus] = useState("");
   const [keyword, setKeyword] = useState("");
   let navigate = useNavigate();
 
-  const handleSelect = (e) => {
-    httpClient
-      .patch(`/admin/users/${e.target.id}`, {
-        is_active: e.target.value === "active" ? true : false,
-      })
-      .then((res) => {
-        console.log("update status ==> ", res);
-        setStatus("ok");
-      });
-  };
-
   const columns = [
     { field: "col1", headerName: "#", width: 100 },
     {
       field: "col2",
-      headerName: "Title",
+      headerName: t("Title"),
       width: 180,
     },
     {
       field: "col3",
-      headerName: "Description",
+      headerName: t("Description"),
       width: 200,
     },
     {
       field: "col4",
-      headerName: "Images",
+      headerName: t("Images"),
       width: 180,
       renderCell: (params) =>
         params.formattedValue !== "N/A" ? (
@@ -66,12 +58,12 @@ const WeAre = () => {
     },
     {
       field: "col5",
-      headerName: "Created At",
+      headerName: t("Created At"),
       width: 180,
     },
     {
       field: "col6",
-      headerName: "Action",
+      headerName: t("Action"),
       width: 200,
       renderCell: (params) => (
         <>
@@ -175,19 +167,20 @@ const WeAre = () => {
       <AppSidebar />
       <div className="wrapper bg-light d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="Who We Are" />
+        <PageTitle title={t("Who We Are")} />
         <CContainer>
           <div className="d-flex justify-content-between pe-">
-            <h4 className="p-0">Who We Are </h4>
+            <h4 className="p-0">{t("Who We Are")} </h4>
             <Button
               variant="contained"
               className="my-2"
               sx={{ backgroundColor: "orange" }}
               onClick={() => {
-                window.location.href = "who_we_are/add_details";
+                // window.location.href = "who_we_are/add_details";
+                navigate("add_details");
               }}
             >
-              Add
+              {t("Add")}
             </Button>
           </div>
           <div

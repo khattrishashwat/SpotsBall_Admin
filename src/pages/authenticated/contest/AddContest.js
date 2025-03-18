@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Box, Button, Container, TextField } from "@mui/material";
+import {
+  Container,
+  Grid,
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Paper,
+} from "@mui/material";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import httpClient from "../../../util/HttpClient";
@@ -237,7 +245,7 @@ const AddContest = () => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      
+
       return;
     }
 
@@ -308,7 +316,7 @@ const AddContest = () => {
           Back
         </Button>
 
-        <Container maxWidth="sm" className="d-flex justify-content-center">
+        {/* <Container maxWidth="xl" className="d-flex justify-content-center">
           {isLoading && <Loader />}
           <Box
             component="form"
@@ -340,23 +348,6 @@ const AddContest = () => {
               helperText={errors.description}
             />
 
-            {/* <label>Original Image</label>
-            <TextField
-              onChange={(e) => handleImageChange(e, setOriginal_player_image)}
-              fullWidth
-              margin="normal"
-              variant="outlined"
-              type="file"
-            /> */}
-
-            <label>Contest Banner Image</label>
-            <TextField
-              onChange={(e) => handleImageChange(e, setContestBanner)}
-              fullWidth
-              margin="normal"
-              variant="outlined"
-              type="file"
-            />
 
             <label>Jackpot Price</label>
             <TextField
@@ -399,6 +390,14 @@ const AddContest = () => {
               }}
             />
 
+            <label>Contest Banner Image</label>
+            <TextField
+              onChange={(e) => handleImageChange(e, setContestBanner)}
+              fullWidth
+              margin="normal"
+              variant="outlined"
+              type="file"
+            />
             <label>Play Screen Image</label>
             <TextField
               onChange={handlePlayerImageChange}
@@ -498,6 +497,185 @@ const AddContest = () => {
               Add Contest
             </Button>
           </Box>
+        </Container> */}
+
+        <Container maxWidth="lg">
+          {isLoading && <Loader />}
+          <Paper elevation={3} sx={{ p: 4, mt: 4, borderRadius: 3 }}>
+            <Typography variant="h4" align="center" gutterBottom>
+              Add Contest
+            </Typography>
+            <Box component="form" noValidate autoComplete="off">
+              <Grid container spacing={4}>
+                {/* Left Side Fields */}
+                <Grid item xs={12} md={6}>
+                  <Typography>Title</Typography>
+                  <TextField
+                    name="title"
+                    value={title}
+                    onChange={handleTitleChange}
+                    fullWidth
+                    margin="normal"
+                    error={!!errors.title}
+                    helperText={errors.title}
+                  />
+                  <Typography>Description</Typography>
+                  <TextField
+                    name="description"
+                    value={description}
+                    onChange={handleDescriptionChange}
+                    fullWidth
+                    margin="normal"
+                    error={!!errors.description}
+                    helperText={errors.description}
+                  />
+                  <Typography>Jackpot Price</Typography>
+                  <TextField
+                    name="jackpotPrice"
+                    value={jackpotPrice}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    error={!!errors.jackpotPrice}
+                    helperText={errors.jackpotPrice}
+                    inputProps={{ maxLength: 5 }}
+                  />
+                  <Typography>Ticket Price</Typography>
+                  <TextField
+                    name="ticketPrice"
+                    value={ticketPrice}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    error={!!errors.ticketPrice}
+                    helperText={errors.ticketPrice}
+                    inputProps={{ maxLength: 5 }}
+                  />
+                  <Typography>Contest Start Date</Typography>
+                  <TextField
+                    name="contestStartDate"
+                    value={contestStartDate}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    type="datetime-local"
+                    error={!!errors.contestStartDate}
+                    helperText={errors.contestStartDate}
+                    InputProps={{
+                      inputProps: {
+                        min: new Date().toISOString().slice(0, 16),
+                      },
+                    }}
+                  />
+                  <Typography>Max Tickets</Typography>
+                  <TextField
+                    name="maxTickets"
+                    value={maxTickets}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    error={!!errors.maxTickets}
+                    helperText={errors.maxTickets}
+                    inputProps={{ maxLength: 3 }}
+                  />
+                  <Typography>Choose Cursor Color</Typography>
+                  <TextField
+                    name="cousor"
+                    value={cousor}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    error={!!errors.cousor}
+                    helperText={errors.cousor}
+                  />
+                  <Typography>GST Rate</Typography>
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    value={gstRate}
+                    disabled
+                  />
+                  <Typography>Platform Fee Rate</Typography>
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    value={platformFeeRate}
+                    disabled
+                  />
+                  <Typography>GST on Platform Fee Rate</Typography>
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    value={gstOnPlatformFeeRate}
+                    disabled
+                  />
+                </Grid>
+
+                {/* Right Side Fields */}
+                <Grid item xs={12} md={6}>
+                  <Typography>Contest Banner Image</Typography>
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    variant="outlined"
+                    type="file"
+                    onChange={(e) => handleImageChange(e, setContestBanner)}
+                  />
+                  <Typography>Play Screen Image</Typography>
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    variant="outlined"
+                    type="file"
+                    onChange={handlePlayerImageChange}
+                  />
+                  <Typography>Image Width</Typography>
+                  <TextField
+                    name="imageWidth"
+                    value={imageWidth}
+                    fullWidth
+                    margin="normal"
+                    disabled
+                    error={!!errors.imageWidth}
+                    helperText={errors.imageWidth}
+                  />
+                  <Typography>Image Height</Typography>
+                  <TextField
+                    name="imageHeight"
+                    value={imageHeight}
+                    fullWidth
+                    margin="normal"
+                    disabled
+                    error={!!errors.imageHeight}
+                    helperText={errors.imageHeight}
+                  />
+                  {quantities.map((quantity, index) => (
+                    <Box key={index}>
+                      <Typography>Ticket Quantity {index + 1}</Typography>
+                      <TextField
+                        value={quantity}
+                        onChange={(e) =>
+                          handleQuantityChange(index, e.target.value)
+                        }
+                        fullWidth
+                        margin="normal"
+                      />
+                    </Box>
+                  ))}
+                </Grid>
+              </Grid>
+
+              <Button
+                onClick={handleSubmit}
+                fullWidth
+                variant="contained"
+                color="primary"
+                sx={{ mt: 4 }}
+              >
+                Add Contest
+              </Button>
+            </Box>
+          </Paper>
         </Container>
       </div>
     </>

@@ -9,6 +9,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import Swal from "sweetalert2"; // Added for showing custom alerts
+import { useTranslation } from "react-i18next";
 
 const EditWeAre = () => {
   const [description, setDescription] = useState(""); // Initialize with an empty string
@@ -16,6 +17,7 @@ const EditWeAre = () => {
   const [images, setImages] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+    const { t } = useTranslation();
 
   const navigate = useNavigate();
   const params = useParams();
@@ -107,7 +109,7 @@ const EditWeAre = () => {
           onClick={() => navigate(-1)}
         >
           <ArrowBackIcon />
-          Back
+          {t("Back")}
         </Button>
         <Container maxWidth="sm" className="d-flex justify-content-center">
           {isLoading && <Loader />}
@@ -118,10 +120,10 @@ const EditWeAre = () => {
             sx={{ mt: 4, width: "80%" }}
           >
             <Typography variant="h6" sx={{ mb: 2 }}>
-              Edit "Who We Are" Section
+              {t("Edit Who We Are Section")}
             </Typography>
 
-            <label>Subtitle</label>
+            <label>{t("Subtitle")}</label>
             <TextField
               value={subTitle}
               onChange={handleSubtitleChange}
@@ -131,7 +133,7 @@ const EditWeAre = () => {
             />
 
             <Typography variant="h6" sx={{ mt: 2 }}>
-              Description:
+              {t("Description:")}
             </Typography>
             <CKEditor
               editor={ClassicEditor}
@@ -143,7 +145,7 @@ const EditWeAre = () => {
               }}
             />
 
-            <label>Image</label>
+            <label>{t("Image")}</label>
             <TextField
               onChange={handleImageChange}
               fullWidth
@@ -175,7 +177,7 @@ const EditWeAre = () => {
               onClick={handleSubmit}
               disabled={isLoading}
             >
-              {isLoading ? "Updating..." : "Update"}
+              {isLoading ? t("Updating...") : t("Update")}
             </Button>
           </Box>
         </Container>

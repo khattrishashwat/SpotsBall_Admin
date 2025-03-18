@@ -6,6 +6,7 @@ import httpClient from "../../../util/HttpClient";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../../components/loader/Loader";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useTranslation } from "react-i18next";
 
 const AddBanner = () => {
   const [title, setTitle] = useState("");
@@ -13,6 +14,7 @@ const AddBanner = () => {
   const [bannerImages, setBannerImages] = useState(null);
   const [courusal, setCourusal] = useState("");
   const [courusalInput, setCourusalInput] = useState(""); // Temporary state for carousel title input
+    const { t } = useTranslation();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -69,7 +71,7 @@ const AddBanner = () => {
           onClick={() => navigate(-1)}
         >
           <ArrowBackIcon />
-          back
+          {t("Back")}
         </Button>
         <Container maxWidth="sm" className="d-flex justify-content-center">
           {isLoading && <Loader />}
@@ -79,7 +81,7 @@ const AddBanner = () => {
             autoComplete="off"
             sx={{ mt: 4, width: "80%" }}
           >
-            <label>Title</label>
+            <label>{t("Title")}</label>
             <TextField
               value={title}
               onChange={handleTitleChange}
@@ -88,7 +90,7 @@ const AddBanner = () => {
               placeholder="Enter banner title"
               sx={{ border: "none" }}
             />
-            <label className="mt-4">Subtitle</label>
+            <label className="mt-4">{t("Subtitle")}</label>
             <TextField
               value={subTitle}
               onChange={handleSubtitleChange}
@@ -97,7 +99,7 @@ const AddBanner = () => {
               placeholder="Enter subtitle"
               sx={{ border: "none" }}
             />
-            <label className="mt-4">Banner Image</label>
+            <label className="mt-4">{t("Banner Image")}</label>
             <TextField
               onChange={handleImageChange}
               fullWidth
@@ -105,13 +107,13 @@ const AddBanner = () => {
               variant="outlined"
               type="file"
             />
-            <label className="mt-4">Carousel Title</label>
+            <label className="mt-4">{t("Carousel Title")}</label>
             <TextField
               value={courusalInput}
               onChange={handleCourusalInputChange}
               fullWidth
               margin="normal"
-              placeholder="Enter carousel title"
+              placeholder={t("Enter carousel title")}
               sx={{ border: "none" }}
             />
 
@@ -121,7 +123,7 @@ const AddBanner = () => {
               sx={{ mt: 2, backgroundColor: "orange" }}
               onClick={handleAddCourusal}
             >
-              Add Carousel
+              {t("Add Carousel")}
             </Button>
 
             {/* Display Carousel Titles */}
@@ -142,7 +144,7 @@ const AddBanner = () => {
               onClick={handleSubmit}
               disabled={isLoading}
             >
-              Add Banner
+              {t("Add Banner")}
             </Button>
           </Box>
         </Container>

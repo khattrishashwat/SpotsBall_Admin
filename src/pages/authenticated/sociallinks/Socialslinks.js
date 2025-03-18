@@ -10,6 +10,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import swal from "sweetalert2";
 import httpClient from "../../../util/HttpClient";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Socialslinks = () => {
   const [rows, setRows] = useState([]);
@@ -22,6 +23,7 @@ const Socialslinks = () => {
     pageSize: 10,
   });
   const [totalRecords, setTotalRecords] = useState(0);
+    const { t } = useTranslation();
 
   const navigate = useNavigate();
 
@@ -93,13 +95,13 @@ const Socialslinks = () => {
 
   const columns = [
     { field: "col1", headerName: "#", width: 80 },
-    { field: "col2", headerName: "Platform", width: 250 },
-    { field: "col3", headerName: "Social Link", width: 250 },
-    { field: "clo4", headerName: "Created At", width: 180 },
-    { field: "clo5", headerName: "Updated At", width: 180 },
+    { field: "col2", headerName: t("Platform"), width: 250 },
+    { field: "col3", headerName: t("Social Link"), width: 250 },
+    { field: "clo4", headerName: t("Created At"), width: 180 },
+    { field: "clo5", headerName: t("Updated At"), width: 180 },
     {
       field: "clo6",
-      headerName: "Action",
+      headerName: t("Action"),
       width: 200,
       renderCell: (params) => (
         <>
@@ -112,7 +114,7 @@ const Socialslinks = () => {
             color="error"
             onClick={() => confirmBeforeDelete(params.row)}
           >
-            Delete
+            {t("Delete")}
           </Button>
         </>
       ),
@@ -124,10 +126,10 @@ const Socialslinks = () => {
       <AppSidebar />
       <div className="wrapper bg-light">
         <AppHeader />
-        <PageTitle title="Social Links" />
+        <PageTitle title={t("Social Links")} />
         <CContainer>
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <h4>Social Links</h4>
+            <h4>{t("Social Links")}</h4>
             {/* <Button
               variant="contained"
               color="primary"

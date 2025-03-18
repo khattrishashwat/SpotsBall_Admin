@@ -4,6 +4,7 @@ import httpClient from "../../../util/HttpClient"; // Ensure this path is correc
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const AddSocials = () => {
   const [type, setType] = useState("");
@@ -11,6 +12,7 @@ const AddSocials = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   let navigate = useNavigate();
+    const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,7 +70,7 @@ const AddSocials = () => {
             }}
           >
             <Typography variant="h5" component="h1" gutterBottom>
-              Create Social Link
+              {t("Create Social Link")}
             </Typography>
             <form onSubmit={handleSubmit} style={{ width: "100%" }}>
               <TextField
@@ -114,7 +116,7 @@ const AddSocials = () => {
                   backgroundColor: "orange",
                 }}
               >
-                {loading ? "Submitting..." : "Submit"}
+                {loading ? t("Submitting...") : t("Submit")}
               </Button>
             </form>
             {message && (

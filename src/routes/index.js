@@ -2,12 +2,6 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import Protected from "./Protected";
 import GuestRoutes from "./GuestRoutes";
-import AdminActivities from "../pages/authenticated/admin/AdminActivities";
-import AddNotification from "../pages/authenticated/notification/AddNotification";
-import Notification from "../pages/authenticated/notification/Notification";
-import Email from "../pages/authenticated/emails/Email";
-import AddEmail from "../pages/authenticated/emails/AddEmail";
-import Notifications from "../pages/authenticated/notification/Notifications";
 
 // Lazy load components
 const NotFound = lazy(() => import("../pages/common/NotFound"));
@@ -15,6 +9,7 @@ const Register = lazy(() => import("../pages/auth/Register"));
 const Login = lazy(() => import("../pages/auth/Login"));
 const Forgot = lazy(() => import("../pages/auth/Forgot"));
 const Reset = lazy(() => import("../pages/auth/Reset"));
+const Verify = lazy(() => import("../pages/auth/Verify"));
 const Dashboard = lazy(() =>
   import("../pages/authenticated/dashboard/Dashboard")
 );
@@ -35,9 +30,9 @@ const AddPress = lazy(() => import("../pages/authenticated/Press/AddPress"));
 const EditPress = lazy(() => import("../pages/authenticated/Press/EditPress"));
 const UsersData = lazy(() => import("../pages/authenticated/UsersData"));
 const Profile = lazy(() => import("../pages/authenticated/profile/Profile"));
-// const Groups = lazy(() => import("../pages/authenticated/group/Groups"));
-// const AddGroup = lazy(() => import("../pages/authenticated/group/AddGroup"));
-// const EditGroup = lazy(() => import("../pages/authenticated/group/EditGroup"));
+const Groups = lazy(() => import("../pages/authenticated/group/Groups"));
+const AddGroup = lazy(() => import("../pages/authenticated/group/AddGroup"));
+const EditGroup = lazy(() => import("../pages/authenticated/group/EditGroup"));
 const Content = lazy(() => import("../pages/authenticated/content/Content"));
 const NewContent = lazy(() =>
   import("../pages/authenticated/content/NewContent")
@@ -45,9 +40,9 @@ const NewContent = lazy(() =>
 const EditContent = lazy(() =>
   import("../pages/authenticated/content/EditContent")
 );
-// const EditQuestions = lazy(() =>
-//   import("../pages/authenticated/question/EditQuestion")
-// );
+const EditQuestions = lazy(() =>
+  import("../pages/authenticated/question/EditQuestion")
+);
 const FAQ = lazy(() => import("../pages/authenticated/faq/FAQ"));
 const AddFAQ = lazy(() => import("../pages/authenticated/faq/AddFAQ"));
 const EditFAQ = lazy(() => import("../pages/authenticated/faq/EditFAQ"));
@@ -147,12 +142,6 @@ const Subsribers = lazy(() =>
   import("../pages/authenticated/subscriber/Subsribers")
 );
 
-const Admin = lazy(() => import("../pages/authenticated/admin/Admin"));
-const AddAdmin = lazy(() => import("../pages/authenticated/admin/AddAdmin"));
-const AdminExtra = lazy(() =>
-  import("../pages/authenticated/admin/AdminExtra")
-);
-
 /**
  * Lazy wrapper to enable Suspense fallback for lazy-loaded components.
  * @param {React.Component} Component - The component to be wrapped.
@@ -203,6 +192,10 @@ const routes = createBrowserRouter(
           path: "reset",
           element: LazyComponent(Reset),
         },
+        {
+          path: "verify",
+          element: LazyComponent(Verify),
+        },
       ],
     },
 
@@ -220,44 +213,8 @@ const routes = createBrowserRouter(
           element: LazyComponent(Dashboard),
         },
         {
-          path: "admins",
-          element: LazyComponent(Admin),
-        },
-        {
-          path: "admins/add-new-admin",
-          element: LazyComponent(AddAdmin),
-        },
-        {
-          path: "admins-activities",
-          element: LazyComponent(AdminActivities),
-        },
-        {
-          path: "admins-activities/country-code/:id",
-          element: LazyComponent(AdminExtra),
-        },
-        {
           path: "users",
           element: LazyComponent(UsersData),
-        },
-        {
-          path: "notification",
-          element: LazyComponent(Notifications),
-        },
-        {
-          path: "notifications",
-          element: LazyComponent(Notification),
-        },
-        {
-          path: "notifications/add-new-notification",
-          element: LazyComponent(AddNotification),
-        },
-        {
-          path: "emails",
-          element: LazyComponent(Email),
-        },
-        {
-          path: "emails/add-new-email",
-          element: LazyComponent(AddEmail),
         },
         {
           path: "applicatiom_management",
@@ -453,11 +410,11 @@ const routes = createBrowserRouter(
           element: LazyComponent(EditWeAre),
         },
         {
-          path: "support",
+          path: "contacts",
           element: LazyComponent(ContactUs),
         },
         {
-          path: "support/contact",
+          path: "contacts/contact",
           element: LazyComponent(Contact),
         },
 

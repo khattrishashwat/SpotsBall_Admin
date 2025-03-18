@@ -7,12 +7,15 @@ import Loader from "../../../components/loader/Loader";
 import { useNavigate, useParams } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
+
 
 const EditSocials = () => {
   const [type, setType] = useState("");
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
+    const { t } = useTranslation();
 
   let navigate = useNavigate();
   let params = useParams();
@@ -96,7 +99,7 @@ const EditSocials = () => {
             onClick={() => navigate(-1)}
           >
             <ArrowBackIcon />
-            Back
+            {t("Back")}
           </Button>
           {isLoading && <Loader />}
           <Box component="form" noValidate autoComplete="off" sx={{ mt: 4 }}>
@@ -142,7 +145,7 @@ const EditSocials = () => {
               onClick={handleSubmit}
               disabled={isLoading}
             >
-              {isLoading ? "Updating..." : "Update Social Link"}
+              {isLoading ? t("Updating...") : t("Update Social Link")}
             </Button>
           </Box>
         </Container>

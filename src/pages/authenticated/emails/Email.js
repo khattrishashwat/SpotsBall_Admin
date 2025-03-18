@@ -9,6 +9,7 @@ import { IconButton, Snackbar, Button, Switch } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import httpClient from "../../../util/HttpClient";
 import swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 import Loader from "../../../components/loader/Loader";
 import { CardMedia } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -16,10 +17,12 @@ import { GridOverlay } from "@mui/x-data-grid";
 import { Typography } from "@mui/material";
 
 const CustomNoRowsOverlay = () => {
+  const { t } = useTranslation();
+
   return (
     <GridOverlay>
       <Typography variant="h6" color="textSecondary">
-        No data found
+        {t("No data found")}
       </Typography>
     </GridOverlay>
   );
@@ -38,6 +41,7 @@ const Email = () => {
     pageSize: 10,
   });
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [status, setStatus] = useState("");
   const [keyword, setKeyword] = useState("");
@@ -73,7 +77,7 @@ const Email = () => {
     { field: "col1", headerName: "#", width: 80 },
     {
       field: "col2",
-      headerName: "Profile",
+      headerName: t("Profile"),
       width: 140,
       renderCell: (params) => {
         return params.formattedValue !== "N/A" ? (
@@ -113,7 +117,7 @@ const Email = () => {
     },
     {
       field: "col3",
-      headerName: "Deactive/Active",
+      headerName: t("De-Active/Active"),
       width: 180,
       renderCell: (params) => {
         return (
@@ -124,13 +128,13 @@ const Email = () => {
         );
       },
     },
-    { field: "col4", headerName: "Name", width: 200 },
-    { field: "col5", headerName: "email", width: 200 },
-    { field: "col6", headerName: "Phone Number", width: 160 },
-    { field: "col7", headerName: "Country", width: 160 },
-    { field: "col8", headerName: "Status", width: 170 },
-    { field: "col9", headerName: "TimeStamp", width: 170 },
-    { field: "col10", headerName: "Created Date", width: 170 },
+    { field: "col4", headerName: t("Name"), width: 200 },
+    { field: "col5", headerName: t("Email"), width: 200 },
+    { field: "col6", headerName: t("Phone Number"), width: 160 },
+    { field: "col7", headerName: t("Country"), width: 160 },
+    { field: "col8", headerName: t("Status"), width: 170 },
+    { field: "col9", headerName: t("TimeStamp"), width: 170 },
+    { field: "col10", headerName: t("Created Date"), width: 170 },
     {
       field: "col11",
       headerName: "Action",
@@ -252,15 +256,15 @@ const Email = () => {
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title="Email Management" />
+        <PageTitle title={t("Email Management")} />
         <CContainer>
           <div className="d-flex justify-content-between align-items-center">
-            <h4 className="my-4">Email</h4>
+            <h4 className="my-4">{t("Email")}</h4>
             <Button
               variant="contained"
               onClick={() => navigate("add-new-email")}
             >
-              Add Email
+              {t("Add Email")}
             </Button>
           </div>
           <div
@@ -307,7 +311,7 @@ const Email = () => {
               }}
             >
               <CCol xs={5}>
-                Show
+                {t("Show")}
                 <input
                   className="mx-2"
                   type="number"
@@ -331,7 +335,7 @@ const Email = () => {
                   }}
                   onChange={handleRecordPerPage}
                 />
-                Records per page
+                {t("Records per page")}
               </CCol>
               <CCol
                 xs={6}
@@ -341,14 +345,14 @@ const Email = () => {
                   alignItems: "center",
                 }}
               >
-                Search:
+                {t("Search:")}
                 <input
                   type="text"
                   name="search"
                   className="form-control form-control-sm"
                   style={{ fontSize: "13px", marginLeft: "10px" }}
                   onChange={handleSearch}
-                  placeholder="Search by name, email, phone, etc."
+                  placeholder={t("Search by name, email, phone, etc.")}
                 />
               </CCol>
             </div>

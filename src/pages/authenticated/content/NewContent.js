@@ -14,6 +14,7 @@ import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const NewContent = () => {
   const [loading, setLoading] = useState(false);
@@ -23,6 +24,7 @@ const NewContent = () => {
   const params = useParams();
   const [newContent, setNewContent] = useState({});
   const editor = useRef(null);
+  const { t } = useTranslation();
 
   const navigate = useNavigate();
 
@@ -86,9 +88,9 @@ const NewContent = () => {
                 }}
               >
                 <ArrowBackIcon />
-                back
+                {t("Back")}
               </Button>
-              <span className="w-5">Title: </span>
+              <span className="w-5">{t("Title :")} </span>
               <input
                 className=""
                 value={title}
@@ -99,7 +101,7 @@ const NewContent = () => {
                 }}
               />
             </div>
-            Description:
+            {t("Description:")}
             <CKEditor
               editor={ClassicEditor}
               data={content}
@@ -117,7 +119,7 @@ const NewContent = () => {
               //     console.log('Focus.', editor); `
               // }}
             />
-            <span className="w-5">Types: </span>
+            <span className="w-5">{t("Types:")} </span>
             <input
               className=""
               value={type}
@@ -128,7 +130,7 @@ const NewContent = () => {
               }}
             />
             <button onClick={updateContent} className="Submit">
-              Submit
+              {t("Submit")}
             </button>
           </div>
         </Container>

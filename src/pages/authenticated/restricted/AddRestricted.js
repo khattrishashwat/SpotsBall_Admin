@@ -12,6 +12,7 @@ import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import { useNavigate } from "react-router-dom";
 import { State } from "country-state-city"; // Import State from the package
+import { useTranslation } from "react-i18next";
 
 const AddRestricted = () => {
   const [state, setState] = useState("");
@@ -19,6 +20,7 @@ const AddRestricted = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   let navigate = useNavigate();
+    const { t } = useTranslation();
 
   // Load Indian states on component mount
   useEffect(() => {
@@ -72,12 +74,12 @@ const AddRestricted = () => {
             }}
           >
             <Typography variant="h5" component="h1" gutterBottom>
-              Select State
+              {t("Select State")}
             </Typography>
             <form onSubmit={handleSubmit} style={{ width: "100%" }}>
               <TextField
                 select
-                label="Select State"
+                label={t("Select State")}
                 variant="outlined"
                 fullWidth
                 margin="normal"
@@ -110,7 +112,7 @@ const AddRestricted = () => {
                   backgroundColor: "orange",
                 }}
               >
-                {loading ? "Submitting..." : "Submit"}
+                {loading ? t("Submitting...") : t("Submit")}
               </Button>
             </form>
             {message && (

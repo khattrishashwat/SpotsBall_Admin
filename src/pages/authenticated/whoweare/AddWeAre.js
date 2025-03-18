@@ -8,6 +8,7 @@ import Loader from "../../../components/loader/Loader";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { useTranslation } from "react-i18next";
 
 const AddWeAre = () => {
   const [description, setDescription] = useState("");
@@ -17,6 +18,7 @@ const AddWeAre = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+    const { t } = useTranslation();
 
   // Event Handlers
   const handleDescriptionChange = (e) => setDescription(e.target.value);
@@ -75,7 +77,7 @@ const AddWeAre = () => {
           onClick={() => navigate(-1)} // Navigate back
         >
           <ArrowBackIcon />
-          Back
+          {t("Back")}
         </Button>
 
         <Container maxWidth="sm" className="d-flex justify-content-center">
@@ -87,11 +89,11 @@ const AddWeAre = () => {
             sx={{ mt: 4, width: "80%" }}
           >
             <Typography variant="h6" sx={{ mb: 2 }}>
-              Add "Who We Are" Section
+              {t("Add Who We Are Section")}
             </Typography>
 
             {/* Subtitle Field */}
-            <label>Subtitle</label>
+            <label>{t("Subtitle")}</label>
             <TextField
               value={subTitle}
               onChange={handleSubtitleChange}
@@ -102,7 +104,7 @@ const AddWeAre = () => {
 
             {/* Description Field with CKEditor */}
             <Typography variant="h6" sx={{ mt: 2 }}>
-              Description:
+              {t("Description:")}
             </Typography>
             <CKEditor
               editor={ClassicEditor}
@@ -115,7 +117,7 @@ const AddWeAre = () => {
             />
 
             {/* Image Upload Field */}
-            <label>Image</label>
+            <label>{t("Image")}</label>
             <TextField
               onChange={handleImageChange}
               fullWidth
@@ -143,7 +145,7 @@ const AddWeAre = () => {
               onClick={handleSubmit}
               disabled={isLoading} // Disable while loading
             >
-              Add
+              {t("Add")}
             </Button>
           </Box>
         </Container>

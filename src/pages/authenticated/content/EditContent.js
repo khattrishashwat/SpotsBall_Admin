@@ -15,6 +15,7 @@ import AppHeader from "../../../components/AppHeader";
 import Loader from "../../../components/loader/Loader";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const EditContent = () => {
   const [loading, setLoading] = useState(true);
@@ -24,6 +25,7 @@ const EditContent = () => {
   const params = useParams();
   const [newContent, setNewContent] = useState({});
   const editor = useRef(null);
+    const { t } = useTranslation();
 
   const navigate = useNavigate();
   console.log("params ==> ", params.id);
@@ -100,7 +102,7 @@ const EditContent = () => {
             }}
           >
             <ArrowBackIcon />
-            back
+            {t("Back")}
           </Button>
           {loading && <Loader />}
           <div
@@ -108,7 +110,7 @@ const EditContent = () => {
             style={{ visibility: loading ? "hidden" : "visible" }}
           >
             <div className="d-flex flex-column mb-4 w-5 ">
-              <span className="w-5">Title : </span>
+              <span className="w-5">{t("Title :")}</span>
               <input
                 className=""
                 value={title}
@@ -120,7 +122,7 @@ const EditContent = () => {
                 }}
               />
             </div>
-            Description :
+            {t("Description :")}
             <CKEditor
               editor={ClassicEditor}
               data={content}
@@ -156,7 +158,7 @@ const EditContent = () => {
               }}
             />
             <div className="d-flex flex-column mb-4 w-5 ">
-              <span className="w-5">Types : </span>
+              <span className="w-5">{t("Types :")} </span>
               <input
                 className=""
                 value={type}
@@ -169,7 +171,7 @@ const EditContent = () => {
               />
             </div>
             <button onClick={updateContent} className="Submit">
-              Submit
+              {t("Submit")}
             </button>
           </div>
         </Container>
