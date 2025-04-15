@@ -52,8 +52,6 @@ const AddContest = () => {
   // For numeric fields, we use a RegExp to allow only digits.
   const isNumeric = (value) => /^\d*$/.test(value);
 
-  // Validations for individual fields.
-  // NOTE: These functions now are used in the submit handler (and to show helperText)
   const validateField = (name, value) => {
     let error = "";
     switch (name) {

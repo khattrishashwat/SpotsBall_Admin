@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useCallback } from "react";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
+import SupportHeader from "./SupportHeader";
 import { CCol, CContainer } from "@coreui/react";
 import PageTitle from "../../common/PageTitle";
 import { DataGrid } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
+import { MenuItem } from "@mui/material";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
@@ -36,8 +38,7 @@ const ContactUs = () => {
     pageSize: 5,
   });
   const [update, setUpdate] = useState();
-      const { t } = useTranslation();
-
+  const { t } = useTranslation();
   const [searchKeyword, setSearchKeyword] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
@@ -55,36 +56,87 @@ const ContactUs = () => {
 
   const columns = [
     { field: "col1", headerName: "#", width: 100 },
-    { field: "col2", headerName: t("User"), width: 150 },
-    { field: "col3", headerName: t("Phone Number"), width: 150 },
+    { field: "col2", headerName: t("Client"), width: 150 },
+    { field: "col3", headerName: t("Subject"), width: 250 },
+
     { field: "col4", headerName: t("Email"), width: 200 },
-    { field: "col5", headerName: t("Team"), width: 120 },
-    { field: "col6", headerName: t("Message"), width: 250 },
     {
-      field: "col7",
-      headerName: t("Created At"),
+      field: "col5",
+      headerName: t("Team"),
       width: 150,
+      renderCell: (params) => (
+        <TextField
+          select
+          value={params.row.col5}
+          // onChange={(e) => handleTeamChange(e, params.row)}
+          variant="standard"
+          size="small"
+          sx={{ minWidth: 120 }}
+        >
+          <MenuItem value="technical">Technical</MenuItem>
+          <MenuItem value="support">Support</MenuItem>
+          <MenuItem value="business">Business</MenuItem>
+        </TextField>
+      ),
     },
+    {
+      field: "col6",
+      headerName: t("Status"),
+      width: 150,
+      renderCell: (params) => {
+        const status = params.row.status || "Open";
+        const getColor = (status) => {
+          switch (status) {
+            case "Open":
+              return "#28a745"; // green
+            case "Progress":
+              return "#ffc107"; // yellow
+            case "Close":
+              return "#dc3545"; // red
+            default:
+              return "#6c757d"; // grey
+          }
+        };
+
+        return (
+          <select
+            value={status}
+            // onChange={(e) => handleStatusChange(e, params.row)}
+            style={{
+              padding: "5px 8px",
+              borderRadius: "5px",
+              border: "1px solid #ccc",
+              color: "#fff",
+              backgroundColor: getColor(status),
+              fontWeight: "500",
+            }}
+          >
+            <option value="Open" style={{ color: "#28a745" }}>
+              Open
+            </option>
+            <option value="Progress" style={{ color: "#ffc107" }}>
+              Progress
+            </option>
+            <option value="Close" style={{ color: "#dc3545" }}>
+              Close
+            </option>
+          </select>
+        );
+      },
+    },
+
+    { field: "col7", headerName: t("Created At"), width: 150 },
     {
       field: "col8",
       headerName: t("Action"),
       width: 150,
       renderCell: (params) => (
         <>
-          {/* <Visibility
-            className="me-4"
-            cursor="pointer"
-            style={{ color: "green" }}
-            onClick={() => handleView(params.row)}
-          /> */}
           <MailOutlineIcon
             className="me-2"
             cursor="pointer"
             style={{ color: "blue" }}
-            onClick={() => {
-              console.log("Sending mail to:", params.row.col4);
-              handleSendMail(params.row);
-            }}
+            onClick={() => handleSendMail(params.row)}
           />
           <DeleteIcon
             cursor="pointer"
@@ -95,10 +147,6 @@ const ContactUs = () => {
       ),
     },
   ];
-
-  // const handleSendMail = (row) => {
-  //   navigate("contact", { state: { email: row.col4 } });
-  // };
 
   const handleSendMail = (row) => {
     navigate("contact", { state: { email: row.col4 } });
@@ -150,7 +198,6 @@ const ContactUs = () => {
 
   useEffect(() => {
     setLoading(true);
-
     httpClient
       .get(
         `admin/contact-us?page=${paginationModel.page + 1}&limit=${
@@ -159,17 +206,18 @@ const ContactUs = () => {
       )
       .then((res) => {
         const data = res.data.data.data || [];
-        setUserCount(res.data.data.total); // Correctly set total count
+        setUserCount(res.data.data.total);
         setRows(
           data.map((doc, index) => ({
             id: doc._id,
             col1: paginationModel.page * paginationModel.pageSize + (index + 1),
             col2: `${doc.first_name || "N/A"} ${doc.last_name || ""}`.trim(),
-            col3: doc.phone || "N/A",
+            col3: doc.message || "N/A",
             col4: doc.email || "N/A",
             col5: doc.subject || "N/A",
-            col6: doc.message || "N/A",
+            col6: doc.status || "N/A",
             col7: doc.createdAt.substring(0, 10),
+            col9: doc.phone || "N/A",
           }))
         );
         setLoading(false);
@@ -178,7 +226,7 @@ const ContactUs = () => {
         setLoading(false);
         console.error(error);
       });
-  }, [paginationModel]); // Ensure it runs when page changes
+  }, [paginationModel, update]);
 
   const handleRecordPerPage = useCallback((e) => {
     setLoading(true);
@@ -188,19 +236,14 @@ const ContactUs = () => {
     }));
   }, []);
 
-  const handleSearchChange = useCallback((e) => {
-    setSearchKeyword(e.target.value.trim());
-  }, []);
-
   return (
     <>
       <AppSidebar />
       <div className="wrapper bg-light d-flex-column align-items-center">
         <AppHeader />
         <PageTitle title={t("supports")} />
-
         <CContainer>
-          <h4 className="">{t("Support :")}</h4>
+          <SupportHeader />
           <div
             style={{
               height: "auto",
@@ -239,7 +282,6 @@ const ContactUs = () => {
             <div
               style={{
                 width: "100%",
-                height: "auto",
                 display: "flex",
                 justifyContent: "space-between",
                 padding: "10px 0",
@@ -251,9 +293,7 @@ const ContactUs = () => {
                 <input
                   className="mx-2"
                   type="number"
-                  placeholder="10"
                   defaultValue="10"
-                  title="Enter a Number"
                   min={0}
                   style={{
                     width: "45px",
@@ -271,6 +311,7 @@ const ContactUs = () => {
                 {t("Records per page")}
               </CCol>
             </div>
+
             <DataGrid
               sx={{
                 "& .MuiDataGrid-row:nth-of-type(2n)": {
@@ -278,10 +319,6 @@ const ContactUs = () => {
                 },
                 "& .MuiDataGrid-columnHeader": {
                   backgroundColor: "#d5dbd6",
-                  outline: "none !important",
-                },
-                "& .MuiDataGrid-cell": {
-                  outline: "none !important",
                 },
               }}
               rows={rows}
@@ -289,12 +326,12 @@ const ContactUs = () => {
               rowCount={userCount}
               paginationMode="server"
               pageSize={paginationModel.pageSize}
-              page={paginationModel.page} // Keep it as `page`
+              page={paginationModel.page}
               pagination
               paginationModel={paginationModel}
-              onPaginationModelChange={(newModel) => {
-                setPaginationModel(newModel); // Properly update state
-              }}
+              onPaginationModelChange={(newModel) =>
+                setPaginationModel(newModel)
+              }
               loading={loading}
               autoHeight
             />
@@ -309,70 +346,14 @@ const ContactUs = () => {
             <TextField
               margin="dense"
               label={t("User")}
-              type="text"
               fullWidth
               variant="outlined"
               value={selectedFeedback.col2}
-              readOnly
-              InputLabelProps={{
-                sx: {
-                  // fontSize: "18px", // Example: Set custom font size
-                  marginTop: "5px",
-                },
-              }}
-            />
-            <TextField
-              margin="dense"
-              label={t("Contact")}
-              type="text"
-              fullWidth
-              variant="outlined"
-              value={selectedFeedback.col3}
-              readOnly
-              InputLabelProps={{
-                sx: {
-                  // fontSize: "18px", // Example: Set custom font size
-                  marginTop: "5px",
-                },
-              }}
-            />
-            <TextField
-              margin="dense"
-              label={t("Description")}
-              type="text"
-              fullWidth
-              variant="outlined"
-              multiline
-              rows={4}
-              value={selectedFeedback.col6}
-              readOnly
-              InputLabelProps={{
-                sx: {
-                  // fontSize: "18px", // Example: Set custom font size
-                  marginTop: "5px",
-                },
-              }}
-            />
-            <TextField
-              margin="dense"
-              label={t("Subject")}
-              type="text"
-              fullWidth
-              variant="outlined"
-              value={selectedFeedback.col5}
-              readOnly
-              InputLabelProps={{
-                sx: {
-                  // fontSize: "18px", // Example: Set custom font size
-                  marginTop: "5px",
-                },
-              }}
+              InputProps={{ readOnly: true }}
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseDialog} color="primary">
-              {t("Close")}
-            </Button>
+            <Button onClick={handleCloseDialog}>{t("Close")}</Button>
           </DialogActions>
         </Dialog>
       )}
@@ -380,4 +361,4 @@ const ContactUs = () => {
   );
 };
 
-export default React.memo(ContactUs);
+export default ContactUs;

@@ -9,8 +9,8 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    lng: localStorage.getItem("language") || "en", // Default language from localStorage or 'en'
-    fallbackLng: ["en", "hi", "fr", "de"], // Supported fallback languages
+    lng: localStorage.getItem("language") || "en",
+    fallbackLng: ["en", "hi", "fr", "de"],
     debug: false,
 
     resources: {
@@ -96,6 +96,13 @@ i18n
           App: "App",
           Platform: "Platform",
           "Social Links": "Social Links",
+          "Banner Image": "Banner Image",
+          "Edit Banner GIFs": "Edit Banner GIFs",
+          Replace: "Replace",
+          "Update GIFs": "Update GIFs",
+          "Banner Gifs": "Banner Gifs",
+          Banner: "Banner",
+          "Banner Management": "Banner Management",
         },
       },
       hi: {
@@ -179,6 +186,23 @@ i18n
           App: "ऐप",
           Platform: "मंच",
           "Social Links": "सामाजिक लिंक",
+          "Banner Image": "बैनर छवि",
+          "Edit Banner GIFs": "बैनर गिफ्स संपादित करें",
+          Replace: "बदलें",
+          "Update GIFs": "गिफ्स अपडेट करें",
+          "Banner Gifs": "बैनर गिफ्स",
+          Banner: "बैनर",
+          "Banner Management": "बैनर प्रबंधन",
+
+          "": "",
+          "": "",
+          "": "",
+          "": "",
+          "": "",
+          "": "",
+          "": "",
+          "": "",
+          "": "",
         },
       },
       fr: {
@@ -347,5 +371,17 @@ i18n
       },
     },
   });
+
+//  .init({
+//   lng: localStorage.getItem("language") || "en",
+//   fallbackLng: ["en", "hi", "fr", "de"],
+//   debug: false,
+//   backend: {
+//     loadPath: "/locales/{{lng}}/translation.json",
+//   },
+//   interpolation: {
+//     escapeValue: false,
+//   },
+// });
 
 export default i18n;

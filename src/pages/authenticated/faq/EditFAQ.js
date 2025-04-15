@@ -1,140 +1,3 @@
-// import React, { useEffect, useState } from "react";
-// import {
-//   Box,
-//   Button,
-//   Container,
-//   TextField,
-//   Typography,
-//   Paper,
-// } from "@mui/material";
-// import { CKEditor } from "@ckeditor/ckeditor5-react";
-// import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-
-// import AppSidebar from "../../../components/AppSidebar";
-// import AppHeader from "../../../components/AppHeader";
-// import PageTitle from "../../common/PageTitle";
-// import httpClient from "../../../util/HttpClient";
-// import Loader from "../../../components/loader/Loader";
-// import { useNavigate, useParams } from "react-router-dom";
-// import { Padding } from "@mui/icons-material";
-
-// const EditFAQ = () => {
-//   const [question, setQuestion] = useState("");
-//   const [answer, setAnswer] = useState("");
-//   const [submittedQA, setSubmittedQA] = useState(null);
-//   const [isLoading, setIsLoading] = useState(true);
-//   const [newContent, setNewContent] = useState({});
-
-//   let params = useParams();
-//   let navigate = useNavigate();
-
-//   const handleQuestionChange = (e) => setQuestion(e.target.value);
-//   const handleAnswerChange = (e) => setAnswer(newContent);
-
-//   const handleSubmit = () => {
-//     setIsLoading(false);
-//     setSubmittedQA({ question, answer });
-//     setQuestion("");
-//     setAnswer("");
-//     httpClient
-//       .patch(`admin/edit-faq/${params.id}`, { question, answer })
-//       .then((res) => {
-//         setIsLoading(true);
-//         navigate(-1);
-//       })
-//       .catch((err) => {
-//         setIsLoading(true);
-//         console.log(err);
-//       });
-//   };
-
-//   useEffect(() => {
-//     httpClient.get(`admin/get-faq/${params.id}`).then((res) => {
-//       setAnswer(res.data.data.answer);
-//       setQuestion(res.data.data.question);
-//       setIsLoading(false);
-//     });
-//   }, []);
-
-//   return (
-//     <>
-//       <AppSidebar />
-//       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
-//         <AppHeader />
-//         <PageTitle title="Update FAQ" />
-
-//         <Container maxWidth="sm">
-//           {isLoading && <Loader />}
-//           <Box component="form" noValidate autoComplete="off" sx={{ mt: 4 }}>
-//             <TextField
-//               label="Question"
-//               value={question}
-//               onChange={handleQuestionChange}
-//               fullWidth
-//               margin="normal"
-//               variant="outlined"
-//               InputLabelProps={{
-//                 sx: {
-//                   // fontSize: "18px", // Example: Set custom font size
-//                   marginTop: "6px",
-//                 },
-//               }}
-//             />
-
-//             Answer:
-//             <CKEditor
-//               editor={ClassicEditor}
-//               data={answer}
-//               // onReady={editor => {
-//               //     console.log('Editor is ready to use!', editor);
-//               // }}
-//               onChange={(event, editor) => {
-//                 const data = editor.getData();
-//                 setNewContent(data);
-//               }}
-//               // onBlur={(event, editor) => {
-//               //     console.log('Blur.', editor);webwebweb
-//               // }}
-//               // onFocus={(event, editor) => {
-//               //     console.log('Focus.', editor); `
-//               // }}
-//             />
-//             <Button
-//               variant="contained"
-//               color="primary"
-//               sx={{
-//                 mt: 4,
-//                 ml: 2,
-//                 mb: 4,
-//                 display: "block",
-//                 backgroundColor: "orange",
-//               }}
-//               onClick={handleSubmit}
-//             >
-//               Update
-//             </Button>
-//           </Box>
-//           {submittedQA && (
-//             <Paper sx={{ mt: 4, p: 2 }}>
-//               <Typography variant="h6">
-//                 Submitted Question and Answer
-//               </Typography>
-//               <Typography variant="subtitle1">
-//                 <strong>Question:</strong> {submittedQA.question}
-//               </Typography>
-//               <Typography variant="subtitle1">
-//                 <strong>Answer:</strong> {submittedQA.answer}
-//               </Typography>
-//             </Paper>
-//           )}
-//         </Container>
-//       </div>
-//     </>
-//   );
-// };
-
-// export default EditFAQ;
-
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -144,6 +7,7 @@ import {
   Typography,
   Paper,
   CircularProgress,
+  Stack,
 } from "@mui/material";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
@@ -154,25 +18,38 @@ import PageTitle from "../../common/PageTitle";
 import httpClient from "../../../util/HttpClient";
 import { useNavigate, useParams } from "react-router-dom";
 
+const languages = ["English", "Hindi", "Telugu", "Tamil"];
+
 const EditFAQ = () => {
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [faqData, setFaqData] = useState({
+    English: { question: "", answer: "" },
+    Hindi: { question: "", answer: "" },
+    Telugu: { question: "", answer: "" },
+    Tamil: { question: "", answer: "" },
+  });
+  const [selectedLang, setSelectedLang] = useState("English");
   const [isLoading, setIsLoading] = useState(true);
-  const [newContent, setNewContent] = useState("");
 
   let params = useParams();
   let navigate = useNavigate();
 
-  const handleQuestionChange = (e) => setQuestion(e.target.value);
+  const handleQuestionChange = (e) => {
+    setFaqData((prev) => ({
+      ...prev,
+      [selectedLang]: { ...prev[selectedLang], question: e.target.value },
+    }));
+  };
 
   const handleSubmit = () => {
     setIsLoading(true);
+    const { question, answer } = faqData[selectedLang];
     httpClient
       .patch(`admin/faq/edit-faq/${params.id}`, {
+        language: selectedLang,
         question,
-        answer: newContent,
+        answer,
       })
-      .then((res) => {
+      .then(() => {
         setIsLoading(false);
         navigate(-1);
       })
@@ -186,8 +63,15 @@ const EditFAQ = () => {
     httpClient
       .get(`admin/faq/get-faq/${params.id}`)
       .then((res) => {
-        setAnswer(res.data.data.answer);
-        setQuestion(res.data.data.question);
+        // Assuming API returns `language`, `question`, `answer`
+        const fetched = res.data.data;
+        setFaqData((prev) => ({
+          ...prev,
+          [fetched.language]: {
+            question: fetched.question,
+            answer: fetched.answer,
+          },
+        }));
         setIsLoading(false);
       })
       .catch((err) => {
@@ -211,29 +95,43 @@ const EditFAQ = () => {
           )}
 
           <Box component="form" noValidate autoComplete="off" sx={{ mt: 4 }}>
+            {/* Language Buttons */}
+            <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+              {languages.map((lang) => (
+                <Button
+                  key={lang}
+                  variant={selectedLang === lang ? "contained" : "outlined"}
+                  onClick={() => setSelectedLang(lang)}
+                >
+                  {lang}
+                </Button>
+              ))}
+            </Stack>
+
             <TextField
-              label="Question"
-              value={question}
+              label={`Question (${selectedLang})`}
+              value={faqData[selectedLang].question}
               onChange={handleQuestionChange}
               fullWidth
               margin="normal"
               variant="outlined"
               InputLabelProps={{
-                sx: {
-                  marginTop: "6px",
-                },
+                sx: { marginTop: "6px" },
               }}
             />
 
             <Typography variant="h6" sx={{ mt: 2 }}>
-              Answer:
+              Answer ({selectedLang}):
             </Typography>
             <CKEditor
               editor={ClassicEditor}
-              data={answer}
+              data={faqData[selectedLang].answer}
               onChange={(event, editor) => {
                 const data = editor.getData();
-                setNewContent(data);
+                setFaqData((prev) => ({
+                  ...prev,
+                  [selectedLang]: { ...prev[selectedLang], answer: data },
+                }));
               }}
             />
 
@@ -241,31 +139,15 @@ const EditFAQ = () => {
               variant="contained"
               color="primary"
               sx={{
-                mt: 2,
-                ml: 2,
-                mb: 2,
-                mt: 2,
-                display: "block",
+                mt: 3,
                 backgroundColor: "orange",
-                width: "90%",
+                width: "100%",
               }}
               onClick={handleSubmit}
             >
-              {isLoading ? "Updating..." : "Update"}
+              {isLoading ? "Updating..." : `Update ${selectedLang} FAQ`}
             </Button>
           </Box>
-
-          {!isLoading && (
-            <Paper sx={{ mt: 4, p: 2 }}>
-              <Typography variant="h6">Preview of Submitted Data</Typography>
-              <Typography variant="subtitle1" sx={{ mt: 2 }}>
-                <strong>Question:</strong> {question}
-              </Typography>
-              <Typography variant="subtitle1">
-                <strong>Answer:</strong> {newContent || answer}
-              </Typography>
-            </Paper>
-          )}
         </Container>
       </div>
     </>

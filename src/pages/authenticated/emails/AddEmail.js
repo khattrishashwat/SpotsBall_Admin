@@ -1,189 +1,211 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Box,
-  Button,
-  Container,
-  TextField,
   Typography,
   Grid,
-  MenuItem,
-  FormControlLabel,
-  Checkbox,
+  Paper,
+  Avatar,
+  Button,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
 } from "@mui/material";
+import {
+  Mail as MailIcon,
+  Drafts as DraftsIcon,
+  Send as SendIcon,
+  Delete as DeleteIcon,
+  Star as StarIcon,
+  Reply as ReplyIcon,
+  ForwardToInbox as ForwardIcon,
+  ReplyAll as ReplyAllIcon,
+} from "@mui/icons-material";
+
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
-import { useNavigate } from "react-router-dom";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Formik, Form, Field } from "formik";
-import * as Yup from "yup";
-import { Country } from "country-state-city";
+import PageTitle from "../../common/PageTitle";
+import { useTranslation } from "react-i18next";
+import Compose from "./Compose";
 
-const validationSchema = Yup.object({
-  title: Yup.string().required("Title is required"),
-  message: Yup.string().required("Message is required"),
-  country: Yup.string().required("Country is required"),
-  recipient: Yup.array()
-    .min(1, "At least one recipient type is required")
-    .required("Recipient is required"),
-});
+const messages = [
+  {
+    id: 1,
+    sender: "David Moore",
+    subject: "Hi Emily, Please be informed...",
+    starred: true,
+  },
+  {
+    id: 2,
+    sender: "Microsoft Account",
+    subject: "Change the password for your account.",
+    starred: false,
+  },
+  {
+    id: 3,
+    sender: "Sophia Lara",
+    subject: "Hello, last date for registration...",
+    starred: false,
+  },
+  {
+    id: 4,
+    sender: "Robert Finch",
+    subject: "Meeting postponed to next week.",
+    starred: false,
+  },
+];
 
-function AddEmail() {
-  const navigate = useNavigate();
-  const [countries, setCountries] = useState([]);
+const messageDetail = {
+  subject: "Weekly Update - Week 19 (May 8, 2017 – May 14, 2017)",
+  sender: "Sarah Graves",
+  email: "itsmesarah268@gmail.com",
+  content: `Hi Emily,
 
-  useEffect(() => {
-    setCountries(Country.getAllCountries());
-  }, []);
+This week has been a great week and the team is right on schedule with the set deadline. The team has made great progress and achievements this week.
+
+Regards,
+Sarah Graves`,
+};
+
+export default function MailPage() {
+  const [selectedMsg, setSelectedMsg] = useState(messageDetail);
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
 
   return (
     <>
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <Container maxWidth="md" sx={{ py: 4 }}>
-          <Button
-            variant="contained"
-            color="secondary"
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate(-1)}
-            sx={{ mb: 3 }}
-          >
-            Back
-          </Button>
+        <PageTitle title={t("Email Management")} />
+        <Box>
+          <Grid container spacing={1} sx={{ mt: 1, px: 2 }}>
+            <Grid item xs={12} md={2}>
+              <Paper elevation={2} sx={{ p: 2 }}>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                  onClick={() => setOpen(true)}
+                >
+                  Compose
+                </Button>
+                <List>
+                  <ListItem button>
+                    <ListItemIcon>
+                      <MailIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Inbox" />
+                  </ListItem>
+                  <ListItem button>
+                    <ListItemIcon>
+                      <SendIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Sent" />
+                  </ListItem>
+                  <ListItem button>
+                    <ListItemIcon>
+                      <DraftsIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Draft" />
+                  </ListItem>
+                  <ListItem button>
+                    <ListItemIcon>
+                      <DeleteIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Trash" />
+                  </ListItem>
+                </List>
+              </Paper>
+            </Grid>
 
-          <Typography variant="h4" align="center" gutterBottom>
-            New Email
-          </Typography>
-
-          <Formik
-            initialValues={{
-              title: "",
-              recipient: [],
-              country: "",
-              message: "",
-            }}
-            validationSchema={validationSchema}
-            onSubmit={(values) => {
-              console.log("Form Data", values);
-            }}
-          >
-            {({ values, setFieldValue, errors, touched }) => (
-              <Form>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <Field
-                      as={TextField}
-                      name="title"
-                      label="Title"
-                      fullWidth
-                      error={touched.title && !!errors.title}
-                      helperText={touched.title && errors.title}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="subtitle1">Send To:</Typography>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={values.recipient.includes("User")}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setFieldValue("recipient", [
-                                ...values.recipient,
-                                "User",
-                              ]);
-                            } else {
-                              setFieldValue(
-                                "recipient",
-                                values.recipient.filter(
-                                  (item) => item !== "User"
-                                )
-                              );
-                            }
-                          }}
-                        />
+            <Grid item xs={12} md={3}>
+              <Paper elevation={2} sx={{ p: 2 }}>
+                <Typography variant="h6">Messages</Typography>
+                <Divider sx={{ mb: 1 }} />
+                <List>
+                  {messages.map((msg) => (
+                    <ListItem
+                      key={msg.id}
+                      button
+                      onClick={() =>
+                        setSelectedMsg({
+                          subject: msg.subject,
+                          sender: msg.sender,
+                          email: `${msg.sender
+                            .split(" ")
+                            .join(".")
+                            .toLowerCase()}@mail.com`,
+                          content: `Hi Emily,\n\nThis is a sample message from ${msg.sender}. This is just placeholder content.\n\nRegards,\n${msg.sender}`,
+                        })
                       }
-                      label="User"
-                    />
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={values.recipient.includes("Admin")}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setFieldValue("recipient", [
-                                ...values.recipient,
-                                "Admin",
-                              ]);
-                            } else {
-                              setFieldValue(
-                                "recipient",
-                                values.recipient.filter(
-                                  (item) => item !== "Admin"
-                                )
-                              );
-                            }
-                          }}
-                        />
-                      }
-                      label="Admin"
-                    />
-                    {touched.recipient && errors.recipient && (
-                      <Typography color="error" variant="body2">
-                        {errors.recipient}
-                      </Typography>
-                    )}
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <Field
-                      as={TextField}
-                      name="country"
-                      label="Country"
-                      select
-                      fullWidth
-                      error={touched.country && !!errors.country}
-                      helperText={touched.country && errors.country}
                     >
-                      {countries.map((country) => (
-                        <MenuItem key={country.isoCode} value={country.name}>
-                          {country.name}
-                        </MenuItem>
-                      ))}
-                    </Field>
-                  </Grid>
+                      <ListItemIcon>
+                        {msg.starred ? (
+                          <StarIcon color="warning" />
+                        ) : (
+                          <MailIcon />
+                        )}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={msg.sender}
+                        secondary={msg.subject}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </Paper>
+            </Grid>
 
-                  <Grid item xs={12}>
-                    <Field
-                      as={TextField}
-                      name="message"
-                      label="Message"
-                      multiline
-                      rows={4}
-                      fullWidth
-                      error={touched.message && !!errors.message}
-                      helperText={touched.message && errors.message}
-                    />
-                  </Grid>
+            <Grid item xs={12} md={7}>
+              <Paper elevation={2} sx={{ p: 2 }}>
+                <Typography variant="h5" sx={{ mb: 1 }}>
+                  {selectedMsg.subject}
+                </Typography>
+                <Box display="flex" alignItems="center" sx={{ mb: 2 }}>
+                  <Avatar sx={{ mr: 2 }}>{selectedMsg.sender[0]}</Avatar>
+                  <Box>
+                    <Typography variant="subtitle1">
+                      {selectedMsg.sender}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {selectedMsg.email}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Divider sx={{ mb: 2 }} />
+                <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
+                  {selectedMsg.content}
+                </Typography>
+                <Divider sx={{ my: 2 }} />
 
-                  <Grid item xs={12}>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                    >
-                      Submit
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Form>
-            )}
-          </Formik>
-        </Container>
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  <Button startIcon={<ReplyIcon />} variant="outlined">
+                    Reply
+                  </Button>
+                  <Button startIcon={<ReplyAllIcon />} variant="outlined">
+                    Reply All
+                  </Button>
+                  <Button startIcon={<ForwardIcon />} variant="outlined">
+                    Forward
+                  </Button>
+                  <Button
+                    startIcon={<DeleteIcon />}
+                    variant="outlined"
+                    color="error"
+                  >
+                    Delete
+                  </Button>
+                </Box>
+              </Paper>
+            </Grid>
+            <Compose open={open} onClose={() => setOpen(false)} />
+          </Grid>
+        </Box>
+
+        {/* 👈 Compose Drawer outside the main Box so it overlays on top */}
       </div>
     </>
   );
 }
-
-export default AddEmail;

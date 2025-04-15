@@ -26,6 +26,8 @@ import PeopleIcon from "@mui/icons-material/People";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import Logo from "./logo.png";
 import SettingsIcon from "@mui/icons-material/Settings";
+import ImageIcon from "@mui/icons-material/Image";
+import GifIcon from "@mui/icons-material/Gif";
 
 const useNavItems = () => {
   const { t } = useTranslation();
@@ -197,6 +199,25 @@ const useNavItems = () => {
     },
     {
       component: CNavGroup,
+      name: t("Banner Management"),
+      icon: <PaymentIcon />,
+      items: [
+        {
+          component: CNavItem,
+          name: t("Banner"),
+          to: "/banner",
+          icon: <ImageIcon />,
+        },
+        {
+          component: CNavItem,
+          name: t("Banner Gifs"),
+          to: "/bannergifs",
+          icon: <GifIcon />,
+        },
+      ],
+    },
+    {
+      component: CNavGroup,
       name: t("Content Management"),
       icon: <SettingsIcon />,
       items: [
@@ -247,6 +268,12 @@ const useNavItems = () => {
           component: CNavItem,
           name: t("How To Play"),
           to: "/how_to_play",
+          icon: <SubscriptionsIcon />,
+        },
+        {
+          component: CNavItem,
+          name: t("How it Work"),
+          to: "/how_it_work",
           icon: <SubscriptionsIcon />,
         },
         {

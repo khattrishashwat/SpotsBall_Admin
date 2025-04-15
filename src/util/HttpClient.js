@@ -1,9 +1,8 @@
 import axios from "axios";
 
 const httpClient = axios.create({
-  // baseURL: "https://webmobrildemo.com/spotsball/admin/", // staging server
-  // baseURL: "https://webmobrildemo.com/spotsball/api/v1/", // staging server
-  baseURL: "https://www.spotsball.com/spotsball/api/v1/", // staging server
+  baseURL: "https://webmobrildemo.com/spotsball/api/v1/", // staging server
+  // baseURL: "https://www.spotsball.wcom/spotsball/api/v1/", // Live server
 });
 
 // Request interceptor

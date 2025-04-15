@@ -9,8 +9,6 @@ import {
 import { AppSidebarNav } from "./AppSidebarNav";
 import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
-
-// sidebar nav config
 import useNavItems from "./_nav";
 import styled from "styled-components";
 
@@ -24,7 +22,7 @@ const SidebarLink = styled("a")(({ theme, active }) => ({
   backgroundColor: active ? theme.palette.primary.main : "transparent",
   transition: "background-color 0.3s, color 0.3s",
   "&:hover": {
-    backgroundColor: "red", //theme.palette.action.hover,
+    backgroundColor: "red",
     color: "green !important",
   },
 }));

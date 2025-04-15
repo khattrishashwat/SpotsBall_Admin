@@ -1,23 +1,52 @@
 import React, { useState } from "react";
-import { TextField, Button, Container, Box, Typography } from "@mui/material";
-import httpClient from "../../../util/HttpClient"; // Ensure this path is correct based on your project structure
+import {
+  TextField,
+  Button,
+  Container,
+  Box,
+  Typography,
+  Stack,
+} from "@mui/material";
+import httpClient from "../../../util/HttpClient";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import { useNavigate } from "react-router-dom";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
+const languages = ["English", "Hindi", "Telugu", "Tamil"];
+
 const AddFAQ = () => {
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [selectedLang, setSelectedLang] = useState("English");
+  const [formData, setFormData] = useState({
+    English: { question: "", answer: "" },
+    Hindi: { question: "", answer: "" },
+    Telugu: { question: "", answer: "" },
+    Tamil: { question: "", answer: "" },
+  });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
+  const handleInputChange = (lang, field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [lang]: { ...prev[lang], [field]: value },
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!question || !answer) {
-      setMessage("Both Question and Answer are required!");
+
+    // Check if any language is missing question or answer
+    const missingFields = languages.filter(
+      (lang) => !formData[lang].question || !formData[lang].answer
+    );
+
+    if (missingFields.length) {
+      setMessage(
+        `Please fill Question and Answer for: ${missingFields.join(", ")}`
+      );
       return;
     }
 
@@ -26,12 +55,16 @@ const AddFAQ = () => {
 
     try {
       const response = await httpClient.post("admin/faq/add-faq", {
-        question,
-        answer,
+        faqs: formData,
       });
-      setMessage("Question created successfully!");
-      setQuestion("");
-      setAnswer("");
+
+      setMessage("FAQ created successfully!");
+      setFormData({
+        English: { question: "", answer: "" },
+        Hindi: { question: "", answer: "" },
+        Telugu: { question: "", answer: "" },
+        Tamil: { question: "", answer: "" },
+      });
       navigate(-1);
     } catch (err) {
       console.error("Error =>", err);
@@ -47,7 +80,7 @@ const AddFAQ = () => {
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <Container maxWidth="sm">
+        <Container maxWidth="md">
           <Box
             sx={{
               display: "flex",
@@ -60,32 +93,50 @@ const AddFAQ = () => {
             }}
           >
             <Typography variant="h5" component="h1" gutterBottom>
-              Create a New Question
+              Create a New FAQ
             </Typography>
+
+            {/* Language Toggle Buttons */}
+            <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+              {languages.map((lang) => (
+                <Button
+                  key={lang}
+                  variant={selectedLang === lang ? "contained" : "outlined"}
+                  onClick={() => setSelectedLang(lang)}
+                >
+                  {lang}
+                </Button>
+              ))}
+            </Stack>
+
             <form onSubmit={handleSubmit} style={{ width: "100%" }}>
               <TextField
-                label="Question"
+                label={`Question (${selectedLang})`}
                 variant="outlined"
                 fullWidth
                 margin="normal"
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
+                value={formData[selectedLang].question}
+                onChange={(e) =>
+                  handleInputChange(selectedLang, "question", e.target.value)
+                }
                 required
                 InputLabelProps={{
                   sx: { marginTop: "6px" },
                 }}
               />
+
               <Typography variant="h6" sx={{ mt: 2 }}>
-                Answer:
+                Answer ({selectedLang}):
               </Typography>
               <CKEditor
                 editor={ClassicEditor}
-                data={answer}
+                data={formData[selectedLang].answer}
                 onChange={(event, editor) => {
                   const data = editor.getData();
-                  setAnswer(data);
+                  handleInputChange(selectedLang, "answer", data);
                 }}
               />
+
               <Button
                 type="submit"
                 variant="contained"
@@ -97,6 +148,7 @@ const AddFAQ = () => {
                 {loading ? "Submitting..." : "Submit"}
               </Button>
             </form>
+
             {message && (
               <Typography
                 variant="body2"
