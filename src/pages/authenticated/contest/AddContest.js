@@ -7,7 +7,10 @@ import {
   Button,
   Typography,
   Paper,
+  Stack,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
+
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import httpClient from "../../../util/HttpClient";
@@ -16,9 +19,12 @@ import Loader from "../../../components/loader/Loader";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Swal from "sweetalert2";
 
+const languages = ["English", "Hindi", "Telugu", "Tamil"];
+
 const AddContest = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [selectedLang, setSelectedLang] = useState("English");
 
   // Form states
   const [title, setTitle] = useState("");
@@ -28,28 +34,25 @@ const AddContest = () => {
   const [jackpotPrice, setJackpotPrice] = useState("");
   const [ticketPrice, setTicketPrice] = useState("");
   const [contestStartDate, setContestStartDate] = useState("");
-  const [original_player_image, setOriginal_player_image] = useState("");
   const [imageWidth, setImageWidth] = useState("");
   const [imageHeight, setImageHeight] = useState("");
   const [maxTickets, setMaxTickets] = useState("");
   const [quantities, setQuantities] = useState([0, 0, 0, 0]);
   const [cousor, setCousor] = useState("");
+  const { t } = useTranslation();
 
   // Constants for rates
   const gstRate = 28;
   const platformFeeRate = 2.5;
   const gstOnPlatformFeeRate = 18;
 
-  // Loading and error states
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
-  // Helper to count words
   const countWords = (str) => {
     return str.trim().split(/\s+/).filter(Boolean).length;
   };
 
-  // For numeric fields, we use a RegExp to allow only digits.
   const isNumeric = (value) => /^\d*$/.test(value);
 
   const validateField = (name, value) => {
@@ -103,7 +106,6 @@ const AddContest = () => {
     return error;
   };
 
-  // Handler for Title (word limit: 150 words)
   const handleTitleChange = (e) => {
     const value = e.target.value;
     if (countWords(value) <= 150) {
@@ -117,7 +119,6 @@ const AddContest = () => {
     }
   };
 
-  // Handler for Description (word limit: 200 words)
   const handleDescriptionChange = (e) => {
     const value = e.target.value;
     if (countWords(value) <= 200) {
@@ -131,11 +132,9 @@ const AddContest = () => {
     }
   };
 
-  // General handler for other fields
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // For numeric fields (jackpotPrice, ticketPrice, maxTickets) allow only digits.
     if (
       (name === "jackpotPrice" ||
         name === "ticketPrice" ||
@@ -177,9 +176,7 @@ const AddContest = () => {
     }
   };
 
-  // Handler for quantities that only allows positive integers (no negative or decimals)
   const handleQuantityChange = (index, value) => {
-    // Only allow digits and ensure it doesn't start with zero unless it's exactly "0"
     if (/^(0|[1-9]\d*)?$/.test(value)) {
       const updatedQuantities = [...quantities];
       updatedQuantities[index] = value;
@@ -213,7 +210,6 @@ const AddContest = () => {
       setPlayerImage(file);
       const img = new Image();
       img.onload = () => {
-        // Auto-populate and disable editing of these fields
         setImageWidth(img.width.toString());
         setImageHeight(img.height.toString());
       };
@@ -222,7 +218,6 @@ const AddContest = () => {
   };
 
   const handleSubmit = () => {
-    // Validate all fields before submitting using our validateField function.
     const newErrors = {};
     newErrors.title = validateField("title", title);
     newErrors.description = validateField("description", description);
@@ -256,7 +251,6 @@ const AddContest = () => {
     formData.append("jackpot_price", jackpotPrice);
     formData.append("ticket_price", ticketPrice);
     formData.append("contest_start_date", contestStartDate);
-    // formData.append("original_player_image", original_player_image);
     formData.append("image_width", imageWidth);
     formData.append("image_height", imageHeight);
     formData.append("maxTickets", maxTickets);
@@ -314,200 +308,29 @@ const AddContest = () => {
           Back
         </Button>
 
-        {/* <Container maxWidth="xl" className="d-flex justify-content-center">
-          {isLoading && <Loader />}
-          <Box
-            component="form"
-            noValidate
-            autoComplete="off"
-            sx={{ mt: 4, width: "80%" }}
-          >
-            <label>Title</label>
-            <TextField
-              name="title"
-              value={title}
-              onChange={handleTitleChange}
-              fullWidth
-              margin="normal"
-              placeholder="Enter contest title"
-              error={!!errors.title}
-              helperText={errors.title}
-            />
-
-            <label>Description</label>
-            <TextField
-              name="description"
-              value={description}
-              onChange={handleDescriptionChange}
-              fullWidth
-              margin="normal"
-              placeholder="Enter contest description"
-              error={!!errors.description}
-              helperText={errors.description}
-            />
-
-
-            <label>Jackpot Price</label>
-            <TextField
-              name="jackpotPrice"
-              value={jackpotPrice}
-              onChange={handleChange}
-              fullWidth
-              margin="normal"
-              placeholder="Enter jackpot price"
-              error={!!errors.jackpotPrice}
-              helperText={errors.jackpotPrice}
-              inputProps={{ maxLength: 5 }}
-            />
-
-            <label>Ticket Price</label>
-            <TextField
-              name="ticketPrice"
-              value={ticketPrice}
-              onChange={handleChange}
-              fullWidth
-              margin="normal"
-              placeholder="Enter ticket price"
-              error={!!errors.ticketPrice}
-              helperText={errors.ticketPrice}
-              inputProps={{ maxLength: 5 }}
-            />
-
-            <label>Contest Start Date</label>
-            <TextField
-              name="contestStartDate"
-              value={contestStartDate}
-              onChange={handleChange}
-              fullWidth
-              margin="normal"
-              type="datetime-local"
-              error={!!errors.contestStartDate}
-              helperText={errors.contestStartDate}
-              InputProps={{
-                inputProps: { min: new Date().toISOString().slice(0, 16) },
-              }}
-            />
-
-            <label>Contest Banner Image</label>
-            <TextField
-              onChange={(e) => handleImageChange(e, setContestBanner)}
-              fullWidth
-              margin="normal"
-              variant="outlined"
-              type="file"
-            />
-            <label>Play Screen Image</label>
-            <TextField
-              onChange={handlePlayerImageChange}
-              fullWidth
-              margin="normal"
-              variant="outlined"
-              type="file"
-            />
-
-            <label>Image Width</label>
-            <TextField
-              name="imageWidth"
-              value={imageWidth}
-              fullWidth
-              margin="normal"
-              placeholder="Image width auto-populated"
-              disabled
-              error={!!errors.imageWidth}
-              helperText={errors.imageWidth}
-            />
-
-            <label>Image Height</label>
-            <TextField
-              name="imageHeight"
-              value={imageHeight}
-              fullWidth
-              margin="normal"
-              placeholder="Image height auto-populated"
-              disabled
-              error={!!errors.imageHeight}
-              helperText={errors.imageHeight}
-            />
-
-            <label>Max Tickets</label>
-            <TextField
-              name="maxTickets"
-              value={maxTickets}
-              onChange={handleChange}
-              fullWidth
-              margin="normal"
-              placeholder="Enter max ticket count"
-              error={!!errors.maxTickets}
-              helperText={errors.maxTickets}
-              inputProps={{ maxLength: 3 }}
-            />
-
-            <label>Ticket Quantities</label>
-            {quantities.map((quantity, index) => (
-              <TextField
-                key={index}
-                value={quantity}
-                onChange={(e) => handleQuantityChange(index, e.target.value)}
-                fullWidth
-                margin="normal"
-                placeholder={`Enter quantity for ticket type ${index + 1}`}
-              />
-            ))}
-
-            <label>GST Rate</label>
-            <TextField fullWidth margin="normal" value={gstRate} disabled />
-
-            <label>Platform Fee Rate</label>
-            <TextField
-              fullWidth
-              margin="normal"
-              value={platformFeeRate}
-              disabled
-            />
-
-            <label>GST on Platform Fee Rate</label>
-            <TextField
-              fullWidth
-              margin="normal"
-              value={gstOnPlatformFeeRate}
-              disabled
-            />
-
-            <label>Choose Cursor Color</label>
-            <TextField
-              name="cousor"
-              value={cousor}
-              onChange={handleChange}
-              fullWidth
-              margin="normal"
-              placeholder="Enter Cursor Color"
-              error={!!errors.cousor}
-              helperText={errors.cousor}
-            />
-
-            <Button
-              onClick={handleSubmit}
-              fullWidth
-              variant="contained"
-              color="primary"
-              sx={{ mt: 4 }}
-            >
-              Add Contest
-            </Button>
-          </Box>
-        </Container> */}
-
         <Container maxWidth="lg">
           {isLoading && <Loader />}
           <Paper elevation={3} sx={{ p: 4, mt: 4, borderRadius: 3 }}>
             <Typography variant="h4" align="center" gutterBottom>
               Add Contest
             </Typography>
+
+            <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+              {languages.map((lang) => (
+                <Button
+                  key={lang}
+                  variant={selectedLang === lang ? "contained" : "outlined"}
+                  onClick={() => setSelectedLang(lang)}
+                >
+                  {lang}
+                </Button>
+              ))}
+            </Stack>
             <Box component="form" noValidate autoComplete="off">
               <Grid container spacing={4}>
                 {/* Left Side Fields */}
                 <Grid item xs={12} md={6}>
-                  <Typography>Title</Typography>
+                  <Typography>{t(`Title*(${selectedLang})`)}</Typography>
                   <TextField
                     name="title"
                     value={title}
@@ -517,7 +340,8 @@ const AddContest = () => {
                     error={!!errors.title}
                     helperText={errors.title}
                   />
-                  <Typography>Description</Typography>
+                  <Typography>{t(`Description*(${selectedLang})`)}</Typography>
+
                   <TextField
                     name="description"
                     value={description}
@@ -527,7 +351,10 @@ const AddContest = () => {
                     error={!!errors.description}
                     helperText={errors.description}
                   />
-                  <Typography>Jackpot Price</Typography>
+                  <Typography>
+                    {t(`Jackpot Price*(${selectedLang})`)}
+                  </Typography>
+
                   <TextField
                     name="jackpotPrice"
                     value={jackpotPrice}
@@ -538,7 +365,8 @@ const AddContest = () => {
                     helperText={errors.jackpotPrice}
                     inputProps={{ maxLength: 5 }}
                   />
-                  <Typography>Ticket Price</Typography>
+                  <Typography>{t(`Ticket Price*(${selectedLang})`)}</Typography>
+
                   <TextField
                     name="ticketPrice"
                     value={ticketPrice}
@@ -549,7 +377,10 @@ const AddContest = () => {
                     helperText={errors.ticketPrice}
                     inputProps={{ maxLength: 5 }}
                   />
-                  <Typography>Contest Start Date</Typography>
+                  <Typography>
+                    {t(`Contest Start Date*(${selectedLang})`)}
+                  </Typography>
+
                   <TextField
                     name="contestStartDate"
                     value={contestStartDate}
@@ -565,7 +396,8 @@ const AddContest = () => {
                       },
                     }}
                   />
-                  <Typography>Max Tickets</Typography>
+                  <Typography>{t(`Max Tickets*(${selectedLang})`)}</Typography>
+
                   <TextField
                     name="maxTickets"
                     value={maxTickets}
@@ -576,7 +408,10 @@ const AddContest = () => {
                     helperText={errors.maxTickets}
                     inputProps={{ maxLength: 3 }}
                   />
-                  <Typography>Choose Cursor Color</Typography>
+                  <Typography>
+                    {t(`Choose Cursor Color*(${selectedLang})`)}
+                  </Typography>
+
                   <TextField
                     name="cousor"
                     value={cousor}
@@ -586,21 +421,28 @@ const AddContest = () => {
                     error={!!errors.cousor}
                     helperText={errors.cousor}
                   />
-                  <Typography>GST Rate</Typography>
+                  <Typography>{t(`GST Rate*(${selectedLang})`)}</Typography>
+
                   <TextField
                     fullWidth
                     margin="normal"
                     value={gstRate}
                     disabled
                   />
-                  <Typography>Platform Fee Rate</Typography>
+                  <Typography>
+                    {t(`Platform Fee Rate*(${selectedLang})`)}
+                  </Typography>
+
                   <TextField
                     fullWidth
                     margin="normal"
                     value={platformFeeRate}
                     disabled
                   />
-                  <Typography>GST on Platform Fee Rate</Typography>
+                  <Typography>
+                    {t(`GST on Platform Fee Rate*(${selectedLang})`)}
+                  </Typography>
+
                   <TextField
                     fullWidth
                     margin="normal"
@@ -611,7 +453,10 @@ const AddContest = () => {
 
                 {/* Right Side Fields */}
                 <Grid item xs={12} md={6}>
-                  <Typography>Contest Banner Image</Typography>
+                  <Typography>
+                    {t(`Contest Banner Image*(${selectedLang})`)}
+                  </Typography>
+
                   <TextField
                     fullWidth
                     margin="normal"
@@ -619,7 +464,10 @@ const AddContest = () => {
                     type="file"
                     onChange={(e) => handleImageChange(e, setContestBanner)}
                   />
-                  <Typography>Play Screen Image</Typography>
+                  <Typography>
+                    {t(`TitPlay Screen Imagele*(${selectedLang})`)}
+                  </Typography>
+
                   <TextField
                     fullWidth
                     margin="normal"
@@ -627,7 +475,8 @@ const AddContest = () => {
                     type="file"
                     onChange={handlePlayerImageChange}
                   />
-                  <Typography>Image Width</Typography>
+                  <Typography>{t(`Image Width*(${selectedLang})`)}</Typography>
+
                   <TextField
                     name="imageWidth"
                     value={imageWidth}
@@ -637,7 +486,8 @@ const AddContest = () => {
                     error={!!errors.imageWidth}
                     helperText={errors.imageWidth}
                   />
-                  <Typography>Image Height</Typography>
+                  <Typography>{t(`Image Height*(${selectedLang})`)}</Typography>
+
                   <TextField
                     name="imageHeight"
                     value={imageHeight}
@@ -649,7 +499,12 @@ const AddContest = () => {
                   />
                   {quantities.map((quantity, index) => (
                     <Box key={index}>
-                      <Typography>Ticket Quantity {index + 1}</Typography>
+                      <Typography>
+                        {t(`Ticket Quantity (${selectedLang}) `)}
+                        {index + 1}
+                      </Typography>
+
+                      {/* <Typography>Ticket Quantity {index + 1}</Typography> */}
                       <TextField
                         value={quantity}
                         onChange={(e) =>

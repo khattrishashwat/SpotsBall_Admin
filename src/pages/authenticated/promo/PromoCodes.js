@@ -11,6 +11,7 @@ import swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import httpClient from "../../../util/HttpClient";
 import EditIcon from "@mui/icons-material/Edit";
+import { useTranslation } from "react-i18next";
 
 const PromoCodes = () => {
   const [alertMessage, setAlertMessage] = useState("");
@@ -23,21 +24,22 @@ const PromoCodes = () => {
     page: 0,
     pageSize: 10,
   });
+  const { t } = useTranslation();
 
   const navigate = useNavigate();
 
   const columns = [
     { field: "col1", headerName: "#", width: 80 },
-    { field: "col2", headerName: "Name", width: 150 },
-    { field: "col3", headerName: "Min Ticket", width: 150 },
-    { field: "col4", headerName: "Max Ticket", width: 180 },
-    { field: "col5", headerName: "Discount", width: 180 },
-    { field: "col6", headerName: "Status", width: 180 },
-    { field: "col7", headerName: "Created At", width: 180 },
-    { field: "col8", headerName: "Updated At", width: 180 },
+    { field: "col2", headerName: t("Name"), width: 150 },
+    { field: "col3", headerName: t("Min Ticket"), width: 150 },
+    { field: "col4", headerName: t("Max Ticket"), width: 180 },
+    { field: "col5", headerName: t("Discount"), width: 180 },
+    { field: "col6", headerName: t("Status"), width: 180 },
+    { field: "col7", headerName: t("Created At"), width: 180 },
+    { field: "col8", headerName: t("Updated At"), width: 180 },
     {
       field: "col9",
-      headerName: "Action",
+      headerName: t("Action"),
       width: 200,
       renderCell: (params) => (
         <>
@@ -130,13 +132,13 @@ const PromoCodes = () => {
         <PageTitle title="Coupons" />
         <CContainer>
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h4>Discount Coupons:</h4>
+            <h4>{t("Discount Coupons")}:</h4>
             <Button
               variant="contained"
               style={{ backgroundColor: "orange" }}
               onClick={() => navigate("new_coupons")}
             >
-              Add New Coupons
+              {t("Add New Coupons")}
             </Button>
           </div>
           <div

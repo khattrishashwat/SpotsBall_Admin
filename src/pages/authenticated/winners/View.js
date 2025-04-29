@@ -12,9 +12,11 @@ import swal from "sweetalert2";
 import Loader from "../../../components/loader/Loader";
 import axios from "axios";
 import { Visibility } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
+
+
 
 const View = (props) => {
-    console.log("props data => ", props)
   const [alertMessage, setAlertMessage] = useState();
   const [apiSuccess, setApiSuccess] = useState(false);
   const [apiError, setApiError] = useState(false);
@@ -26,6 +28,7 @@ const View = (props) => {
     page: 0,
     pageSize: 10,
   });
+  const { t } = useTranslation();
 
   const [filterMode, setFilterMode] = useState("name");
   const [status, setStatus] = useState("");

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import SunEditor from "suneditor-react";
 import "suneditor/dist/css/suneditor.min.css";
@@ -12,13 +12,21 @@ import {
   Button,
   TextField,
 } from "@mui/material";
-const Compose = ({ open, onClose }) => {
+const Compose = ({ open, onClose, defaultEmail }) => {
   const [emailData, setEmailData] = useState({
     email: "",
     subject: "",
     message: "",
   });
-
+  useEffect(() => {
+    if (open) {
+      setEmailData((prev) => ({
+        ...prev,
+        email: defaultEmail || "",
+      }));
+    }
+  }, [open, defaultEmail]);
+  
   const mailApiUrl = "admin/mail/send-mail";
 
   const getEmailTemplate = (name, message, subject) => {
@@ -106,7 +114,7 @@ const Compose = ({ open, onClose }) => {
         <div className="header">
           <span>New Message</span>
           <div className="actions">
-            <button className="minimize">–</button>
+            {/* <button className="minimize">–</button> */}
             <button className="close" onClick={onClose}>
               ×
             </button>

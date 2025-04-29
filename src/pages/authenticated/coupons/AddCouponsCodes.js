@@ -1,16 +1,29 @@
 import React, { useState } from "react";
-import { TextField, Button, Container, Box, Typography } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Container,
+  Box,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import httpClient from "../../../util/HttpClient";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
+const languages = ["English", "Hindi", "Telugu", "Tamil"];
 
 const AddCouponsCodes = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   let navigate = useNavigate();
+
+  const { t } = useTranslation();
+  const [selectedLang, setSelectedLang] = useState("English");
 
   const validationSchema = Yup.object({
     name: Yup.string()
@@ -63,10 +76,25 @@ const AddCouponsCodes = () => {
             }}
           >
             <Typography variant="h5" component="h1" gutterBottom>
-              Add New Promo Code
+              {t("Add New Promo Code")}
             </Typography>
+
+            <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+              {languages.map((lang) => (
+                <Button
+                  key={lang}
+                  variant={selectedLang === lang ? "contained" : "outlined"}
+                  onClick={() => setSelectedLang(lang)}
+                >
+                  {lang}
+                </Button>
+              ))}
+            </Stack>
+
             <form onSubmit={formik.handleSubmit} style={{ width: "100%" }}>
-              <span>Name</span>
+              <span>
+                {t("Name")} ({selectedLang})
+              </span>
               <TextField
                 variant="outlined"
                 fullWidth
@@ -79,8 +107,10 @@ const AddCouponsCodes = () => {
                 error={formik.touched.name && Boolean(formik.errors.name)}
                 helperText={formik.touched.name && formik.errors.name}
               />
+              <span>
+                {t("Amount")} ({selectedLang})
+              </span>
 
-              <span>Amount</span>
               <TextField
                 variant="outlined"
                 fullWidth

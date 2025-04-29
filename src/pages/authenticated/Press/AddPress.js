@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Box, Button, Container, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  TextField,
+  Typography,
+  Stack,
+} from "@mui/material";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import httpClient from "../../../util/HttpClient";
@@ -10,7 +17,11 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
+const languages = ["English", "Hindi", "Telugu", "Tamil"];
+
 const AddPress = () => {
+  const [selectedLang, setSelectedLang] = useState("English");
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [pressBanner, setPressBanner] = useState(null);
@@ -116,14 +127,37 @@ const AddPress = () => {
           <ArrowBackIcon />
           Back
         </Button>
-        <Container maxWidth="sm" className="d-flex justify-content-center">
+        <Container maxWidth="md">
           {isLoading && <Loader />}
           <Box
             component="form"
             noValidate
             autoComplete="off"
-            sx={{ mt: 4, width: "80%" }}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              mt: 4,
+              p: 2,
+              border: "1px solid #ccc",
+              borderRadius: 1,
+            }}
           >
+            <Typography variant="h5" component="h1" gutterBottom>
+              Create a New Blogs
+            </Typography>
+            <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+              {languages.map((lang) => (
+                <Button
+                  key={lang}
+                  variant={selectedLang === lang ? "contained" : "outlined"}
+                  onClick={() => setSelectedLang(lang)}
+                >
+                  {lang}
+                </Button>
+              ))}
+            </Stack>
+
             <label>Title</label>
             <TextField
               value={title}

@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  TextField,
+  Stack,
+  Typography,
+} from "@mui/material";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import PageTitle from "../../common/PageTitle";
@@ -7,6 +14,9 @@ import httpClient from "../../../util/HttpClient";
 import Loader from "../../../components/loader/Loader";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
+
+const languages = ["English", "Hindi", "Telugu", "Tamil"];
 
 const EditCouponsCodes = () => {
   const [name, setName] = useState("");
@@ -14,32 +24,11 @@ const EditCouponsCodes = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [selectedLang, setSelectedLang] = useState("English");
+  const { t } = useTranslation();
 
   let params = useParams();
   let navigate = useNavigate();
-  console.log("meessage", message);
-
-  // const handleSubmit = () => {
-  //   setMessage("");
-  //   setIsLoading(true);
-
-  //   httpClient
-  //     .patch(`api/v1/admin/promocode/edit-promocode/${params.id}`, {
-  //       name,
-  //       amount,
-  //     })
-  //     .then(() => {
-  //               setMessage();
-
-  //       setIsLoading(false);
-  //       navigate(-1); // Go back to the previous page
-  //     })
-  //     .catch((err) => {
-  //       setIsLoading(false);
-  //       console.error(err);
-  //       setMessage();
-  //     });
-  // };
 
   const handleSubmit = () => {
     setIsLoading(true);
@@ -56,8 +45,8 @@ const EditCouponsCodes = () => {
         Swal.fire({
           icon: "success",
           title: "Success",
-          text: response.data.message ,
-          showConfirmButton:false,
+          text: response.data.message,
+          showConfirmButton: false,
           timer: 1500,
         });
         navigate(-1); // Go back to the previous page
@@ -97,16 +86,24 @@ const EditCouponsCodes = () => {
           {isLoading && <Loader />}
           {!isLoading && (
             <Box component="form" noValidate autoComplete="off" sx={{ mt: 4 }}>
-              {message && (
-                <Typography
-                  variant="body2"
-                  color={message.includes("Failed") ? "red" : "green"}
-                  sx={{ mb: 2 }}
-                >
-                  {message}
-                </Typography>
-              )}
-              <span>Name</span>
+              <Typography variant="h5" component="h1" gutterBottom>
+                {t("Edit Promo Code")}
+              </Typography>
+
+              <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+                {languages.map((lang) => (
+                  <Button
+                    key={lang}
+                    variant={selectedLang === lang ? "contained" : "outlined"}
+                    onClick={() => setSelectedLang(lang)}
+                  >
+                    {lang}
+                  </Button>
+                ))}
+              </Stack>
+              <span>
+                {t("Name")} ({selectedLang})
+              </span>
               <TextField
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -115,7 +112,10 @@ const EditCouponsCodes = () => {
                 variant="outlined"
                 required
               />
-              <span>Amount</span>
+              <span>
+                {t("Amount")} ({selectedLang})
+              </span>
+
               <TextField
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
@@ -138,7 +138,7 @@ const EditCouponsCodes = () => {
                 }}
                 onClick={handleSubmit}
               >
-                Update
+                {t("Update")}
               </Button>
             </Box>
           )}

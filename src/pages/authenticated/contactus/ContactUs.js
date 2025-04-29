@@ -7,7 +7,7 @@ import PageTitle from "../../common/PageTitle";
 import { DataGrid } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { MenuItem } from "@mui/material";
-
+import Compose from "../emails/Compose";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
   IconButton,
@@ -25,6 +25,7 @@ import httpClient from "../../../util/HttpClient";
 import swal from "sweetalert2";
 import { Visibility } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import EditIcon from "@mui/icons-material/Edit";
 
 const ContactUs = () => {
   const [alertMessage, setAlertMessage] = useState("");
@@ -37,6 +38,9 @@ const ContactUs = () => {
     page: 0,
     pageSize: 5,
   });
+  const [openCompose, setOpenCompose] = useState(false);
+  const [selectedEmail, setSelectedEmail] = useState("");
+
   const [update, setUpdate] = useState();
   const { t } = useTranslation();
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -64,20 +68,20 @@ const ContactUs = () => {
       field: "col5",
       headerName: t("Team"),
       width: 150,
-      renderCell: (params) => (
-        <TextField
-          select
-          value={params.row.col5}
-          // onChange={(e) => handleTeamChange(e, params.row)}
-          variant="standard"
-          size="small"
-          sx={{ minWidth: 120 }}
-        >
-          <MenuItem value="technical">Technical</MenuItem>
-          <MenuItem value="support">Support</MenuItem>
-          <MenuItem value="business">Business</MenuItem>
-        </TextField>
-      ),
+      // renderCell: (params) => (
+      //   <TextField
+      //     select
+      //     value={params.row.col5}
+      //     // onChange={(e) => handleTeamChange(e, params.row)}
+      //     variant="standard"
+      //     size="small"
+      //     sx={{ minWidth: 120 }}
+      //   >
+      //     <MenuItem value="technical">Technical</MenuItem>
+      //     <MenuItem value="support">Support</MenuItem>
+      //     <MenuItem value="business">Business</MenuItem>
+      //   </TextField>
+      // ),
     },
     {
       field: "col6",
@@ -132,6 +136,9 @@ const ContactUs = () => {
       width: 150,
       renderCell: (params) => (
         <>
+          <EditIcon
+            style={{ color: "gold", marginRight: "20px", cursor: "pointer" }}
+          />
           <MailOutlineIcon
             className="me-2"
             cursor="pointer"
@@ -148,9 +155,15 @@ const ContactUs = () => {
     },
   ];
 
+  // const handleSendMail = (row) => {
+  //   navigate("Compose", { state: { email: row.col4 } });
+  // };
+
   const handleSendMail = (row) => {
-    navigate("contact", { state: { email: row.col4 } });
+    setSelectedEmail(row.col4); // assuming col4 is the email column
+    setOpenCompose(true);
   };
+  console.log("emails", selectedEmail);
 
   const handleView = (row) => {
     setSelectedFeedback(row);
@@ -334,6 +347,11 @@ const ContactUs = () => {
               }
               loading={loading}
               autoHeight
+            />
+            <Compose
+              open={openCompose}
+              onClose={() => setOpenCompose(false)}
+              defaultEmail={selectedEmail}
             />
           </div>
         </CContainer>

@@ -1,11 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import PageTitle from "../../common/PageTitle";
 import httpClient from "../../../util/HttpClient";
 import Loader from "../../../components/loader/Loader";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
+const languages = ["English", "Hindi", "Telugu", "Tamil"];
 
 const EditPromoCodes = () => {
   const [name, setName] = useState("");
@@ -14,6 +24,8 @@ const EditPromoCodes = () => {
   const [discountPercentage, setDiscountPercentage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [selectedLang, setSelectedLang] = useState("English");
+  const { t } = useTranslation();
 
   let params = useParams();
   let navigate = useNavigate();
@@ -73,73 +85,107 @@ const EditPromoCodes = () => {
         <PageTitle title="Update Promo Code" />
 
         <Container maxWidth="sm">
-          {isLoading && <Loader />}
-          {!isLoading && (
-            <Box component="form" noValidate autoComplete="off" sx={{ mt: 4 }}>
-              {message && (
-                <Typography
-                  variant="body2"
-                  color={message.includes("Failed") ? "red" : "green"}
-                  sx={{ mb: 2 }}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              mt: 4,
+              p: 2,
+              border: "1px solid #ccc",
+              borderRadius: 1,
+            }}
+          >
+            <Typography variant="h5" component="h1" gutterBottom>
+              {t("Create a New Discount Coupons")}
+            </Typography>
+            <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+              {languages.map((lang) => (
+                <Button
+                  key={lang}
+                  variant={selectedLang === lang ? "contained" : "outlined"}
+                  onClick={() => setSelectedLang(lang)}
                 >
-                  {message}
-                </Typography>
-              )}
-              <span>Name</span>
+                  {lang}
+                </Button>
+              ))}
+            </Stack>
+            <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+              <span>
+                {t("Name")} ({selectedLang})
+              </span>
               <TextField
+                variant="outlined"
+                fullWidth
+                margin="normal"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                fullWidth
-                margin="normal"
-                variant="outlined"
                 required
               />
-              <span>Minimum Tickets</span>
+              <span>
+                {t("Minimum Tickets")} ({selectedLang})
+              </span>
+
               <TextField
+                variant="outlined"
+                fullWidth
+                margin="normal"
                 value={minTickets}
                 onChange={(e) => setMinTickets(e.target.value)}
-                fullWidth
-                margin="normal"
-                variant="outlined"
                 required
                 type="number"
               />
-              <span>Maximum Tickets</span>
+              <span>
+                {t("Maximum Tickets")} ({selectedLang})
+              </span>
+
               <TextField
+                variant="outlined"
+                fullWidth
+                margin="normal"
                 value={maxTickets}
                 onChange={(e) => setMaxTickets(e.target.value)}
-                fullWidth
-                margin="normal"
-                variant="outlined"
                 required
                 type="number"
               />
-              <span>Discount Percentage</span>
+              <span>
+                {t("Discount Percentage")} ({selectedLang})
+              </span>
+
               <TextField
-                value={discountPercentage}
-                onChange={(e) => setDiscountPercentage(e.target.value)}
+                variant="outlined"
                 fullWidth
                 margin="normal"
-                variant="outlined"
+                value={discountPercentage}
+                onChange={(e) => setDiscountPercentage(e.target.value)}
                 required
                 type="number"
               />
               <Button
+                type="submit"
                 variant="contained"
                 color="primary"
+                fullWidth
+                disabled={isLoading}
                 sx={{
                   mt: 4,
-                  ml: 2,
                   mb: 4,
-                  display: "block",
                   backgroundColor: "orange",
                 }}
-                onClick={handleSubmit}
               >
-                Update
+                {isLoading ? "Submitting..." : "Submit"}
               </Button>
-            </Box>
-          )}
+            </form>
+            {message && (
+              <Typography
+                variant="body2"
+                color={message.includes("successfully") ? "green" : "red"}
+                sx={{ mt: 2 }}
+              >
+                {message}
+              </Typography>
+            )}
+          </Box>
         </Container>
       </div>
     </>

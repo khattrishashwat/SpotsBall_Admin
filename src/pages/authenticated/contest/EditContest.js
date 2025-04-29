@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  TextField,
+  Typography,
+  Paper,
+  Stack,
+  Grid,
+} from "@mui/material";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import Loader from "../../../components/loader/Loader";
@@ -7,12 +16,16 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import httpClient from "../../../util/HttpClient";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
+
+const languages = ["English", "Hindi", "Telugu", "Tamil"];
 
 const EditContest = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
   const { x, y } = location.state || {};
+  const { t } = useTranslation();
 
   // State management
   const [title, setTitle] = useState("");
@@ -33,6 +46,8 @@ const EditContest = () => {
   const [gstOnPlatformFeeRate, setGstOnPlatformFeeRate] = useState("");
   const [cousor, setCousor] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedLang, setSelectedLang] = useState("English");
+  const [errors, setErrors] = useState({});
 
   // Winning coordinates
   const initialCoordinates = x && y ? `{"x": ${x}, "y": ${y}}` : "";
@@ -52,46 +67,46 @@ const EditContest = () => {
     let error = "";
     switch (name) {
       case "title":
-        if (!value.trim()) error = "Title is required";
+        if (!value) error = "Title is required";
         else if (countWords(value) > 150)
           error = "Title must not exceed 150 words";
         break;
       case "description":
-        if (!value.trim()) error = "Description is required";
+        if (!value) error = "Description is required";
         else if (countWords(value) > 200)
           error = "Description must not exceed 200 words";
         break;
       case "jackpotPrice":
-        if (!value.trim()) error = "Jackpot Price is required";
+        if (!value) error = "Jackpot Price is required";
         else if (!isNumeric(value)) error = "Jackpot Price must be numeric";
         else if (value.length < 1 || value.length > 5)
           error = "Jackpot Price must be between 1 and 5 digits";
         break;
       case "ticketPrice":
-        if (!value.trim()) error = "Ticket Price is required";
+        if (!value) error = "Ticket Price is required";
         else if (!isNumeric(value)) error = "Ticket Price must be numeric";
         else if (value.length < 1 || value.length > 5)
           error = "Ticket Price must be between 1 and 5 digits";
         break;
       case "contestStartDate":
-        if (!value.trim()) error = "Contest Start Date is required";
+        if (!value) error = "Contest Start Date is required";
         break;
       case "imageWidth":
-        if (!value.trim()) error = "Image Width is required";
+        if (!value) error = "Image Width is required";
         else if (isNaN(value)) error = "Image Width must be a number";
         break;
       case "imageHeight":
-        if (!value.trim()) error = "Image Height is required";
+        if (!value) error = "Image Height is required";
         else if (isNaN(value)) error = "Image Height must be a number";
         break;
       case "maxTickets":
-        if (!value.trim()) error = "Max Tickets is required";
+        if (!value) error = "Max Tickets is required";
         else if (!isNumeric(value)) error = "Max Tickets must be numeric";
         else if (value.length < 1 || value.length > 3)
           error = "Max Tickets must be between 1 and 3 digits";
         break;
       case "cousor":
-        if (!value.trim()) error = "Cursor color is required";
+        if (!value) error = "Cursor color is required";
         break;
       default:
         break;
@@ -316,212 +331,246 @@ const EditContest = () => {
           <ArrowBackIcon />
           Back
         </Button>
-        <Container maxWidth="sm" className="d-flex justify-content-center">
+        <Container maxWidth="lg">
           {isLoading && <Loader />}
-          <Box component="form" sx={{ mt: 4 }}>
-            <Typography variant="h6">Edit Contest</Typography>
-            <label>Title</label>
-            <TextField
-              value={title}
-              onChange={handleTitleChange}
-              fullWidth
-              margin="normal"
-              placeholder="Enter contest title"
-              helperText={validateField("title", title)}
-              error={!!validateField("title", title)}
-            />
-            <label>Description</label>
-            <TextField
-              value={description}
-              onChange={handleDescriptionChange}
-              fullWidth
-              margin="normal"
-              placeholder="Enter contest description"
-              helperText={validateField("description", description)}
-              error={!!validateField("description", description)}
-            />
-            {/* <div>
-              <label>Original Player Image</label>
-              <TextField
-                type="file"
-                onChange={(e) => handleFileChange(e, setOriginalPlayerImage)}
-                fullWidth
-                margin="normal"
-                variant="outlined"
-              />
-              {originalPlayerImage && (
-                <img
-                  src={
-                    typeof originalPlayerImage === "string"
-                      ? originalPlayerImage
-                      : URL.createObjectURL(originalPlayerImage)
-                  }
-                  alt="Player Preview"
-                  style={{ width: "100px", marginTop: "10px" }}
-                />
-              )}
-            </div> */}
-            <div>
-              <label>Contest Banner Image</label>
-              <TextField
-                type="file"
-                onChange={(e) => handleFileChange(e, setContestBanner)}
-                fullWidth
-                margin="normal"
-              />
-              {contestBanner && (
-                <img
-                  src={
-                    typeof contestBanner === "string"
-                      ? contestBanner
-                      : URL.createObjectURL(contestBanner)
-                  }
-                  alt="Banner Preview"
-                  style={{ width: "100px", marginTop: "10px" }}
-                />
-              )}
-            </div>
-            <div>
-              <label>Play Screen  Image</label>
-              <TextField
-                type="file"
-                onChange={handlePlayerImageChange}
-                fullWidth
-                margin="normal"
-              />
-              {playerImage && (
-                <img
-                  src={
-                    typeof playerImage === "string"
-                      ? playerImage
-                      : URL.createObjectURL(playerImage)
-                  }
-                  alt="Player Preview"
-                  style={{ width: "100px", marginTop: "10px" }}
-                />
-              )}
-            </div>
-            <label>Jackpot Price</label>
-            <TextField
-              value={jackpotPrice}
-              onChange={handleChange}
-              name="jackpotPrice"
-              fullWidth
-              margin="normal"
-              placeholder="Enter jackpot price"
-              inputProps={{ maxLength: 5 }}
-              helperText={validateField("jackpotPrice", jackpotPrice)}
-              error={!!validateField("jackpotPrice", jackpotPrice)}
-            />
-            <label>Ticket Price</label>
-            <TextField
-              value={ticketPrice}
-              onChange={handleChange}
-              name="ticketPrice"
-              fullWidth
-              margin="normal"
-              placeholder="Enter ticket price"
-              inputProps={{ maxLength: 5 }}
-              helperText={validateField("ticketPrice", ticketPrice)}
-              error={!!validateField("ticketPrice", ticketPrice)}
-            />
-            <label>Contest Start Date</label>
-            <TextField
-              type="datetime-local"
-              value={contestStartDate}
-              onChange={handleChange}
-              name="contestStartDate"
-              fullWidth
-              margin="normal"
-              InputProps={{
-                inputProps: {
-                  min: new Date().toISOString().slice(0, 16),
-                },
-              }}
-              helperText={validateField("contestStartDate", contestStartDate)}
-              error={!!validateField("contestStartDate", contestStartDate)}
-            />
-            <label>Image Width</label>
-            <TextField
-              value={imageWidth}
-              fullWidth
-              margin="normal"
-              placeholder="Auto-populated"
-              disabled
-              helperText={validateField("imageWidth", imageWidth)}
-              error={!!validateField("imageWidth", imageWidth)}
-            />
-            <label>Image Height</label>
-            <TextField
-              value={imageHeight}
-              fullWidth
-              margin="normal"
-              placeholder="Auto-populated"
-              disabled
-              helperText={validateField("imageHeight", imageHeight)}
-              error={!!validateField("imageHeight", imageHeight)}
-            />
-            <label>Max Tickets</label>
-            <TextField
-              value={maxTickets}
-              onChange={handleChange}
-              name="maxTickets"
-              fullWidth
-              margin="normal"
-              placeholder="Enter max tickets"
-              inputProps={{ maxLength: 3 }}
-              helperText={validateField("maxTickets", maxTickets)}
-              error={!!validateField("maxTickets", maxTickets)}
-            />
-            <label>Ticket Quantities</label>
-            <div>
-              {quantities.map((qty, index) => (
-                <TextField
-                  key={index}
-                  value={qty}
-                  onChange={(e) => handleQuantityChange(index, e.target.value)}
-                  margin="normal"
-                  placeholder={`Quantity ${index + 1}`}
-                />
+          <Paper elevation={3} sx={{ p: 4, mt: 4, borderRadius: 3 }}>
+            <Typography variant="h4" align="center" gutterBottom>
+              Edit Contest
+            </Typography>
+
+            <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+              {languages.map((lang) => (
+                <Button
+                  key={lang}
+                  variant={selectedLang === lang ? "contained" : "outlined"}
+                  onClick={() => setSelectedLang(lang)}
+                >
+                  {lang}
+                </Button>
               ))}
-            </div>
-            <label>GST Rate</label>
-            <TextField value={gstRate} fullWidth margin="normal" disabled />
-            <label>Platform Fee Rate</label>
-            <TextField
-              value={platformFeeRate}
-              fullWidth
-              margin="normal"
-              disabled
-            />
-            <label>GST on Platform Fee Rate</label>
-            <TextField
-              value={gstOnPlatformFeeRate}
-              fullWidth
-              margin="normal"
-              disabled
-            />
-            <label>Choose Cursor Color</label>
-            <TextField
-              value={cousor}
-              onChange={handleChange}
-              name="cousor"
-              fullWidth
-              margin="normal"
-              placeholder="Enter cursor color"
-              helperText={validateField("cousor", cousor)}
-              error={!!validateField("cousor", cousor)}
-            />
-            <Button
-              sx={{ mt: 4, mb: 4 }}
-              variant="contained"
-              color="primary"
-              fullWidth
-              onClick={handleSubmit}
-            >
-              Update Contest
-            </Button>
-          </Box>
+            </Stack>
+            <Box component="form" noValidate autoComplete="off">
+              <Grid container spacing={4}>
+                {/* Left Side Fields */}
+                <Grid item xs={12} md={6}>
+                  <Typography>{t(`Title*(${selectedLang})`)}</Typography>
+                  <TextField
+                    name="title"
+                    value={title}
+                    onChange={handleTitleChange}
+                    fullWidth
+                    margin="normal"
+                    error={!!errors.title}
+                    helperText={errors.title}
+                  />
+                  <Typography>{t(`Description*(${selectedLang})`)}</Typography>
+
+                  <TextField
+                    name="description"
+                    value={description}
+                    onChange={handleDescriptionChange}
+                    fullWidth
+                    margin="normal"
+                    error={!!errors.description}
+                    helperText={errors.description}
+                  />
+                  <Typography>
+                    {t(`Jackpot Price*(${selectedLang})`)}
+                  </Typography>
+
+                  <TextField
+                    name="jackpotPrice"
+                    value={jackpotPrice}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    error={!!errors.jackpotPrice}
+                    helperText={errors.jackpotPrice}
+                    inputProps={{ maxLength: 5 }}
+                  />
+                  <Typography>{t(`Ticket Price*(${selectedLang})`)}</Typography>
+
+                  <TextField
+                    name="ticketPrice"
+                    value={ticketPrice}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    error={!!errors.ticketPrice}
+                    helperText={errors.ticketPrice}
+                    inputProps={{ maxLength: 5 }}
+                  />
+                  <Typography>
+                    {t(`Contest Start Date*(${selectedLang})`)}
+                  </Typography>
+
+                  <TextField
+                    name="contestStartDate"
+                    value={contestStartDate}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    type="datetime-local"
+                    error={!!errors.contestStartDate}
+                    helperText={errors.contestStartDate}
+                    InputProps={{
+                      inputProps: {
+                        min: new Date().toISOString().slice(0, 16),
+                      },
+                    }}
+                  />
+                  <Typography>{t(`Max Tickets*(${selectedLang})`)}</Typography>
+
+                  <TextField
+                    name="maxTickets"
+                    value={maxTickets}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    error={!!errors.maxTickets}
+                    helperText={errors.maxTickets}
+                    inputProps={{ maxLength: 3 }}
+                  />
+                  <Typography>
+                    {t(`Choose Cursor Color*(${selectedLang})`)}
+                  </Typography>
+
+                  <TextField
+                    name="cousor"
+                    value={cousor}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    error={!!errors.cousor}
+                    helperText={errors.cousor}
+                  />
+                  <Typography>{t(`GST Rate*(${selectedLang})`)}</Typography>
+
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    value={gstRate}
+                    disabled
+                  />
+                  <Typography>
+                    {t(`Platform Fee Rate*(${selectedLang})`)}
+                  </Typography>
+
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    value={platformFeeRate}
+                    disabled
+                  />
+                  <Typography>
+                    {t(`GST on Platform Fee Rate*(${selectedLang})`)}
+                  </Typography>
+
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    value={gstOnPlatformFeeRate}
+                    disabled
+                  />
+                </Grid>
+
+                {/* Right Side Fields */}
+                <Grid item xs={12} md={6}>
+                  <Typography>
+                    {t(`Contest Banner Image*(${selectedLang})`)}
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    variant="outlined"
+                    type="file"
+                    onChange={(e) => handleFileChange(e, setContestBanner)}
+                  />
+
+                  {contestBanner && (
+                    <img
+                      src={
+                        typeof contestBanner === "string"
+                          ? contestBanner
+                          : URL.createObjectURL(contestBanner)
+                      }
+                      alt="Banner Preview"
+                      style={{ width: "100px", marginTop: "10px" }}
+                    />
+                  )}
+                  <Typography>
+                    {t(`Play Screen Imagele*(${selectedLang})`)}
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    variant="outlined"
+                    type="file"
+                    onChange={handlePlayerImageChange}
+                  />
+                  {playerImage && (
+                    <img
+                      src={
+                        typeof playerImage === "string"
+                          ? playerImage
+                          : URL.createObjectURL(playerImage)
+                      }
+                      alt="Player Preview"
+                      style={{ width: "100px", marginTop: "10px" }}
+                    />
+                  )}
+                  <Typography>{t(`Image Width*(${selectedLang})`)}</Typography>
+                  <TextField
+                    name="imageWidth"
+                    value={imageWidth}
+                    fullWidth
+                    margin="normal"
+                    disabled
+                    error={!!errors.imageWidth}
+                    helperText={errors.imageWidth}
+                  />
+                  <Typography>{t(`Image Height*(${selectedLang})`)}</Typography>
+                  <TextField
+                    name="imageHeight"
+                    value={imageHeight}
+                    fullWidth
+                    margin="normal"
+                    disabled
+                    error={!!errors.imageHeight}
+                    helperText={errors.imageHeight}
+                  />
+                  {quantities.map((quantity, index) => (
+                    <Box key={index}>
+                      <Typography>
+                        {t(`Ticket Quantity (${selectedLang}) `)}
+                        {index + 1}
+                      </Typography>
+
+                      {/* <Typography>Ticket Quantity {index + 1}</Typography> */}
+                      <TextField
+                        value={quantity}
+                        onChange={(e) =>
+                          handleQuantityChange(index, e.target.value)
+                        }
+                        fullWidth
+                        margin="normal"
+                      />
+                    </Box>
+                  ))}
+                </Grid>
+              </Grid>
+
+              <Button
+                onClick={handleSubmit}
+                fullWidth
+                variant="contained"
+                color="primary"
+                sx={{ mt: 4 }}
+              >
+                Add Contest
+              </Button>
+            </Box>
+          </Paper>
         </Container>
       </div>
     </>

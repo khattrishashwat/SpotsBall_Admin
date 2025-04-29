@@ -30,7 +30,7 @@ function BarGraph() {
               { label: "Normal Login", data: [50, 70, 90, 120, 140, 160] },
               { label: "Google Login", data: [40, 60, 85, 110, 130, 150] },
               { label: "Facebook Login", data: [30, 50, 75, 100, 120, 140] },
-              { label: "Twitter Login", data: [20, 40, 65, 90, 110, 130] },
+              // { label: "Twitter Login", data: [20, 40, 65, 90, 110, 130] },
             ]}
             width={500}
             height={400}

@@ -3,47 +3,60 @@ import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import { CCol, CContainer } from "@coreui/react";
 import PageTitle from "../../common/PageTitle";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridOverlay } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Button, IconButton, Snackbar, CircularProgress } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import {
+  Button,
+  IconButton,
+  Snackbar,
+  CircularProgress,
+  Typography,
+  Tooltip,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import httpClient from "../../../util/HttpClient";
 import swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import EditIcon from "@mui/icons-material/Edit";
+
+const CustomNoRowsOverlay = () => {
+  return (
+    <GridOverlay>
+      <Typography variant="h6" color="textSecondary">
+        No data found
+      </Typography>
+    </GridOverlay>
+  );
+};
 
 const InPress = () => {
-  const [alertMessage, setAlertMessage] = useState();
+  const [alertMessage, setAlertMessage] = useState("");
   const [apiSuccess, setApiSuccess] = useState(false);
   const [apiError, setApiError] = useState(false);
   const [closeSnakeBar, setCloseSnakeBar] = useState(false);
   const [userCount, setUserCount] = useState(0);
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState("");
+  const navigate = useNavigate();
+
   const [paginationModel, setPaginationModel] = useState({
-    page: 1,
+    page: 0,
     pageSize: 10,
   });
 
-  const [filterMode, setFilterMode] = useState("name");
-  const [status, setStatus] = useState("");
-  const [keyword, setKeyword] = useState("");
-  const navigate = useNavigate();
-
-  const handleSelect = (e) => {
-    httpClient
-      .patch(`/admin/users/${e.target.id}`, {
-        is_active: e.target.value === "active" ? true : false,
-      })
-      .then((res) => {
-        console.log("update status ==> ", res);
-        setStatus("ok");
-      });
-  };
-
   const columns = [
     { field: "col1", headerName: "#", width: 80 },
-    { field: "col2", headerName: "Title", width: 250 },
+    {
+      field: "col2",
+      headerName: "Title",
+      width: 250,
+      renderCell: (params) => (
+        <Tooltip title={params.value}>
+          <span>{params.value}</span>
+        </Tooltip>
+      ),
+    },
     {
       field: "col3",
       headerName: "Image",
@@ -109,18 +122,17 @@ const InPress = () => {
     setLoading(true);
     httpClient
       .get(
-        `admin/press/get-press?page=${paginationModel.page}&limit=${paginationModel.pageSize}`
+        `admin/press/get-press?page=${paginationModel.page + 1}&limit=${
+          paginationModel.pageSize
+        }`
       )
       .then((res) => {
         const data = res.data.data;
-        setUserCount(data?.pagination?.total); // Total number of records
-        setLoading(false);
+        setUserCount(data?.pagination?.total);
         setRows(
           data.data.map((user, index) => ({
             id: user._id,
-            col1:
-              (paginationModel.page - 1) * paginationModel.pageSize +
-              (index + 1),
+            col1: paginationModel.page * paginationModel.pageSize + (index + 1),
             col2: user.title || "N/A",
             col3: user.press_banner || "N/A",
             col4: user.link || "N/A",
@@ -132,23 +144,14 @@ const InPress = () => {
               : "N/A",
           }))
         );
-        setStatus("");
+        setLoading(false);
       })
       .catch((error) => {
         setLoading(false);
         console.error(error);
       });
-  }, [paginationModel, alertMessage, status, keyword]);
+  }, [paginationModel, status]);
 
-  const handlePageChange = (newPage) => {
-    setPaginationModel((prev) => ({ ...prev, page: newPage }));
-  };
-
-  const handlePageSizeChange = (newPageSize) => {
-    setPaginationModel({ page: 1, pageSize: newPageSize }); // Reset to page 0 when changing size
-  };
-
-  // Handle confirmation before deleting
   const confirmBeforeDelete = (e, params) => {
     swal
       .fire({
@@ -173,7 +176,6 @@ const InPress = () => {
         setAlertMessage(res.data.message);
         setApiSuccess(true);
         setApiError(false);
-        setLoading(false);
         setCloseSnakeBar(true);
         setStatus("deleted");
       })
@@ -182,7 +184,6 @@ const InPress = () => {
         setApiError(true);
         setApiSuccess(false);
         setCloseSnakeBar(true);
-        setLoading(false);
       });
   };
 
@@ -192,16 +193,13 @@ const InPress = () => {
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
         <PageTitle title="Blog" />
-
         <CContainer>
           <div className="d-flex justify-content-between align-items-center">
-            <h4 className="">Blog : </h4>
+            <h4 className="">Blog :</h4>
             <Button
               variant="contained"
               className="my-2"
-              sx={{
-                backgroundColor: "orange",
-              }}
+              sx={{ backgroundColor: "orange" }}
               onClick={() => navigate("add-blogs")}
             >
               Add Press
@@ -210,7 +208,6 @@ const InPress = () => {
           <div
             style={{
               height: "600px",
-              minHeight: "600px",
               border: "1px solid gray",
               padding: 15,
               borderRadius: 5,
@@ -220,6 +217,12 @@ const InPress = () => {
               open={closeSnakeBar}
               autoHideDuration={1000}
               message={alertMessage}
+              onClose={() => {
+                setCloseSnakeBar(false);
+                setAlertMessage("");
+                setApiError(false);
+                setApiSuccess(false);
+              }}
               ContentProps={{
                 sx: apiSuccess
                   ? { backgroundColor: "green" }
@@ -230,66 +233,60 @@ const InPress = () => {
                 vertical: "bottom",
               }}
               action={
-                <React.Fragment>
-                  <IconButton
-                    aria-label="close"
-                    color="inherit"
-                    sx={{ p: 0.5 }}
-                    onClick={() => setCloseSnakeBar(false)}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </React.Fragment>
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  sx={{ p: 0.5 }}
+                  onClick={() => setCloseSnakeBar(false)}
+                >
+                  <CloseIcon />
+                </IconButton>
               }
             />
-            <DataGrid
-              sx={{
-                "& .MuiDataGrid-row:nth-of-type(2n)": {
-                  backgroundColor: "#f5f5f5", // Light background for even rows
-                },
-                "& .MuiDataGrid-columnHeader": {
-                  backgroundColor: "#f0f0f0", // Header background
-                  color: "#333",
-                  fontWeight: "bold",
-                },
-                "& .MuiDataGrid-cell": {
-                  color: "#333",
-                },
-                "& .MuiDataGrid-row:hover": {
-                  backgroundColor: "#f0f0f0", // Hover effect
-                },
-              }}
-              rows={rows}
-              columns={columns}
-              rowCount={userCount}
-              paginationMode="server"
-              pageSizeOptions={[10, 20, 30]}
-              pageSize={paginationModel.pageSize}
-              page={paginationModel.page}
-              onPageChange={handlePageChange}
-              onPageSizeChange={handlePageSizeChange}
-              loading={loading}
-              autoHeight
-              components={{
-                LoadingOverlay: () => (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      backgroundColor: "rgba(255, 255, 255, 0.7)",
-                    }}
-                  >
-                    <CircularProgress />
-                  </div>
-                ),
-              }}
-            />
+
+            {loading ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: 30,
+                }}
+              >
+                <CircularProgress />
+              </div>
+            ) : (
+              <DataGrid
+                sx={{
+                  "& .MuiDataGrid-row:nth-of-type(2n)": {
+                    backgroundColor: "#f5f5f5",
+                  },
+                  "& .MuiDataGrid-columnHeader": {
+                    backgroundColor: "#f0f0f0",
+                    color: "#333",
+                    fontWeight: "bold",
+                  },
+                  "& .MuiDataGrid-cell": {
+                    color: "#333",
+                  },
+                  "& .MuiDataGrid-row:hover": {
+                    backgroundColor: "#f0f0f0",
+                  },
+                }}
+                rows={rows}
+                columns={columns}
+                rowCount={userCount}
+                pageSize={paginationModel.pageSize}
+                page={paginationModel.page}
+                pagination
+                paginationMode="server"
+                paginationModel={paginationModel}
+                onPaginationModelChange={setPaginationModel}
+                components={{
+                  NoRowsOverlay: CustomNoRowsOverlay,
+                }}
+                disableSelectionOnClick
+              />
+            )}
           </div>
         </CContainer>
       </div>

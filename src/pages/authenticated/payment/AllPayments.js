@@ -11,6 +11,7 @@ import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import PageTitle from "../../common/PageTitle";
 import Loader from "../../../components/loader/Loader";
+import { useTranslation } from "react-i18next";
 
 const AllPayments = () => {
   const navigate = useNavigate();
@@ -25,10 +26,11 @@ const AllPayments = () => {
     page: 0,
     pageSize: 10,
   });
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchContestAllPayment();
-  }, []);
+  }, [paginationModel]);
 
   const fetchContestAllPayment = async () => {
     setLoading(true);
@@ -43,8 +45,7 @@ const AllPayments = () => {
       setRows(
         contestData.data.map((record, index) => ({
           id: record._id,
-          col1:
-            (paginationModel.page) * paginationModel.pageSize + (index + 1), // Updated this line
+          col1: paginationModel.page * paginationModel.pageSize + (index + 1), // Updated this line
           col2: record.userId || "N/A",
           col3: record.contestId || "N/A",
           col4: record.discountApplied?.name
@@ -100,18 +101,18 @@ const AllPayments = () => {
 
   const columns = [
     { field: "col1", headerName: "#", width: 80 },
-    { field: "col2", headerName: "User", width: 200 },
-    { field: "col3", headerName: "Contest", width: 200 },
-    { field: "col4", headerName: "Discount Amount", width: 150 },
-    { field: "col5", headerName: "Promo Codes", width: 180 },
-    { field: "col6", headerName: "Tickets", width: 150 },
-    { field: "col7", headerName: "Ticket Amount", width: 150 },
-    { field: "col8", headerName: "Amount (All Tax Included)", width: 180 },
-    { field: "col9", headerName: "Payment ID", width: 180 },
-    { field: "col10", headerName: "Transaction Status", width: 250 },
+    { field: "col2", headerName: t("User"), width: 200 },
+    { field: "col3", headerName: t("Contest"), width: 200 },
+    { field: "col4", headerName: t("Discount Amount"), width: 150 },
+    { field: "col5", headerName: t("Promo Codes"), width: 180 },
+    { field: "col6", headerName: t("Tickets"), width: 150 },
+    { field: "col7", headerName: t("Ticket Amount"), width: 150 },
+    { field: "col8", headerName: t("Amount (All Tax Included)"), width: 180 },
+    { field: "col9", headerName: t("Payment ID"), width: 180 },
+    { field: "col10", headerName: t("Transaction Status"), width: 250 },
     {
       field: "col11",
-      headerName: "PDF",
+      headerName: t("PDF"),
       width: 180,
       renderCell: (params) =>
         params.value !== "N/A" ? (
@@ -138,12 +139,6 @@ const AllPayments = () => {
     setPaginationModel(newPaginationModel);
   };
 
-  const getPaginatedData = () => {
-    const startIndex = paginationModel.page * paginationModel.pageSize;
-    const endIndex = startIndex + paginationModel.pageSize;
-    return rows.slice(startIndex, endIndex);
-  };
-
   const handleRecordPerPage = (e) => {
     const newPageSize = e.target.value;
     setPaginationModel((prevState) => ({
@@ -159,7 +154,7 @@ const AllPayments = () => {
         <AppHeader />
         <PageTitle title="All Payment" />
         <CContainer>
-          <h4>All Payments:</h4>
+          <h4>{t("All Payments")}:</h4>
           <Snackbar
             open={closeSnackBar}
             autoHideDuration={2000}
@@ -185,8 +180,8 @@ const AllPayments = () => {
               rows={rows}
               columns={columns}
               rowCount={userCount}
-              pageSize={paginationModel.pageSize}
-              page={paginationModel.page} // Fixing page indexing
+              pageSizeOptions={[10, 20, 50]}
+              paginationModel={paginationModel}
               pagination
               paginationMode="server"
               onPaginationModelChange={handlePaginationChange}

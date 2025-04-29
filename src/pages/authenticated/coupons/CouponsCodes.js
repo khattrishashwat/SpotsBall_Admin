@@ -13,6 +13,7 @@ import {
   Close as CloseIcon,
 } from "@mui/icons-material";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
 const CouponsCodes = () => {
   const [rows, setRows] = useState([]);
@@ -24,6 +25,7 @@ const CouponsCodes = () => {
     page: 0,
     pageSize: 10,
   });
+  const { t } = useTranslation();
 
   const navigate = useNavigate();
 
@@ -113,13 +115,13 @@ const CouponsCodes = () => {
 
   const columns = [
     { field: "index", headerName: "#", width: 80 },
-    { field: "name", headerName: "Name", width: 150 },
-    { field: "amount", headerName: "Amount", width: 150 },
-    { field: "createdAt", headerName: "Created At", width: 180 },
-    { field: "updatedAt", headerName: "Updated At", width: 180 },
+    { field: "name", headerName: t("Name"), width: 150 },
+    { field: "amount", headerName: t("Amount"), width: 150 },
+    { field: "createdAt", headerName: t("Created At"), width: 180 },
+    { field: "updatedAt", headerName: t("Updated At"), width: 180 },
     {
       field: "active",
-      headerName: "Status",
+      headerName: t("Status"),
       width: 120,
       renderCell: (params) => (
         <Switch
@@ -130,7 +132,7 @@ const CouponsCodes = () => {
     },
     {
       field: "actions",
-      headerName: "Actions",
+      headerName: t("Actions"),
       width: 200,
       renderCell: (params) => (
         <>
@@ -153,13 +155,20 @@ const CouponsCodes = () => {
         <PageTitle title="Promo Codes" />
         <CContainer>
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h4>Promo Codes</h4>
+            <h4>{t("Promo Codes")}</h4>
+            <Button
+              variant="contained"
+              style={{ backgroundColor: "grey" }}
+              onClick={() => navigate("new_promo")}
+            >
+              {t("Old Promo Code")}
+            </Button>
             <Button
               variant="contained"
               style={{ backgroundColor: "orange" }}
-              onClick={() => navigate("new_promo")}
+              onClick={() => navigate("new")}
             >
-              Add New Promo Code
+              {t(" New Promo Code")}
             </Button>
           </div>
           <div

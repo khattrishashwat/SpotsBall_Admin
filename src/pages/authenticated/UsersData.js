@@ -15,6 +15,8 @@ import { CardMedia } from "@mui/material";
 import styled from "styled-components";
 import { GridOverlay } from "@mui/x-data-grid";
 import { Typography } from "@mui/material";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 const CustomNoRowsOverlay = () => {
   const { t } = useTranslation();
@@ -121,7 +123,7 @@ const UserData = () => {
       renderCell: (params) => {
         return (
           <Switch
-            checked={params.row.col3} // checked={params.row.col3 === true ? true : false}
+            checked={params.row.col3}
             onChange={(e) => handleStatusChange(e, params.row)}
           />
         );
@@ -130,23 +132,10 @@ const UserData = () => {
     { field: "col4", headerName: t("Name"), width: 200 },
     { field: "col5", headerName: t("Email"), width: 200 },
     { field: "col6", headerName: t("Phone Number"), width: 160 },
-    { field: "col7", headerName: t("Status"), width: 170 },
-    { field: "col8", headerName: t("TimeStamp"), width: 170 },
-    { field: "col9", headerName: t("Created Date"), width: 170 },
-    // {
-    //   field: "col8",
-    //   headerName: "Action",
-    //   width: 125,
-    //   renderCell: (params) => {
-    //     return (
-    //       <DeleteIcon
-    //         cursor={"pointer"}
-    //         style={{ color: "red" }}
-    //         onClick={(e) => confirmBeforeDelete(e, params.row)}
-    //       />
-    //     );
-    //   },
-    // },
+    { field: "col7", headerName: t("Account Deleted"), width: 170 },
+    { field: "col8", headerName: t("Visit Time"), width: 170 },
+    { field: "col9", headerName: t("TimeStamp"), width: 170 },
+    { field: "col10", headerName: t("Created Date"), width: 170 },
   ];
 
   //handle get confirmation before delete user
@@ -216,15 +205,24 @@ const UserData = () => {
             users.map((user, index) => ({
               id: user._id,
               col1:
-                paginationModel.page * paginationModel.pageSize + (index + 1), // Updated this line
-              col2: user.profile_url || "N/A",
+                paginationModel.page * paginationModel.pageSize + (index + 1),
+              col2: user.profile_url || null, // keep null instead of "N/A"
               col3: user.is_active,
               col4: `${user.first_name || "User"} ${
                 user.last_name || ""
               }`.trim(),
               col5: user.email || "Not Available",
-              col6: user.phone || "Not Available",
-              col9: user.createdAt?.substring(0, 10) || "N/A",
+              col6: user.phone
+                ? `${user.country_code || ""} ${user.phone}`
+                : "Not Available",
+              col7: user.isDeleted ? "Yes" : "No",
+              col8: user.login_count ?? "Not Available",
+              col9: user.last_login
+                ? new Date(user.last_login).toLocaleString()
+                : "Not Available",
+              col10: user.createdAt
+                ? new Date(user.createdAt).toISOString().substring(0, 10)
+                : "N/A",
             }))
           );
         })
@@ -249,12 +247,55 @@ const UserData = () => {
     }));
   };
 
+  const exportToExcel = () => {
+    const exportData = rows.map((row) => ({
+      Name: row.col4,
+      Email: row.col5,
+      "Phone Number": row.col6,
+      "Is Active": row.col3 ? "Active" : "Deactivated",
+      Deleted: row.col7,
+      "Visit Time": row.col8,
+      "Last Login": row.col9,
+      "Created Date": row.col10,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Users");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    });
+
+    saveAs(blob, "UserData.xlsx");
+  };
+
   return (
     <>
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
         <PageTitle title={t("User Management")} />
+        <button
+          onClick={exportToExcel}
+          style={{
+            padding: "6px 12px",
+            backgroundColor: "#1976d2",
+            color: "#fff",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+            marginBottom: "10px",
+          }}
+        >
+          📥 Export to Excel
+        </button>
+
         <CContainer>
           <h4 className="">{t("Users")}</h4>
           <div
@@ -361,13 +402,14 @@ const UserData = () => {
                 <DataGrid
                   rows={rows}
                   columns={columns}
+                  rowCount={userCount}
                   pageSize={paginationModel.pageSize}
                   page={paginationModel.page - 1}
                   pagination
                   paginationMode="server"
-                  rowCount={userCount}
                   paginationModel={paginationModel}
                   onPaginationModelChange={setPaginationModel}
+                  pageSizeOptions={[10, 50, 100]}
                   components={{
                     NoRowsOverlay: CustomNoRowsOverlay,
                   }}

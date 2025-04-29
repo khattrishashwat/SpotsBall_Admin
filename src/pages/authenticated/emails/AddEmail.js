@@ -204,7 +204,6 @@ export default function MailPage() {
           </Grid>
         </Box>
 
-        {/* 👈 Compose Drawer outside the main Box so it overlays on top */}
       </div>
     </>
   );

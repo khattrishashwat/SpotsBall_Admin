@@ -1,9 +1,19 @@
 import React, { useState } from "react";
-import { TextField, Button, Container, Box, Typography } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Container,
+  Box,
+  Stack,
+  Typography,
+} from "@mui/material";
 import httpClient from "../../../util/HttpClient"; // Adjust the import path based on your project structure
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
+const languages = ["English", "Hindi", "Telugu", "Tamil"];
 
 const AddPromoCodes = () => {
   const [name, setName] = useState("");
@@ -13,6 +23,8 @@ const AddPromoCodes = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   let navigate = useNavigate();
+  const { t } = useTranslation();
+  const [selectedLang, setSelectedLang] = useState("English");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -66,10 +78,23 @@ const AddPromoCodes = () => {
             }}
           >
             <Typography variant="h5" component="h1" gutterBottom>
-              Create a New Discount Coupons
+              {t("Create a New Discount Coupons")}
             </Typography>
+            <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+              {languages.map((lang) => (
+                <Button
+                  key={lang}
+                  variant={selectedLang === lang ? "contained" : "outlined"}
+                  onClick={() => setSelectedLang(lang)}
+                >
+                  {lang}
+                </Button>
+              ))}
+            </Stack>
             <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-              <span>Name</span>
+              <span>
+                {t("Name")} ({selectedLang})
+              </span>
               <TextField
                 variant="outlined"
                 fullWidth
@@ -78,7 +103,10 @@ const AddPromoCodes = () => {
                 onChange={(e) => setName(e.target.value)}
                 required
               />
-              <span>Minimum Tickets</span>
+              <span>
+                {t("Minimum Tickets")} ({selectedLang})
+              </span>
+
               <TextField
                 variant="outlined"
                 fullWidth
@@ -88,7 +116,10 @@ const AddPromoCodes = () => {
                 required
                 type="number"
               />
-              <span>Maximum Tickets</span>
+              <span>
+                {t("Maximum Tickets")} ({selectedLang})
+              </span>
+
               <TextField
                 variant="outlined"
                 fullWidth
@@ -98,7 +129,10 @@ const AddPromoCodes = () => {
                 required
                 type="number"
               />
-              <span>Discount Percentage</span>
+              <span>
+                {t("Discount Percentage")} ({selectedLang})
+              </span>
+
               <TextField
                 variant="outlined"
                 fullWidth

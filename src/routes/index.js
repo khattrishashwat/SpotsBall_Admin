@@ -10,6 +10,7 @@ import AddEmail from "../pages/authenticated/emails/AddEmail";
 import Notifications from "../pages/authenticated/notification/Notifications";
 import HowItWork from "../pages/authenticated/howitwork/HowItWork";
 import Compose from "../pages/authenticated/emails/Compose";
+import NewPromo from "../pages/authenticated/coupons/NewPromo";
 
 // Lazy load components
 const NotFound = lazy(() => import("../pages/common/NotFound"));
@@ -74,7 +75,6 @@ const UserPaticipate = lazy(() =>
 const ContactUs = lazy(() =>
   import("../pages/authenticated/contactus/ContactUs")
 );
-const Contact = lazy(() => import("../pages/authenticated/contactus/Contact"));
 const UserAccountDelete = lazy(() =>
   import("../pages/authenticated/UserAccountDelete")
 );
@@ -409,6 +409,11 @@ const routes = createBrowserRouter(
           element: LazyComponent(AddCouponsCodes),
         },
         {
+          // path: "coupons/new_coupons",
+          path: "promocodes/new",
+          element: LazyComponent(NewPromo),
+        },
+        {
           // path: "coupons/edit_coupons/:id",
           path: "promocodes/edit_promo/:id",
           element: LazyComponent(EditCouponsCodes),
@@ -476,10 +481,6 @@ const routes = createBrowserRouter(
         {
           path: "support",
           element: LazyComponent(ContactUs),
-        },
-        {
-          path: "support/contact",
-          element: LazyComponent(Contact),
         },
 
         {

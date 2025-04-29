@@ -10,6 +10,7 @@ import httpClient from "../../../util/HttpClient";
 import swal from "sweetalert2";
 import Loader from "../../../components/loader/Loader";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const ContestManagement = () => {
   const [alertMessage, setAlertMessage] = useState();
@@ -24,6 +25,7 @@ const ContestManagement = () => {
   });
 
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const fetchContests = () => {
     setLoading(true);
@@ -99,10 +101,10 @@ const ContestManagement = () => {
 
   const columns = [
     { field: "col1", headerName: "#", width: 150 },
-    { field: "col2", headerName: "Title", width: 205 },
+    { field: "col2", headerName: t("Title"), width: 205 },
     {
       field: "col3",
-      headerName: "Image",
+      headerName: t("Image"),
       width: 200,
       renderCell: (params) =>
         params.value !== "N/A" ? (
@@ -115,13 +117,13 @@ const ContestManagement = () => {
           ""
         ),
     },
-    { field: "col4", headerName: "₹ Price", width: 120 },
-    { field: "col5", headerName: "Max Ticket", width: 180 },
-    { field: "col6", headerName: "Contest Start Date", width: 180 },
-    { field: "col7", headerName: "Contest End Date", width: 180 },
+    { field: "col4", headerName: t("₹ Price"), width: 120 },
+    { field: "col5", headerName: t("Max Ticket"), width: 180 },
+    { field: "col6", headerName: t("Contest Start Date"), width: 180 },
+    { field: "col7", headerName: t("Contest End Date"), width: 180 },
     {
       field: "col8",
-      headerName: "Status",
+      headerName: t("Status"),
       width: 120,
       renderCell: (params) => (
         <span style={{ color: params.value ? "green" : "red" }}>
@@ -146,7 +148,7 @@ const ContestManagement = () => {
     // },
     {
       field: "col9",
-      headerName: "Action",
+      headerName: t("Action"),
       width: 200,
       renderCell: (params) => {
         // Convert dates to Date objects
@@ -187,9 +189,9 @@ const ContestManagement = () => {
 
         <CContainer>
           <div className="d-flex justify-content-between align-items-center">
-            <h4 className="my-4">Contest Management</h4>
+            <h4 className="my-4">{t("Contest Management")}</h4>
             <Button variant="contained" onClick={() => navigate("add-contest")}>
-              Add Contest
+              {t("Add Contest")}
             </Button>
           </div>
 
@@ -230,7 +232,7 @@ const ContestManagement = () => {
               loading={loading}
               autoHeight
               components={{
-                NoRowsOverlay: () => <div>No records to display</div>,
+                NoRowsOverlay: () => <div>{t("No records to display")}</div>,
               }}
               disableSelectionOnClick
             />
