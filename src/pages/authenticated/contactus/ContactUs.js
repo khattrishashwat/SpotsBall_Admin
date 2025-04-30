@@ -26,6 +26,7 @@ import swal from "sweetalert2";
 import { Visibility } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
+import Stepper from "./Stepper";
 
 const ContactUs = () => {
   const [alertMessage, setAlertMessage] = useState("");
@@ -47,16 +48,8 @@ const ContactUs = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
   const navigate = useNavigate();
-
-  const handleSelect = useCallback((e) => {
-    httpClient
-      .patch(`/admin/users/${e.target.id}`, {
-        is_active: e.target.value === "active",
-      })
-      .then((res) => {
-        console.log("update status ==> ", res);
-      });
-  }, []);
+  const [openStepper, setOpenStepper] = useState(false);
+  const [editData, setEditData] = useState(null);
 
   const columns = [
     { field: "col1", headerName: "#", width: 100 },
@@ -68,63 +61,54 @@ const ContactUs = () => {
       field: "col5",
       headerName: t("Team"),
       width: 150,
-      // renderCell: (params) => (
-      //   <TextField
-      //     select
-      //     value={params.row.col5}
-      //     // onChange={(e) => handleTeamChange(e, params.row)}
-      //     variant="standard"
-      //     size="small"
-      //     sx={{ minWidth: 120 }}
-      //   >
-      //     <MenuItem value="technical">Technical</MenuItem>
-      //     <MenuItem value="support">Support</MenuItem>
-      //     <MenuItem value="business">Business</MenuItem>
-      //   </TextField>
-      // ),
     },
     {
       field: "col6",
       headerName: t("Status"),
       width: 150,
       renderCell: (params) => {
-        const status = params.row.status || "Open";
+        const rawStatus = params.row.col6;
+        const status = rawStatus;
         const getColor = (status) => {
           switch (status) {
-            case "Open":
+            case "open":
               return "#28a745"; // green
-            case "Progress":
+            case "in progress":
               return "#ffc107"; // yellow
-            case "Close":
+            case "closed":
               return "#dc3545"; // red
             default:
               return "#6c757d"; // grey
           }
         };
 
+        const getLabel = (status) => {
+          switch (status) {
+            case "open":
+              return "Open";
+            case "in progress":
+              return "In Progress";
+            case "closed":
+              return "Closed";
+            default:
+              return "Unknown";
+          }
+        };
+
         return (
-          <select
-            value={status}
-            // onChange={(e) => handleStatusChange(e, params.row)}
+          <span
             style={{
-              padding: "5px 8px",
-              borderRadius: "5px",
-              border: "1px solid #ccc",
+              padding: "4px 10px",
+              borderRadius: "12px",
+              fontWeight: 600,
               color: "#fff",
               backgroundColor: getColor(status),
-              fontWeight: "500",
+              textTransform: "uppercase",
+              fontSize: "0.75rem",
             }}
           >
-            <option value="Open" style={{ color: "#28a745" }}>
-              Open
-            </option>
-            <option value="Progress" style={{ color: "#ffc107" }}>
-              Progress
-            </option>
-            <option value="Close" style={{ color: "#dc3545" }}>
-              Close
-            </option>
-          </select>
+            {getLabel(status)}
+          </span>
         );
       },
     },
@@ -137,6 +121,7 @@ const ContactUs = () => {
       renderCell: (params) => (
         <>
           <EditIcon
+            onClick={() => handleStepperClick(params.row.id)}
             style={{ color: "gold", marginRight: "20px", cursor: "pointer" }}
           />
           <MailOutlineIcon
@@ -155,15 +140,25 @@ const ContactUs = () => {
     },
   ];
 
-  // const handleSendMail = (row) => {
-  //   navigate("Compose", { state: { email: row.col4 } });
-  // };
+  const handleStepperClick = (id) => {
+    httpClient
+      .get(`admin/contact-us/${id}`)
+      .then((res) => {
+        console.log("restepper -->", res.data.data);
+
+        setEditData(res.data.data);
+        setOpenStepper(true);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch contact details", error);
+        swal.fire("Error", "Failed to load contact details", "error");
+      });
+  };
 
   const handleSendMail = (row) => {
     setSelectedEmail(row.col4); // assuming col4 is the email column
     setOpenCompose(true);
   };
-  console.log("emails", selectedEmail);
 
   const handleView = (row) => {
     setSelectedFeedback(row);
@@ -357,22 +352,20 @@ const ContactUs = () => {
         </CContainer>
       </div>
 
-      {selectedFeedback && (
-        <Dialog open={openDialog} onClose={handleCloseDialog}>
-          <DialogTitle>{t("Contact Details")}</DialogTitle>
+      {openStepper && (
+        <Dialog
+          open={openStepper}
+          onClose={() => setOpenStepper(false)}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>Support Status</DialogTitle>
           <DialogContent>
-            <TextField
-              margin="dense"
-              label={t("User")}
-              fullWidth
-              variant="outlined"
-              value={selectedFeedback.col2}
-              InputProps={{ readOnly: true }}
+            <Stepper
+              initialData={editData}
+              onClose={() => setOpenStepper(false)}
             />
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog}>{t("Close")}</Button>
-          </DialogActions>
         </Dialog>
       )}
     </>

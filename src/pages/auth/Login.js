@@ -59,11 +59,12 @@ const Login = () => {
 
   const login = async (userInfo) => {
     try {
-      const res = await httpClient.post("admin/auth/login", userInfo);
-      console.log("login => ", res);
+      const res = await httpClient.post("admin/auth/send-login-otp", userInfo);
+      console.log("login => ", res.data?.data);
 
       // Check if the token is directly in the response (adjust as needed)
-      const token = res.data?.data?.token || res.data.token || res.token;
+      // const token = res.data?.data?.token || res.data.token || res.token;
+      const token = res.data?.data;
 
       if (token) {
         localStorage.setItem("token", token);
@@ -71,7 +72,7 @@ const Login = () => {
         setApiError(false);
         setAlertMessage("Logged In Successfully");
         setCloseSnakeBar(true);
-        navigate("/dashboard");
+        navigate("/auth/verify");
       } else {
         throw new Error("Token not found in response.");
       }
@@ -83,8 +84,7 @@ const Login = () => {
       setApiSuccess(false);
 
       // Customize the error message
-      const errorMessage =
-        error.response?.data?.message || "Invalid Credentials";
+      const errorMessage = error.response?.data?.message;
       setAlertMessage(errorMessage);
       setCloseSnakeBar(true);
     }
@@ -205,7 +205,7 @@ const Login = () => {
                         <CCol xs={6} className="text-right">
                           <Link
                             to={"/auth/forgot"}
-                            style={{ paddingLeft: "81px", paddingRight: "0" }}
+                            style={{ paddingLeft: "80px", paddingRight: "0" }}
                           >
                             Forgot Password?
                           </Link>

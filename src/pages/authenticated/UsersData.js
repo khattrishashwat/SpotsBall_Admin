@@ -81,37 +81,33 @@ const UserData = () => {
       headerName: t("Profile"),
       width: 140,
       renderCell: (params) => {
-        return params.formattedValue !== "N/A" ? (
+        const hasImage =
+          params.formattedValue && params.formattedValue !== "N/A";
+        const imageSrc = hasImage
+          ? params.formattedValue
+          : `${process.env.PUBLIC_URL}/images/user_image.png`;
+        return (
           <img
+            src={imageSrc}
+            alt="profile"
             style={{
-              width: "45px",
-              height: "45px",
+              width: 45,
+              height: 45,
               borderRadius: "50%",
               objectFit: "cover",
               cursor: "pointer",
             }}
-            src={params.formattedValue}
-            alt="profile"
             onMouseEnter={() => {
-              setShowImage(true);
-              setProfilePicture(params.formattedValue);
+              if (hasImage) {
+                setShowImage(true);
+                setProfilePicture(params.formattedValue);
+              }
             }}
             onMouseLeave={() => {
-              setShowImage(false);
+              if (hasImage) {
+                setShowImage(false);
+              }
             }}
-          />
-        ) : (
-          <img
-            style={{
-              width: "45px",
-              height: "45px",
-              borderRadius: "50%",
-              objectFit: "cover",
-              cursor: "pointer",
-              background: "transparent",
-            }}
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRp0xKoXUryp0JZ1Sxp-99eQiQcFrmA1M1qbQ&s"
-            alt="profile"
           />
         );
       },
@@ -129,7 +125,7 @@ const UserData = () => {
         );
       },
     },
-    { field: "col4", headerName: t("Name"), width: 200 },
+    { field: "col4", headerName: t("Name"), width: 150 },
     { field: "col5", headerName: t("Email"), width: 200 },
     { field: "col6", headerName: t("Phone Number"), width: 160 },
     { field: "col7", headerName: t("Account Deleted"), width: 170 },
@@ -281,23 +277,24 @@ const UserData = () => {
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
         <PageTitle title={t("User Management")} />
-        <button
-          onClick={exportToExcel}
-          style={{
-            padding: "6px 12px",
-            backgroundColor: "#1976d2",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-            marginBottom: "10px",
-          }}
-        >
-          📥 Export to Excel
-        </button>
 
         <CContainer>
-          <h4 className="">{t("Users")}</h4>
+          <h4 style={{ marginBottom: "-3%" }}>{t("Users")}</h4>
+          <button
+            onClick={exportToExcel}
+            style={{
+              padding: "6px 12px",
+              backgroundColor: "#1976d2",
+              color: "#fff",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+              marginBottom: "10px",
+              marginLeft: "85%",
+            }}
+          >
+            📥 Export to Excel
+          </button>
           <div
             style={{
               minHeight: "300px",

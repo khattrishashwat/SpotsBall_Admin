@@ -1,103 +1,231 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
-import Stepper from "@mui/material/Stepper";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
-import StepContent from "@mui/material/StepContent";
-import Button from "@mui/material/Button";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
+import { useState } from "react";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 import {
-  Button,
   Box,
-  Typography,
-  Paper,
-  StepContent,
-  StepLabel,
+  Stepper as MuiStepper,
   Step,
-  Stepper,,
+  StepLabel,
+  StepContent,
+  Button,
+  Paper,
+  Typography,
+  TextField,
 } from "@mui/material";
-const steps = [
-  {
-    label: "Select campaign settings",
-    description: `For each ad campaign that you create, you can control how much
-              you're willing to spend on clicks and conversions, which networks
-              and geographical locations you want your ads to show on, and more.`,
-  },
-  {
-    label: "Create an ad group",
-    description:
-      "An ad group contains one or more ads which target a shared set of keywords.",
-  },
-  {
-    label: "Create an ad",
-    description: `Try out different ad text to see what brings in the most customers,
-              and learn how to enhance your ads using features like ad extensions.
-              If you run into any problems with your ads, find out how to tell if
-              they're running and how to resolve approval issues.`,
-  },
-];
+import httpClient from "../../../util/HttpClient";
+import Swal from "sweetalert2";
+import Snackbar from "@mui/material/Snackbar";
 
-export default function VerticalLinearStepper() {
+function Stepper({ initialData = [], onClose }) {
+  console.log("in", initialData);
+
   const [activeStep, setActiveStep] = React.useState(0);
+  const [replies, setReplies] = React.useState({});
+  const statusSteps = ["open", "in progress", "closed"];
+  const [alertMessage, setAlertMessage] = useState(null);
+  const [closeSnakeBar, setCloseSnakeBar] = useState(false);
+  const [apiSuccess, setApiSuccess] = useState(null); // true = success, false = error
 
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  const handleChangeReply = (e, status) => {
+    setReplies((prev) => ({
+      ...prev,
+      [status]: e.target.value,
+    }));
   };
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  const handleNext = async () => {
+    const status = statusSteps[activeStep];
+    const ticket = initialData.find((item) => item.status === status);
+    console.log("tikectks", ticket);
+
+    const reply = replies[status];
+
+    if (!ticket) return;
+
+    if (!reply) {
+      // Close the modal immediately
+      if (onClose) onClose();
+
+      const result = await Swal.fire({
+        title: "No Reply Provided",
+        text: "Do you want to change the status without replying to the client?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, change status",
+        cancelButtonText: "No, reply first",
+        customClass: {
+          popup: "custom-z-index-swal",
+        },
+      });
+
+      if (result.isConfirmed) {
+        try {
+          await httpClient.patch(`admin/contact-us/${ticket._id}`, {
+            status: statusSteps[activeStep + 1] || "closed",
+          });
+          setAlertMessage("Status has been changed.");
+          setCloseSnakeBar(true);
+
+          // Reopen modal after 2 seconds at next step
+          setTimeout(() => {
+            if (onClose) onClose(activeStep + 1);
+          }, 2000);
+        } catch (error) {
+          setAlertMessage("Failed to update status.");
+          setCloseSnakeBar(true);
+
+          // Optional: reopen current step if error
+          setTimeout(() => {
+            if (onClose) onClose(activeStep);
+          }, 1000);
+        }
+      } else {
+        setAlertMessage("Please write a reply before continuing.");
+        setCloseSnakeBar(true);
+
+        // Reopen modal after 1 second at current step
+        setTimeout(() => {
+          if (onClose) onClose(activeStep);
+        }, 1000);
+      }
+    } else {
+      try {
+        await httpClient.post("admin/mail/send-mail", {
+          email: ticket.email,
+          subject: ticket.subject,
+          body: reply,
+        });
+
+        setApiSuccess(true);
+        setAlertMessage("Reply has been sent to the client.");
+        setCloseSnakeBar(true);
+
+        // Close after 3 seconds (no need to change step)
+        setTimeout(() => {
+          if (onClose) onClose();
+        }, 3000);
+      } catch (error) {
+        setApiSuccess(false);
+        setAlertMessage("Failed to send reply.");
+        setCloseSnakeBar(true);
+      }
+    }
   };
 
+  const handleBack = () => setActiveStep((prev) => prev - 1);
   const handleReset = () => {
     setActiveStep(0);
+    setReplies({});
+    if (onClose) onClose();
   };
 
   return (
-    <Box sx={{ maxWidth: 400 }}>
-      <Stepper activeStep={activeStep} orientation="vertical">
-        {steps.map((step, index) => (
-          <Step key={step.label}>
-            <StepLabel
-              optional={
-                index === steps.length - 1 ? (
-                  <Typography variant="caption">Last step</Typography>
-                ) : null
-              }
-            >
-              {step.label}
-            </StepLabel>
-            <StepContent>
-              <Typography>{step.description}</Typography>
-              <Box sx={{ mb: 2 }}>
-                <Button
-                  variant="contained"
-                  onClick={handleNext}
-                  sx={{ mt: 1, mr: 1 }}
-                >
-                  {index === steps.length - 1 ? "Finish" : "Continue"}
-                </Button>
-                <Button
-                  disabled={index === 0}
-                  onClick={handleBack}
-                  sx={{ mt: 1, mr: 1 }}
-                >
-                  Back
-                </Button>
-              </Box>
-            </StepContent>
-          </Step>
-        ))}
-      </Stepper>
-      {activeStep === steps.length && (
-        <Paper square elevation={0} sx={{ p: 3 }}>
-          <Typography>All steps completed - you&apos;re finished</Typography>
-          <Button onClick={handleReset} sx={{ mt: 1, mr: 1 }}>
+    <>
+      <Snackbar
+        open={closeSnakeBar}
+        autoHideDuration={2000}
+        message={alertMessage}
+        ContentProps={{
+          sx: apiSuccess
+            ? { backgroundColor: "green" }
+            : { backgroundColor: "red" },
+        }}
+        anchorOrigin={{
+          horizontal: "right",
+          vertical: "bottom",
+        }}
+        action={
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            sx={{ p: 0.5 }}
+            onClick={() => setCloseSnakeBar(false)}
+          >
+            <CloseIcon />
+          </IconButton>
+        }
+      />
+      <Box sx={{ maxWidth: 600 }}>
+        <MuiStepper activeStep={activeStep} orientation="vertical">
+          {statusSteps.map((status, index) => {
+            const ticket = initialData.find((item) => item.status === status);
+
+            return (
+              <Step key={status}>
+                <StepLabel>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{ textTransform: "capitalize" }}
+                  >
+                    Step {index + 1}: {status} Status
+                  </Typography>
+                </StepLabel>
+                <StepContent>
+                  {ticket ? (
+                    <Box>
+                      <Typography>
+                        <strong>
+                          {ticket.first_name} {ticket.last_name} (
+                          {ticket.ticket_number})
+                        </strong>{" "}
+                        - {ticket.status}({ticket.createdAt.substring(0, 10)})
+                      </Typography>
+                      <Typography>{ticket.email}</Typography>
+                      <Typography>{ticket.phone}</Typography>
+                      <Typography>Team :- {ticket.subject}</Typography>
+                      <Typography>Message :- {ticket.message}</Typography>
+
+                      <TextField
+                        fullWidth
+                        multiline
+                        rows={4}
+                        label="Reply :-"
+                        value={replies[status] || ""}
+                        onChange={(e) => handleChangeReply(e, status)}
+                        sx={{ mt: 2 }}
+                      />
+
+                      <Box sx={{ mt: 2 }}>
+                        <Button
+                          variant="contained"
+                          onClick={handleNext}
+                          sx={{ mr: 1 }}
+                        >
+                          {index === statusSteps.length - 1
+                            ? "Finish"
+                            : "Continue"}
+                        </Button>
+                        {/* <Button
+                        disabled={index === 0}
+                        onClick={handleBack}
+                        sx={{ mr: 1 }}
+                      >
+                        Back
+                      </Button> */}
+                      </Box>
+                    </Box>
+                  ) : (
+                    <Typography>No data available for this status</Typography>
+                  )}
+                </StepContent>
+              </Step>
+            );
+          })}
+        </MuiStepper>
+
+        {activeStep === statusSteps.length && (
+          <Paper square elevation={0} sx={{ p: 3 }}>
+            <Typography>All steps completed — you're finished</Typography>
+            {/* <Button onClick={handleReset} sx={{ mt: 1 }}>
             Reset
-          </Button>
-        </Paper>
-      )}
-    </Box>
+          </Button> */}
+          </Paper>
+        )}
+      </Box>
+    </>
   );
 }
+
+export default Stepper;

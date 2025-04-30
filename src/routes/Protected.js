@@ -5,7 +5,7 @@ const Protected = () => {
   const token = window.localStorage.getItem("token");
 
   if (token) return <Outlet />;
-  return <Navigate to={"/auth/logs"} />;
+  return <Navigate to={"/auth/login"} />;
 };
 
 export default Protected;

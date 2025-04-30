@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const httpClient = axios.create({
-  // baseURL: "https://webmobrildemo.com/spotsball/api/v1/", // staging server
-  baseURL: "https://www.spotsball.com/spotsball/api/v1/", // Live server
+  baseURL: "https://webmobrildemo.com/spotsball/api/v1/", // staging server
+  // baseURL: "https://www.spotsball.com/spotsball/api/v1/", // Live server
 });
 
 // Request interceptor
@@ -32,6 +32,7 @@ httpClient.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       window.localStorage.removeItem("token");
+      window.localStorage.removeItem("name");
       window.location.reload();
     }
 

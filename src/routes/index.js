@@ -11,6 +11,7 @@ import Notifications from "../pages/authenticated/notification/Notifications";
 import HowItWork from "../pages/authenticated/howitwork/HowItWork";
 import Compose from "../pages/authenticated/emails/Compose";
 import NewPromo from "../pages/authenticated/coupons/NewPromo";
+import TwoFactor from "../pages/auth/TwoFactor";
 
 // Lazy load components
 const NotFound = lazy(() => import("../pages/common/NotFound"));
@@ -203,6 +204,10 @@ const routes = createBrowserRouter(
         {
           path: "login",
           element: LazyComponent(Login),
+        },
+        {
+          path: "verify",
+          element: LazyComponent(TwoFactor),
         },
         {
           path: "forgot",
