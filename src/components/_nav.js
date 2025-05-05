@@ -119,12 +119,6 @@ const useNavItems = () => {
           to: "/subscribers",
           icon: <SubscriptionsIcon />,
         },
-        {
-          component: CNavItem,
-          name: t("Send Notification"),
-          to: "/notification",
-          icon: <FeedbackIcon />,
-        },
       ],
     },
     {
@@ -311,7 +305,7 @@ const useNavItems = () => {
         {
           component: CNavItem,
           name: t("Send Notification"),
-          to: "/notifications",
+          to: "/notification",
           icon: <FeedbackIcon />,
         },
         {

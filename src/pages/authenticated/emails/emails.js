@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import AppSidebar from "../../../components/AppSidebar";
 import AppHeader from "../../../components/AppHeader";
 import { CCol, CContainer } from "@coreui/react";
@@ -10,6 +9,7 @@ import { IconButton, Snackbar, Button, Switch } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import httpClient from "../../../util/HttpClient";
 import swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 import Loader from "../../../components/loader/Loader";
 import { CardMedia } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -28,9 +28,7 @@ const CustomNoRowsOverlay = () => {
   );
 };
 
-const Admin = () => {
-  const { t } = useTranslation();
-
+const Email = () => {
   const [alertMessage, setAlertMessage] = useState();
   const [apiSuccess, setApiSuccess] = useState(false);
   const [apiError, setApiError] = useState(false);
@@ -43,6 +41,7 @@ const Admin = () => {
     pageSize: 10,
   });
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [status, setStatus] = useState("");
   const [keyword, setKeyword] = useState("");
@@ -116,13 +115,9 @@ const Admin = () => {
         );
       },
     },
-    { field: "col3", headerName: t("Name"), width: 200 },
-    { field: "col4", headerName: t("Email"), width: 200 },
-    { field: "col5", headerName: t("Phone Number"), width: 160 },
-    { field: "col6", headerName: t("Status"), width: 170 },
     {
-      field: "col7",
-      headerName: t("In-Active/Active"),
+      field: "col3",
+      headerName: t("De-Active/Active"),
       width: 180,
       renderCell: (params) => {
         return (
@@ -133,12 +128,16 @@ const Admin = () => {
         );
       },
     },
-    { field: "col8", headerName: t("Visit Count"), width: 170 },
-    { field: "col9", headerName: t("Last Visit"), width: 170 },
+    { field: "col4", headerName: t("Name"), width: 200 },
+    { field: "col5", headerName: t("Email"), width: 200 },
+    { field: "col6", headerName: t("Phone Number"), width: 160 },
+    { field: "col7", headerName: t("Country"), width: 160 },
+    { field: "col8", headerName: t("Status"), width: 170 },
+    { field: "col9", headerName: t("TimeStamp"), width: 170 },
     { field: "col10", headerName: t("Created Date"), width: 170 },
     {
       field: "col11",
-      headerName: t("Action"),
+      headerName: "Action",
       width: 125,
       renderCell: (params) => {
         return (
@@ -205,11 +204,11 @@ const Admin = () => {
       setLoading(true);
 
       httpClient
-        .get
-        // `admin/users/get-all-users?page=${paginationModel.page}&limit=${
-        //   paginationModel.pageSize
-        // }&search=${keyword.trim()}`
-        ()
+        .get(
+          `admin/users/get-all-users?page=${paginationModel.page}&limit=${
+            paginationModel.pageSize
+          }&search=${keyword.trim()}`
+        )
         .then((response) => {
           const data = response.data.data || {};
           setUserCount(data.pagination?.totalUsers || 0);
@@ -257,15 +256,15 @@ const Admin = () => {
       <AppSidebar />
       <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
-        <PageTitle title={t("Admin Management")} />
+        <PageTitle title={t("Email Management")} />
         <CContainer>
           <div className="d-flex justify-content-between align-items-center">
-            <h4 className="my-4">{t("Admin")}</h4>
+            <h4 className="my-4">{t("Email")}</h4>
             <Button
               variant="contained"
-              onClick={() => navigate("add-new-admin")}
+              onClick={() => navigate("add-new-email")}
             >
-              {t("Add New Admin")}
+              {t("Add Email")}
             </Button>
           </div>
           <div
@@ -393,4 +392,4 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+export default Email;

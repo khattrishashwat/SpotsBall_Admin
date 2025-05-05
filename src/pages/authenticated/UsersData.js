@@ -79,7 +79,7 @@ const UserData = () => {
     {
       field: "col2",
       headerName: t("Profile"),
-      width: 140,
+      width: 110,
       renderCell: (params) => {
         const hasImage =
           params.formattedValue && params.formattedValue !== "N/A";
@@ -114,8 +114,8 @@ const UserData = () => {
     },
     {
       field: "col3",
-      headerName: t("De-Active/Active"),
-      width: 180,
+      headerName: t("In-Active/Active"),
+      width: 130,
       renderCell: (params) => {
         return (
           <Switch
@@ -128,9 +128,9 @@ const UserData = () => {
     { field: "col4", headerName: t("Name"), width: 150 },
     { field: "col5", headerName: t("Email"), width: 200 },
     { field: "col6", headerName: t("Phone Number"), width: 160 },
-    { field: "col7", headerName: t("Account Deleted"), width: 170 },
-    { field: "col8", headerName: t("Visit Time"), width: 170 },
-    { field: "col9", headerName: t("TimeStamp"), width: 170 },
+    { field: "col7", headerName: t("Account Delete"), width: 130 },
+    { field: "col8", headerName: t("Log Count's"), width: 120 },
+    { field: "col9", headerName: t("Last Login"), width: 170 },
     { field: "col10", headerName: t("Created Date"), width: 170 },
   ];
 

@@ -84,7 +84,7 @@ function Card(props) {
             <hr className="dark horizontal my-0" />
           </div>
         </div>
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
+        {/* <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/banner")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
@@ -113,7 +113,7 @@ function Card(props) {
 
             <hr className="dark horizontal my-0" />
           </div>
-        </div>
+        </div> */}
 
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/contest_management")}>
@@ -288,7 +288,7 @@ function Card(props) {
             <hr className="dark horizontal my-0" />
           </div>
         </div>
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
+        {/* <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/promocodes")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
@@ -317,8 +317,8 @@ function Card(props) {
 
             <hr className="dark horizontal my-0" />
           </div>
-        </div>
-        <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
+        </div> */}
+        {/* <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/winners_circle")}>
             <div
               className="card-header p-4 d-flex justify-content-between align-items-center"
@@ -347,7 +347,7 @@ function Card(props) {
 
             <hr className="dark horizontal my-0" />
           </div>
-        </div>
+        </div> */}
         <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
           <div className="card" onClick={() => navigate("/winner")}>
             <div

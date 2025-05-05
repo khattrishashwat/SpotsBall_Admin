@@ -25,8 +25,6 @@ import Germany from "./images/flags/greman.png";
 const languageOptions = {
   en: { name: "English", flag: Eng },
   hi: { name: "हिन्दी", flag: Hin },
-  fr: { name: "Français", flag: French },
-  de: { name: "Deutsch", flag: Germany },
 };
 
 const AppHeader = () => {
