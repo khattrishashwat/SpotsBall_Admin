@@ -1,39 +1,41 @@
 import axios from "axios";
+import Swal from "sweetalert2";
 
+// Create Axios instance
 const httpClient = axios.create({
-  baseURL: "https://webmobrildemo.com/spotsball/api/v1/", // staging server
-  // baseURL: "https://www.spotsball.com/spotsball/api/v1/", // Live server
+  baseURL: "https://webmobrildemo.com/spotsball/api/v1/", // staging
+  // baseURL: "https://www.spotsball.com/spotsball/api/v1/", // production
 });
 
-// Request interceptor
+// Request Interceptor
 httpClient.interceptors.request.use(
   (request) => {
-    // Get token from local storage
-    let token = window.localStorage.getItem("token");
-
-    // Set Authorization header if token exists
+    const token = window.localStorage.getItem("token");
     if (token) {
       request.headers["Authorization"] = `Bearer ${token}`;
-      // console.log("token => ", `Bearer ${token}`);
     }
-
     return request;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Response interceptor
+// Response Interceptor
 httpClient.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      window.localStorage.removeItem("token");
-      window.localStorage.removeItem("name");
-      window.location.reload();
+      localStorage.removeItem("token");
+      localStorage.removeItem("name");
+
+      Swal.fire({
+        icon: "warning",
+        title: "Session Expired",
+        text: "Please log in again.",
+        confirmButtonText: "OK",
+        allowOutsideClick: false,
+      }).then(() => {
+        window.location.href = "/";
+      });
     }
 
     return Promise.reject(error);

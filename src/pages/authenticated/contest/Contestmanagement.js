@@ -163,7 +163,7 @@ const ContestManagement = () => {
           <IconButton
             color="primary"
             onClick={() => navigate(`edit-contest/${params.row.id}`)}
-            disabled={isDisabled} // Disable button if condition is met
+            disabled={isDisabled}
           >
             <EditIcon />
           </IconButton>

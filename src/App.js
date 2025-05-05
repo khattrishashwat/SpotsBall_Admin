@@ -5,8 +5,11 @@ import "./styles/style.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import Loader from "./components/loader/Loader";
 import { LanguageProvider } from "./LanguageContext";
+import useInactivityLogout from "./util/useInactivityLogout";
 
 function App() {
+  useInactivityLogout();
+
   return (
     <LanguageProvider>
       <Suspense fallback={<Loader />}>
