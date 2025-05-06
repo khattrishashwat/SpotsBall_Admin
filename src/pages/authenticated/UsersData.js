@@ -297,7 +297,7 @@ const UserData = () => {
           </button>
           <div
             style={{
-              minHeight: "300px",
+              minHeight: "700px",
               border: "1px solid gray",
               padding: 15,
               borderRadius: 5,
@@ -390,7 +390,7 @@ const UserData = () => {
               <div
                 style={{
                   width: "100%",
-                  height: "400px",
+                  height: "600px",
                   borderRadius: "5px",
                   border: "1px solid gray",
                   padding: "5px",

@@ -19,7 +19,7 @@ i18n
           Dashboard: "Dashboard",
           "Admin Management": "Admin Management",
           Admin: "Admin",
-          "Admin Activities": "Admins Activitie",
+          "Admin Activities": "Admin Activities",
           "User Management": "User Management",
           Users: "Users",
           Activity: "Activity",

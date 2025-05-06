@@ -243,7 +243,7 @@ const useNavItems = () => {
     },
     {
       component: CNavGroup,
-      name: t("PlatForm Setting"),
+      name: t("Platform Setting"),
       icon: <SettingsIcon />,
       items: [
         {

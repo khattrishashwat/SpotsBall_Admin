@@ -36,6 +36,7 @@ const AppSidebar = () => {
   return (
     <CSidebar
       position="fixed"
+      style={{ marginRight: "22vw" }}
       unfoldable={unfoldable}
       visible={sidebarShow}
       onVisibleChange={(visible) => {
@@ -47,12 +48,12 @@ const AppSidebar = () => {
           <AppSidebarNav items={navItems} />
         </SimpleBar>
       </CSidebarNav>
-      <CSidebarToggler
+      {/* <CSidebarToggler
         className="d-none d-lg-flex"
         onClick={() =>
           dispatch({ type: "set", sidebarUnfoldable: !unfoldable })
         }
-      />
+      /> */}
     </CSidebar>
   );
 };
