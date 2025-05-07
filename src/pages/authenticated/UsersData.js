@@ -290,7 +290,7 @@ const UserData = () => {
               borderRadius: "5px",
               cursor: "pointer",
               marginBottom: "10px",
-              marginLeft: "85%",
+              marginLeft: "80%",
             }}
           >
             📥 Export to Excel
