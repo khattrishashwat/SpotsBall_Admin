@@ -144,8 +144,6 @@ const ContactUs = () => {
     httpClient
       .get(`admin/contact-us/${id}`)
       .then((res) => {
-        console.log("restepper -->", res.data.data);
-
         setEditData(res.data.data);
         setOpenStepper(true);
       })

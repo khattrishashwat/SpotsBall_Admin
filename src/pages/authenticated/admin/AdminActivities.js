@@ -245,7 +245,7 @@ const AdminActivities = () => {
   return (
     <>
       <AppSidebar />
-      <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
+      <div className="wraper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
         <PageTitle title={t("Admin Activities Management")} />
         <CContainer>

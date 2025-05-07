@@ -150,7 +150,7 @@ const AllPayments = () => {
   return (
     <>
       <AppSidebar />
-      <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
+      <div className="wraper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
         <PageTitle title="All Payment" />
         <CContainer>

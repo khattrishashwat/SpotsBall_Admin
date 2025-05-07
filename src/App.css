@@ -1,3 +1,11 @@
 .wrapper {
-    margin-left: 2rem;
+    margin-left: 1rem;
+}
+
+.custom-padding {
+    padding-left: 1.25rem !important;
+}
+
+.wraper {
+    margin-left: 2%;
 }

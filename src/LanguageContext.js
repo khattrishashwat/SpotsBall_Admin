@@ -12,7 +12,6 @@ export const LanguageProvider = ({ children }) => {
     // If the selected language changes, update i18n and localStorage
     if (selectedLanguage !== i18n.language) {
       i18n.changeLanguage(selectedLanguage);
-      // console.log("selectedLanguage", selectedLanguage);
     }
     localStorage.setItem("selectedLanguage", selectedLanguage);
   }, [selectedLanguage]);

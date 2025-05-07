@@ -36,7 +36,7 @@ const AppSidebar = () => {
   return (
     <CSidebar
       position="fixed"
-      style={{ marginRight: "22vw" }}
+      style={{ width: "21vw" }}
       unfoldable={unfoldable}
       visible={sidebarShow}
       onVisibleChange={(visible) => {

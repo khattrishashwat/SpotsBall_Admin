@@ -440,12 +440,12 @@ export default function MailPage() {
                   <Button startIcon={<ReplyIcon />} variant="outlined">
                     Reply
                   </Button>
-                  <Button startIcon={<ReplyAllIcon />} variant="outlined">
+                  {/* <Button startIcon={<ReplyAllIcon />} variant="outlined">
                     Reply All
                   </Button>
                   <Button startIcon={<ForwardIcon />} variant="outlined">
                     Forward
-                  </Button>
+                  </Button> */}
                   <Button
                     startIcon={<DeleteIcon />}
                     variant="outlined"

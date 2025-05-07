@@ -119,7 +119,7 @@ const Admin = () => {
     { field: "col3", headerName: t("Name"), width: 200 },
     { field: "col4", headerName: t("Email"), width: 200 },
     { field: "col5", headerName: t("Phone Number"), width: 160 },
-    { field: "col6", headerName: t("Status"), width: 170 },
+    { field: "col6", headerName: t("Status"), width: 130 },
     {
       field: "col7",
       headerName: t("In-Active/Active"),
@@ -127,7 +127,7 @@ const Admin = () => {
       renderCell: (params) => {
         return (
           <Switch
-            checked={params.row.col3} // checked={params.row.col3 === true ? true : false}
+            checked={params.row.col3}
             onChange={(e) => handleStatusChange(e, params.row)}
           />
         );
@@ -255,7 +255,7 @@ const Admin = () => {
   return (
     <>
       <AppSidebar />
-      <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center">
+      <div className="wraper bg-light min-vh-100 d-flex-column align-items-center">
         <AppHeader />
         <PageTitle title={t("Admin Management")} />
         <CContainer>
