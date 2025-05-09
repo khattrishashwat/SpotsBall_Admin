@@ -68,7 +68,7 @@ const AppHeader = () => {
     <CHeader position="sticky" className="mb-4">
       <CContainer fluid>
         <CHeaderToggler
-          className="ps-1 custom-padding"
+          className="ps-1"
           onClick={() => dispatch({ type: "set", sidebarShow: !sidebarShow })}
         >
           <i className="bi bi-list"></i>

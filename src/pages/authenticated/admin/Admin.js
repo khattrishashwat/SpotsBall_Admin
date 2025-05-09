@@ -81,42 +81,38 @@ const Admin = () => {
       headerName: t("Profile"),
       width: 140,
       renderCell: (params) => {
-        return params.formattedValue !== "N/A" ? (
+        const hasImage =
+          params.formattedValue && params.formattedValue !== "N/A";
+        const imageSrc = hasImage
+          ? params.formattedValue
+          : `${process.env.PUBLIC_URL}/images/user_image.png`;
+        return (
           <img
+            src={imageSrc}
+            alt="profile"
             style={{
-              width: "45px",
-              height: "45px",
+              width: 45,
+              height: 45,
               borderRadius: "50%",
               objectFit: "cover",
               cursor: "pointer",
             }}
-            src={params.formattedValue}
-            alt="profile"
             onMouseEnter={() => {
-              setShowImage(true);
-              setProfilePicture(params.formattedValue);
+              if (hasImage) {
+                setShowImage(true);
+                setProfilePicture(params.formattedValue);
+              }
             }}
             onMouseLeave={() => {
-              setShowImage(false);
+              if (hasImage) {
+                setShowImage(false);
+              }
             }}
-          />
-        ) : (
-          <img
-            style={{
-              width: "45px",
-              height: "45px",
-              borderRadius: "50%",
-              objectFit: "cover",
-              cursor: "pointer",
-              background: "transparent",
-            }}
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRp0xKoXUryp0JZ1Sxp-99eQiQcFrmA1M1qbQ&s"
-            alt="profile"
           />
         );
       },
     },
-    { field: "col3", headerName: t("Name"), width: 200 },
+    { field: "col3", headerName: t("Name"), width: 120 },
     { field: "col4", headerName: t("Email"), width: 200 },
     { field: "col5", headerName: t("Phone Number"), width: 160 },
     { field: "col6", headerName: t("Status"), width: 130 },
@@ -136,20 +132,20 @@ const Admin = () => {
     { field: "col8", headerName: t("Visit Count"), width: 170 },
     { field: "col9", headerName: t("Last Visit"), width: 170 },
     { field: "col10", headerName: t("Created Date"), width: 170 },
-    {
-      field: "col11",
-      headerName: t("Action"),
-      width: 125,
-      renderCell: (params) => {
-        return (
-          <DeleteIcon
-            cursor={"pointer"}
-            style={{ color: "red" }}
-            onClick={(e) => confirmBeforeDelete(e, params.row)}
-          />
-        );
-      },
-    },
+    // {
+    //   field: "col11",
+    //   headerName: t("Action"),
+    //   width: 125,
+    //   renderCell: (params) => {
+    //     return (
+    //       <DeleteIcon
+    //         cursor={"pointer"}
+    //         style={{ color: "red" }}
+    //         onClick={(e) => confirmBeforeDelete(e, params.row)}
+    //       />
+    //     );
+    //   },
+    // },
   ];
 
   //handle get confirmation before delete user
@@ -205,29 +201,34 @@ const Admin = () => {
       setLoading(true);
 
       httpClient
-        .get
-        // `admin/users/get-all-users?page=${paginationModel.page}&limit=${
-        //   paginationModel.pageSize
-        // }&search=${keyword.trim()}`
-        ()
+        .get(
+          // `admin/users/get-all-users?page=${paginationModel.page}&limit=${
+          //   paginationModel.pageSize
+          // }&search=${keyword.trim()}`
+          // ()
+          `admin/auth/get-admins`
+        )
         .then((response) => {
           const data = response.data.data || {};
           setUserCount(data.pagination?.totalUsers || 0);
 
-          const users = data.users || [];
+          const users = data || [];
           setRows(
             users.map((user, index) => ({
               id: user._id,
               col1:
                 paginationModel.page * paginationModel.pageSize + (index + 1), // Updated this line
               col2: user.profile_url || "N/A",
-              col3: user.is_active,
-              col4: `${user.first_name || "User"} ${
-                user.last_name || ""
-              }`.trim(),
-              col5: user.email || "Not Available",
-              col6: user.phone || "Not Available",
-              col10: user.createdAt?.substring(0, 10) || "N/A",
+              col3: user.name,
+              col4: user.email || "Not Available",
+              col5: user.phone || "Not Available",
+              col8: user.login_count ?? "Not Available",
+              col9: user.last_login
+                ? new Date(user.last_login).toLocaleString()
+                : "Not Available",
+              col10: user.createdAt
+                ? new Date(user.createdAt).toISOString().substring(0, 10)
+                : "N/A",
             }))
           );
         })

@@ -46,7 +46,10 @@ const AllPayments = () => {
         contestData.data.map((record, index) => ({
           id: record._id,
           col1: paginationModel.page * paginationModel.pageSize + (index + 1), // Updated this line
-          col2: record.userId || "N/A",
+          col2: record.userId?.first_name
+            ? `${record.userId.first_name} ${record.userId.last_name}`
+            : "N/A",
+
           col3: record.contestId || "N/A",
           col4: record.discountApplied?.name
             ? `${record.discountApplied.name} (${record.discountApplied.discountPercentage}%)`
@@ -58,8 +61,11 @@ const AllPayments = () => {
           col7: record.ticketAmount || "N/A",
           col8: record.amount ? record.amount.toFixed(2) : "N/A",
           col9: record.paymentId || "N/A",
-          col10: record.transaction_status || "N/A",
-          col11: record.pdf || "N/A",
+          col10: record.createdAt
+            ? new Date(record.createdAt).toISOString().substring(0, 10)
+            : "N/A",
+          col11: record.transaction_status || "N/A",
+          col12: record.pdf || "N/A",
         }))
       );
       setLoading(false);
@@ -109,9 +115,10 @@ const AllPayments = () => {
     { field: "col7", headerName: t("Ticket Amount"), width: 150 },
     { field: "col8", headerName: t("Amount (All Tax Included)"), width: 180 },
     { field: "col9", headerName: t("Payment ID"), width: 180 },
-    { field: "col10", headerName: t("Transaction Status"), width: 250 },
+    { field: "col10", headerName: t("Payment Date"), width: 120 },
+    { field: "col11", headerName: t("Transaction Status"), width: 140 },
     {
-      field: "col11",
+      field: "col12",
       headerName: t("PDF"),
       width: 180,
       renderCell: (params) =>

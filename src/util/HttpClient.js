@@ -3,8 +3,8 @@ import Swal from "sweetalert2";
 
 // Create Axios instance
 const httpClient = axios.create({
-  baseURL: "https://webmobrildemo.com/spotsball/api/v1/", // staging
-  // baseURL: "https://www.spotsball.com/spotsball/api/v1/", // production
+  // baseURL: "https://webmobrildemo.com/spotsball/api/v1/", // staging
+  baseURL: "https://www.spotsball.com/spotsball/api/v1/", // production
 });
 
 // Request Interceptor
@@ -34,7 +34,7 @@ httpClient.interceptors.response.use(
         confirmButtonText: "OK",
         allowOutsideClick: false,
       }).then(() => {
-        window.location.href = "/";
+        window.location.href = "/admin-panel";
       });
     }
 

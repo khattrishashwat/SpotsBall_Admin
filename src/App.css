@@ -1,3 +1,7 @@
+.new {
+    overflow-x: hidden;
+}
+
 .wrapper {
     margin-left: 1rem;
 }
@@ -6,6 +10,14 @@
     padding-left: 1.25rem !important;
 }
 
-.wraper {
+/* .wraper {
     margin-left: 2%;
+} */
+
+element{
+    gap: 27px;
+    margin: -26px;
+
+    padding-right: 0.5rem !important;
+    padding-left: 7.5rem !important;
 }

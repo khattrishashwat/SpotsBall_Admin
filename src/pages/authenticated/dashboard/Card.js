@@ -42,7 +42,7 @@ function Card(props) {
 
   return (
     <>
-      <div className="row d-flex gap- flex-wrap px-2">
+      <div className="row d-flex gap- flex-wrap element">
         <div>
           <ClipLoader
             // color={color}

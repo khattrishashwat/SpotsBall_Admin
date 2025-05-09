@@ -18,7 +18,7 @@ const Dashboard = () => {
   return (
     <>
       <AppSidebar />
-      <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center just">
+      <div className="wrapper bg-light min-vh-100 d-flex-column align-items-center just new">
         <AppHeader />
         <PageTitle title="Dashboard" />
         <Card data={data} />

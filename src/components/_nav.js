@@ -67,12 +67,12 @@ const useNavItems = () => {
           to: "/admins",
           icon: <SupervisorAccountIcon />,
         },
-        {
-          component: CNavItem,
-          name: t("Admin Activities"),
-          to: "/admins-activities",
-          icon: <ManageAccountsIcon />,
-        },
+        // {
+        //   component: CNavItem,
+        //   name: t("Admin Activities"),
+        //   to: "/admins-activities",
+        //   icon: <ManageAccountsIcon />,
+        // },
       ],
     },
     //!isAdmin && {
